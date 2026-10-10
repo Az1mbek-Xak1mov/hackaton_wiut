@@ -1,11 +1,13 @@
 import type {
   AnalyseResult, ApplicationListItem, ApplicationReview, BorrowerList, BorrowerProfile,
-  CfoHistoryItem, CfoResponse, CreatedWithJob, DocumentOut, Fact, Finding, Job, LlmSettings, OwnerBusiness,
+  CfoHistoryItem, CfoResponse, CreatedWithJob, DocumentOut, Fact, Finding, Job, LlmSettings, OwnerApplication, OwnerBusiness,
   PortfolioSummary, TokenPair, VersionInfo, ApiErrorBody,
 } from './types'
 
+import { surface } from '@/surface'
+
 const BASE = '/api/v1'
-const LS_KEY = 'converza.auth'
+const LS_KEY = `converza.auth.${surface}`
 
 export type Role = 'officer' | 'owner'
 
@@ -124,14 +126,7 @@ export async function request<T>(path: string, opts: ReqOpts = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { method: opts.method || 'GET', headers, body })
   if (res.status === 401 && useAuth && auth && !opts.retried) {
     if (await tryRefresh()) return request<T>(path, { ...opts, retried: true })
-    // token is dead: get a fresh demo session for the same role, once
-    const role = auth.role
-    try {
-      await demoLogin(role)
-      return request<T>(path, { ...opts, retried: true })
-    } catch {
-      setAuth(null)
-    }
+    setAuth(null) // session is over: the router sends the user to /login
   }
   if (!res.ok) throw await parseError(res)
   if (res.status === 204) return undefined as T
@@ -140,21 +135,51 @@ export async function request<T>(path: string, opts: ReqOpts = {}): Promise<T> {
   return (await res.json()) as T
 }
 
-export async function demoLogin(role: Role): Promise<TokenPair> {
-  const res = await fetch(`${BASE}/auth/demo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ role }),
-  })
-  if (!res.ok) throw await parseError(res)
-  const tp = (await res.json()) as TokenPair
+function storeTokens(tp: TokenPair) {
   const u = tp.user || {}
   setAuth({
     access: tp.access_token,
     refresh: tp.refresh_token,
-    role,
+    role: surface === 'bank' ? 'officer' : 'owner',
     name: (u.full_name || u.name || u.email || '') as string,
   })
+}
+
+/** Email + password sign-in for this surface (OAuth2 password form). */
+export async function login(email: string, password: string): Promise<TokenPair> {
+  const body = new URLSearchParams({ username: email, password })
+  const res = await fetch(`${BASE}/auth/login?surface=${surface}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+    body,
+  })
+  if (!res.ok) throw await parseError(res)
+  const tp = (await res.json()) as TokenPair
+  storeTokens(tp)
+  return tp
+}
+
+export interface RegisterPayload {
+  full_name: string
+  company_name: string
+  stir?: string
+  industry: string
+  region: string
+  email: string
+  password: string
+}
+
+/** Business-owner self-registration; the response is a token pair (signed in at once). */
+export async function register(payload: RegisterPayload): Promise<TokenPair> {
+  const res = await fetch(`${BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw await parseError(res)
+  const tp = (await res.json()) as TokenPair
+  if (tp.access_token) storeTokens(tp)
+  else await login(payload.email, payload.password)
   return tp
 }
 
@@ -208,6 +233,9 @@ export const api = {
     fd.append('file', file)
     return request<CreatedWithJob>('/owner/files', { method: 'POST', form: fd })
   },
+  ownerApplications: () => request<{ items: OwnerApplication[] } | OwnerApplication[]>('/owner/applications'),
+  ownerApply: (payload: { requested_amount_mln: number; term_months: number; purpose: string; document_uuids: string[] }) =>
+    request<OwnerApplication>('/owner/applications', { method: 'POST', body: payload }),
   cfoAsk: (question: string) => request<CfoResponse>('/cfo/messages', { method: 'POST', body: { question } }),
   cfoHistory: () =>
     request<CfoHistoryItem[] | { business?: OwnerBusiness; messages?: CfoHistoryItem[]; items?: CfoHistoryItem[]; facts?: Record<string, Fact> }>('/cfo/messages'),

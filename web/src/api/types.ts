@@ -361,6 +361,20 @@ export interface LlmSettings {
   configured?: boolean
 }
 
+export interface OwnerApplication {
+  uuid?: string
+  number: string
+  status: string
+  requested_display?: string
+  requested_amount?: number
+  term_months?: number
+  purpose?: string
+  received_on?: string
+  created_at?: string
+  documents?: number | string
+  issues_label?: string
+}
+
 export interface OwnerBusiness {
   uuid?: string
   name: string

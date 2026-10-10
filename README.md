@@ -4,13 +4,21 @@
 
 Team **10x engineers**. Partner product for MKBANK's SME Lending Department, with the Central Bank as co-partner (explainability, audit trail, human-in-the-loop). It changes two processes: preparing a loan file, and monitoring the borrower after disbursement.
 
-Live: **https://converza.uz**
+Two apps, separate sign-in:
+
+| App | Who | Sign in |
+|---|---|---|
+| **https://converza.uz** | business owner | `owner@converza.uz` / `Converza-Owner-2026` (business: Farovon Savdo MChJ, STIR 302 447 118), or **Register** with any email (no confirmation) |
+| **https://app.converza.uz** | bank officer | `officer@converza.uz` / `Converza-Officer-2026` |
+
+An owner account cannot sign in to the bank app, and an officer account cannot sign in to the owner app.
 
 | Route | Who | What it shows |
 |---|---|---|
+| converza.uz `/` | owner | upload documents (several at once), live analysis status, **Apply for a loan**, my applications |
+| converza.uz `/cfo` | owner | AI CFO: answers computed by tool calls over the owner's own records, every number cited |
+| app.converza.uz `/bank` | officer | portfolio, applications queue, `/bank/applications/<number>` loan review (issues, extracted figures with page evidence, ratios, verified narrative, decision record), `/bank/borrowers` |
 | `/analyse` | anyone, no login | Upload a PDF, XLSX or JPG. Converza classifies it, extracts what it can, and always returns something true, including "not a recognised statutory form; here is what I could read". Click any value to see its page with the cell highlighted. |
-| `/login` → **Enter as bank officer** | demo officer | `/bank` portfolio overview, `/bank/applications/APP-2026-0931` loan review (issues, extracted figures, ratios, grounded narrative, evidence pane, decision record), `/bank/borrowers` monitoring statuses with reasons |
-| `/login` → **Enter as business owner** | demo owner | `/owner/cfo` AI CFO answers with evidence chips; `/owner/upload` the owner's documents |
 | `/metrics` | anyone | the newest evaluation results JSON, rendered as is |
 | `/api/v1/version` | anyone | the deployed git SHA and build/deploy time (see **Deployment**) |
 

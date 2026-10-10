@@ -106,7 +106,7 @@ const otherFacts = computed(() => openFacts.value.filter((f) => !f.line_code))
         <h1>{{ t('Upload & analyze') }}</h1>
         <p class="meta">{{ t("Bank statements, Форма 1 and Форма 2 feed the AI CFO and your bank's monitoring.") }} {{ t('{a} of {b} documents analyzed', { a: counts.analysed, b: counts.total }) }}</p>
       </div>
-      <RouterLink to="/owner/cfo" class="btn btn-primary">{{ t('Ask the AI CFO →') }}</RouterLink>
+      <RouterLink to="/cfo" class="btn btn-primary">{{ t('Ask the AI CFO →') }}</RouterLink>
     </div>
 
     <section class="panel" :aria-label="t('Upload')" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">

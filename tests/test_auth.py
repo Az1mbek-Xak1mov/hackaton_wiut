@@ -27,12 +27,13 @@ def test_login_and_refresh_token_type(client, db):
     make_user(db, "a@converza.uz", "officer")
     h = auth(client, "a@converza.uz")
     assert client.get("/api/v1/auth/me", headers=h).status_code == 200
-    tokens = client.post("/api/v1/auth/login", data={"username": "a@converza.uz", "password": "password123"}).json()
+    tokens = client.post("/api/v1/auth/login?surface=bank",
+                         data={"username": "a@converza.uz", "password": "password123"}).json()
     # a refresh token is never accepted as an access token
     r = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {tokens['refresh_token']}"})
     assert r.status_code == 401
     assert client.post("/api/v1/auth/refresh", json={"refresh_token": tokens["refresh_token"]}).status_code == 200
-    bad = client.post("/api/v1/auth/login", data={"username": "a@converza.uz", "password": "nope"})
+    bad = client.post("/api/v1/auth/login?surface=bank", data={"username": "a@converza.uz", "password": "nope"})
     assert bad.status_code == 401 and bad.json()["code"] == "invalid_credentials"
 
 

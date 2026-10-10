@@ -16,6 +16,8 @@ from app.modules.jobs.models import Job
 from app.modules.jobs.service import JobService
 from app.modules.statements.models import Transaction
 
+STATUS_LABELS = {"processing": "Documents being analysed", "in_review": "With the bank — in review",
+                 "waiting_on_applicant": "The bank asked for more documents", "decided": "Decision recorded"}
 APP_FIELDS = ("number", "requested_amount", "term_months", "rate_pct", "purpose", "status", "received_on")
 DECISION_FIELDS = ("outcome", "reasoning", "evidence_reviewed")
 
@@ -183,6 +185,58 @@ class ApplicationService:
         self.db.commit()
         self.db.refresh(dec)
         return dec
+
+    def create_owner_application(self, user, data: dict) -> tuple[Application, Job]:
+        """A business owner applies from converza.uz with documents already uploaded and analysed."""
+        from uuid import UUID as _UUID
+        borrower = BorrowerService(self.db).owner_borrower(user)
+        own = {d.uuid: d for d in self.db.scalars(select(Document).where(Document.borrower_id == borrower.id,
+                                                                         Document.owner_kind == "owner")).all()}
+        taken = set(self.db.scalars(select(ApplicationDocument.document_id)).all())
+        if data.get("document_uuids"):
+            docs = []
+            for u in data["document_uuids"]:
+                d = own.get(_UUID(str(u)))
+                if d is None:
+                    raise NotFoundError("document", f"Document {u} is not one of your uploads")
+                docs.append(d)
+        else:
+            docs = [d for d in own.values() if d.status in ("analyzed", "clarification") and d.id not in taken]
+        if not docs:
+            raise AppException(code="no_documents", status_code=422,
+                               detail="Upload and analyse your documents before applying")
+        today = date.today()
+        app = Application(number=self._next_number(today.year), borrower_id=borrower.id,
+                          requested_amount=round(float(data["requested_amount_mln"]) * 1000.0, 2),
+                          term_months=data["term_months"], purpose=data.get("purpose") or "",
+                          status="processing", received_on=today, declared={"channel": "online"})
+        self.db.add(app)
+        self.db.flush()
+        for d in sorted(docs, key=lambda d: d.id):
+            self.db.add(ApplicationDocument(application_id=app.id, document_id=d.id))
+        self.db.flush()
+        audit.record(self.db, user, "create", "application", app.uuid,
+                     after=audit.snapshot(app, APP_FIELDS) | {"documents": len(docs), "channel": "online"})
+        job = enqueue_analysis(self.db, app)
+        self.db.commit()
+        self.db.refresh(app)
+        return app, job
+
+    def owner_items(self, user) -> list[dict]:
+        from app.core.formatting import kuzs_to_mln
+        borrower = BorrowerService(self.db).owner_borrower(user)
+        apps = self.db.scalars(select(Application).where(Application.borrower_id == borrower.id)
+                               .order_by(Application.id.desc())).all()
+        out = []
+        for a in apps:
+            n_docs = len(linked_documents(self.db, a))
+            out.append({"uuid": str(a.uuid), "number": a.number, "status": a.status,
+                        "status_label": STATUS_LABELS.get(a.status, a.status),
+                        "requested_display": kuzs_to_mln(a.requested_amount) if a.requested_amount is not None else "n/a",
+                        "requested_unit": "mln UZS", "term_months": a.term_months, "purpose": a.purpose,
+                        "received_on": a.received_on.isoformat(), "documents": n_docs,
+                        "analysed_at": a.analysed_at.isoformat() if a.analysed_at else None})
+        return out
 
     def docs_count(self, app: Application) -> tuple[int, int]:
         docs = linked_documents(self.db, app)

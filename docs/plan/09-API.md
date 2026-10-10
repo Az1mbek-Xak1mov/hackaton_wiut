@@ -36,6 +36,19 @@ type Job = { uuid: string; kind: string; status: "queued"|"running"|"done"|"fail
 
 Page images of bank/owner documents need auth: `<img>` cannot send headers, so append `?token=<access token>` (also accepted on `/documents/{uuid}/original`). Public documents need nothing. `GET /jobs/{uuid}` returns `Job` (no auth; poll it or `/analyse/{uuid}`).
 
+## Auth — two apps, two surfaces
+
+`converza.uz` = business-owner app (surface `owner`); `app.converza.uz` = bank-officer app (surface `bank`). No demo logins.
+
+| Method | Path | Request | Response |
+|---|---|---|---|
+| POST | `/auth/register` (public) | JSON `{email, password (8–128), full_name, company_name, stir? ("302447118" or "302 447 118"; blank = none), industry?, region?}` | `201 TokenPair` (surface `owner`). `409 email_taken` / `409 stir_taken`, `422` on validation |
+| POST | `/auth/login?surface=owner\|bank` (default `owner`) | **form** `username=<email>&password=…` (OAuth2 form, `application/x-www-form-urlencoded`) | `TokenPair`. `401 invalid_credentials`; `403 wrong_surface` with `message` "This is a business-owner account; sign in at converza.uz" / "This is a bank officer account; sign in at app.converza.uz" and `params:{surface, role}` |
+| POST | `/auth/refresh` | `{refresh_token}` | `TokenPair` on the same surface |
+| GET | `/auth/me` | — | `{user, scopes}` |
+
+`TokenPair = {access_token, refresh_token, token_type:"bearer", expires_in, user:{uuid, email, full_name, role, is_active}, scopes:[…], surface:"owner"|"bank"}`. Surface `owner` accepts role `owner`; `bank` accepts `officer`, `admin`, `demo_viewer`. Owner tokens carry no bank scopes, so every officer endpoint answers 403 to them (and owner endpoints answer 403 to officers). Seeded accounts: `owner@converza.uz` (business Farovon Savdo MChJ, STIR 302447118; password `SEED_OWNER_PASSWORD`) and `officer@converza.uz` (G. Abdullayeva; `SEED_OFFICER_PASSWORD`).
+
 ## Public
 
 | Method | Path | Response |
@@ -46,7 +59,7 @@ Page images of bank/owner documents need auth: `<img>` cannot send headers, so a
 | GET | `/documents/{uuid}/pages/{n}.png` | image (public docs readable by uuid; others `?token=`) |
 | GET | `/documents/{uuid}` · `/documents/{uuid}/facts` · `/documents/{uuid}/transactions?category=` | `DocumentOut` · `{facts}` · `{items:[{row_n, booked_on, amount (UZS), counterparty, counterparty_stir, account, purpose, category, category_source, category_conf, recurring_group}]}` |
 | GET | `/metrics/eval` | latest `eval/results/*.json` content or `{status:"not_measured"}` |
-| POST | `/auth/demo` `{role:"officer"\|"owner"}` | token pair like login |
+| POST | `/auth/demo` | **404** unless `DEMO_LOGIN_ENABLED=true` (off in production) |
 
 ## Officer
 
@@ -62,7 +75,9 @@ Page images of bank/owner documents need auth: `<img>` cannot send headers, so a
 | PATCH | `/findings/{uuid}` | `{state:"open"\|"resolved"\|"dismissed", note}` → Finding (audited, H2) |
 | POST | `/applications/{number}/decision` | `{outcome, reasoning, evidence_reviewed:[keys]}` → 201 |
 | POST | `/facts/{uuid}/review` | `{action:"verify"\|"correct"\|"flag", value?, note?}` → Fact |
+| GET | `/borrowers?status=stable\|watch\|attn\|unknown\|not_monitored` | includes businesses without a loan: `loan_id:null, status:"not_monitored", reason:"Not monitored — no loan with the bank"`; `counts` has a `not_monitored` key. Every officer endpoint answers on an empty database (zeros, empty lists, `run:null`). Previous shape: |
 | GET | `/borrowers?status=` | `{counts:{all, stable, watch, attn}, items:[{uuid, loan_id, name, industry, region, outstanding, outstanding_display, trend_pct, trend_display, coverage_display, latest_period, status, reason, updated}] (sorted by severity, then exposure), run, thresholds, calibration_note}` |
+| GET | `/borrowers/{loan_id or borrower uuid}` | a borrower without a loan is opened by its uuid; then `loan:null`, `status.current:"not_monitored"` |
 | GET | `/borrowers/{loan_id}` | `{business:{uuid, name, industry, region, stir, since, employees}, loan:{loan_id, type, purpose, disbursed_on, original_display, outstanding_display, installment_display, due_day, term_months, paid, left, maturity_on, collateral, coverage_display, repayments:[{n, due_on, paid_on, state:"on_time"\|"late"\|"overdue"\|"upcoming", days_late}], unit}, status:{current, since, history:[{status, from}], reason, indicators:{M01…M06:{value, display, threshold, triggered, evidence, reason}}}, alerts: (Finding & {date})[], quarterly:{periods, period_labels, revenue:[key\|null], opex, net_profit}, narrative, timeline:[{date, title, status}], documents:[{uuid, filename, doc_type, status, uploaded, note}], run, calibration_note, facts: Record<string, Fact>}` |
 | POST | `/borrowers` · `/loans` · `/borrowers/{loan_id}/review-outcome` | create borrower (by STIR) · loan with repayments · officer's monitoring review outcome (H6) |
 | POST | `/monitoring/runs` `{as_of?}` · GET `/monitoring/runs/latest` | `202 {run, job}` · `{run}` |
@@ -74,7 +89,10 @@ Narrative markdown cites facts as `[f_xxxxxx]` **after** the number it states ("
 
 | Method | Path | Response |
 |---|---|---|
-| GET | `/owner/files` | `{business:{uuid, name, industry, region}, items: DocumentOut[]}` |
+| GET | `/owner/me` | `{user:{uuid, email, full_name, role, is_active}, business:{uuid, name, stir\|null, industry, region}}` |
+| GET | `/owner/files` | `{business:{uuid, name, stir, industry, region}, items: DocumentOut[]}` (own documents only) |
+| POST | `/owner/applications` JSON `{requested_amount_mln (>0), term_months (1–360), purpose?, document_uuids?: [uuid]}` — default documents = own analysed (or clarification) uploads not yet in an application → `201 {uuid, number:"APP-2026-0001", status:"processing", job}`; `422 no_documents` when nothing is analysed yet; `404 document_not_found` for a uuid that is not yours. The analysis (rules, ratios, narrative) runs in the worker; the application appears in the officer's `/applications` |
+| GET | `/owner/applications` | `{items:[{uuid, number, status, status_label, requested_display, requested_unit:"mln UZS", term_months, purpose, received_on, documents, analysed_at}]}` (no officer findings) |
 | POST | `/owner/files` multipart | `{uuid, job}` |
 | POST | `/cfo/messages` `{question}` | `{answer:{direct_answer, table:[{label, fact_key}], cant_see, next_steps:[string]}, citations:[key], tool_trace:[{tool, args, result_key}], mode:"llm"\|"facts_only", facts: Record<string, Fact>}` |
 | GET | `/cfo/messages` | `{business:{name}, messages:[{role:"user", content, created_at} \| {role:"assistant", uuid, answer, citations, tool_trace, mode, created_at, facts}]}` |

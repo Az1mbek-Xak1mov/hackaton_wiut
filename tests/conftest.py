@@ -73,8 +73,8 @@ def make_user(db, email: str, role: str, password: str = "password123") -> User:
     return u
 
 
-def auth(client, email: str, password: str = "password123") -> dict:
-    r = client.post("/api/v1/auth/login", data={"username": email, "password": password})
+def auth(client, email: str, password: str = "password123", surface: str = "bank") -> dict:
+    r = client.post(f"/api/v1/auth/login?surface={surface}", data={"username": email, "password": password})
     assert r.status_code == 200, r.text
     return {"Authorization": f"Bearer {r.json()['access_token']}"}
 

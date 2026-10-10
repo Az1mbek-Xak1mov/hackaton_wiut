@@ -19,6 +19,7 @@ class TokenError(Exception):
 class TokenClaims:
     user_id: int
     scopes: list[str]
+    surface: str = "owner"
 
 
 def hash_password(password: str) -> str:
@@ -48,16 +49,18 @@ def _decode(token: str, token_type: str) -> TokenClaims:
         raise TokenError("Invalid token")
     if payload.get("token_type") != token_type:
         raise TokenError("Invalid token type")
-    return TokenClaims(user_id=int(payload["sub"]), scopes=list(payload.get("scopes") or []))
+    return TokenClaims(user_id=int(payload["sub"]), scopes=list(payload.get("scopes") or []),
+                       surface=payload.get("surface") or "owner")
 
 
-def create_access_token(*, user_id: int, user_uuid: str, email: str, role: str, scopes: list[str]) -> str:
-    return _encode({"sub": str(user_id), "user_uuid": user_uuid, "email": email, "role": role, "scopes": scopes},
-                   "access", timedelta(minutes=settings.ACCESS_TOKEN_MINUTES))
+def create_access_token(*, user_id: int, user_uuid: str, email: str, role: str, scopes: list[str],
+                        surface: str = "owner") -> str:
+    return _encode({"sub": str(user_id), "user_uuid": user_uuid, "email": email, "role": role, "scopes": scopes,
+                    "surface": surface}, "access", timedelta(minutes=settings.ACCESS_TOKEN_MINUTES))
 
 
-def create_refresh_token(*, user_id: int, user_uuid: str) -> str:
-    return _encode({"sub": str(user_id), "user_uuid": user_uuid}, "refresh",
+def create_refresh_token(*, user_id: int, user_uuid: str, surface: str = "owner") -> str:
+    return _encode({"sub": str(user_id), "user_uuid": user_uuid, "surface": surface}, "refresh",
                    timedelta(days=settings.REFRESH_TOKEN_DAYS))
 
 

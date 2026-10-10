@@ -105,14 +105,18 @@ const CHIPS = [
             <tr><th>{{ t('Business') }}</th><th>{{ t('Industry · region') }}</th><th class="r">{{ t('Outstanding, mln') }}</th><th class="r">{{ t('Revenue vs prior period') }}</th><th class="r">{{ t('Cash coverage') }}</th><th>{{ t('Latest period') }}</th><th>{{ t('Status · reason') }}</th><th>{{ t('Updated') }}</th></tr>
           </thead>
           <tbody>
-            <tr v-for="r in rows" :key="r.uuid" class="clickable" @click="router.push(`/bank/borrowers/${r.loan_id}`)">
-              <td><RouterLink :to="`/bank/borrowers/${r.loan_id}`" style="font-weight: 500" @click.stop>{{ r.name }}</RouterLink><div class="muted" style="font-size: 12px">{{ r.loan_id }}</div></td>
+            <tr v-for="r in rows" :key="r.uuid" :class="{ clickable: !!r.loan_id }" @click="r.loan_id && router.push(`/bank/borrowers/${r.loan_id}`)">
+              <td>
+                <RouterLink v-if="r.loan_id" :to="`/bank/borrowers/${r.loan_id}`" style="font-weight: 500" @click.stop>{{ r.name }}</RouterLink>
+                <span v-else style="font-weight: 500">{{ r.name }}</span>
+                <div class="muted" style="font-size: 12px">{{ r.loan_id || t('no loan yet') }}</div>
+              </td>
               <td>{{ r.industry }}<div class="muted" style="font-size: 12px">{{ r.region }}</div></td>
-              <td class="r num">{{ trueMinus(r.outstanding_display) }}</td>
+              <td class="r num">{{ r.loan_id ? trueMinus(r.outstanding_display) : '—' }}</td>
               <td class="r num" :class="trendClass(r.trend_pct)">{{ r.trend_display && r.trend_display !== 'n/a' ? trueMinus(r.trend_display) : fmtSignedPct(r.trend_pct) }}</td>
               <td class="r num">{{ r.coverage_display || '—' }}</td>
               <td class="num">{{ r.latest_period || '—' }}</td>
-              <td><span class="pill" :class="severityPillClass(r.status)">{{ statusLabel(r.status) }}</span><div class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ r.reason }}</div></td>
+              <td><span class="pill" :class="severityPillClass(r.status)">{{ statusLabel(r.status) }}</span><div class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ r.loan_id ? r.reason : t('Not monitored — no loan yet') }}</div></td>
               <td class="num muted">{{ fmtDate(r.updated, { short: true }) }}</td>
             </tr>
             <tr v-if="!rows.length"><td colspan="8" class="muted">{{ data?.counts.all ? t('No borrower matches these filters.') : t('No monitoring run yet — borrowers appear after their statements are processed.') }}</td></tr>

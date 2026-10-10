@@ -26,7 +26,8 @@ STATUS_META = [  # rule definitions shown next to the counts (disclosed threshol
     ("watch", "Watch", "One indicator moved; cause not yet confirmed, or data is late"),
     ("attn", "Attention", "Two or more indicators moved, or a payment was late"),
 ]
-SEVERITY = {"attn": 0, "watch": 1, "stable": 2}
+SEVERITY = {"attn": 0, "watch": 1, "stable": 2, "unknown": 3, "not_monitored": 4}
+NOT_MONITORED = "not_monitored"
 CALIBRATION_NOTE = "Illustrative thresholds; calibration against bank history is pilot month 1."
 TERMINAL_DOC = {"analyzed", "clarification", "failed"}
 
@@ -213,15 +214,17 @@ def borrower_items(db: Session, status: str | None = None) -> dict:
     loans = {}
     for loan in db.scalars(select(Loan).order_by(Loan.disbursed_on.desc())).all():
         loans.setdefault(loan.borrower_id, loan)
-    borrowers = db.scalars(select(Borrower).where(Borrower.id.in_(list(loans) or [-1]))).all()
+    borrowers = db.scalars(select(Borrower)).all()   # incl. businesses without a loan (e.g. online applicants)
     periods = _latest_periods(db, [b.id for b in borrowers])
     items = []
     for b in borrowers:
         res = results.get(b.id)
-        st = res.status if res else "unknown"
+        loan = loans.get(b.id)
+        st = res.status if res else ("unknown" if loan else NOT_MONITORED)
+        reason = res.reason if res else ("Not yet monitored" if loan else "Not monitored — no loan with the bank")
         trend = _ind(res, "M01").get("value")
         items.append({
-            "uuid": str(b.uuid), "loan_id": loans[b.id].contract_no, "name": b.name, "industry": b.industry,
+            "uuid": str(b.uuid), "loan_id": loan.contract_no if loan else None, "name": b.name, "industry": b.industry,
             "region": b.region, "outstanding": exposure.get(b.id, 0.0),
             "outstanding_display": kuzs_to_mln(exposure.get(b.id, 0.0)),
             "trend_pct": float(trend) if isinstance(trend, (int, float)) else None,
@@ -229,10 +232,10 @@ def borrower_items(db: Session, status: str | None = None) -> dict:
                               (f"{'+' if trend > 0 else ''}{fmt_number(float(trend), 1)}%"
                                if isinstance(trend, (int, float)) else "n/a")),
             "coverage_display": _coverage_display(res), "latest_period": periods.get(b.id, "n/a"),
-            "status": st, "reason": res.reason if res else "Not yet monitored",
+            "status": st, "reason": reason,
             "updated": (run.finished_at.date().isoformat() if run and run.finished_at else None),
         })
-    counts = {"all": len(items), "stable": 0, "watch": 0, "attn": 0}
+    counts = {"all": len(items), "stable": 0, "watch": 0, "attn": 0, NOT_MONITORED: 0}
     for it in items:
         if it["status"] in counts:
             counts[it["status"]] += 1
@@ -338,17 +341,17 @@ def portfolio_summary(db: Session) -> dict:
     }
 
 
-def borrower_detail(db: Session, loan: Loan) -> dict:
+def borrower_detail(db: Session, loan: Loan | None, borrower: Borrower | None = None) -> dict:
     from app.modules.applications.review import _finding_out, _narrative
     from app.modules.documents.periods import label_end, pretty
     from app.modules.extraction.service import FactSerializer
 
-    b = db.get(Borrower, loan.borrower_id)
+    b = borrower or db.get(Borrower, loan.borrower_id)
     run = latest_run(db)
     res_all = db.scalars(select(MonitoringResult).where(MonitoringResult.borrower_id == b.id)
                          .order_by(MonitoringResult.id)).all()
     current = res_all[-1] if res_all else None
-    reps = db.scalars(select(Repayment).where(Repayment.loan_id == loan.id).order_by(Repayment.n)).all()
+    reps = db.scalars(select(Repayment).where(Repayment.loan_id == loan.id).order_by(Repayment.n)).all() if loan else []
     docs = db.scalars(select(Document).where(Document.borrower_id == b.id, Document.owner_kind != "public")
                       .order_by(Document.id.desc())).all()
     doc_facts = db.scalars(select(Fact).where(Fact.document_id.in_([d.id for d in docs] or [-1]))).all()
@@ -407,17 +410,17 @@ def borrower_detail(db: Session, loan: Loan) -> dict:
     return {
         "business": {"uuid": str(b.uuid), "name": b.name, "industry": b.industry, "region": b.region,
                      "stir": b.stir, "since": b.since, "employees": b.employees},
-        "loan": {"loan_id": loan.contract_no, "type": loan.loan_type, "purpose": loan.purpose,
-                 "disbursed_on": loan.disbursed_on.isoformat(),
-                 "original_display": kuzs_to_mln(loan.original_amount),
-                 "outstanding_display": kuzs_to_mln(loan.outstanding),
-                 "installment_display": kuzs_to_mln(loan.installment), "due_day": loan.due_day,
-                 "term_months": loan.term_months, "paid": sum(1 for r in strip if r["paid_on"]),
-                 "left": loan.term_months - sum(1 for r in strip if r["paid_on"]),
-                 "maturity_on": loan.maturity_on.isoformat() if loan.maturity_on else None,
-                 "collateral": loan.collateral, "coverage_display": _coverage_display(current),
-                 "repayments": strip, "unit": "mln UZS"},
-        "status": {"current": current.status if current else "unknown", "since": since, "history": history,
+        "loan": ({"loan_id": loan.contract_no, "type": loan.loan_type, "purpose": loan.purpose,
+                  "disbursed_on": loan.disbursed_on.isoformat(),
+                  "original_display": kuzs_to_mln(loan.original_amount),
+                  "outstanding_display": kuzs_to_mln(loan.outstanding),
+                  "installment_display": kuzs_to_mln(loan.installment), "due_day": loan.due_day,
+                  "term_months": loan.term_months, "paid": sum(1 for r in strip if r["paid_on"]),
+                  "left": loan.term_months - sum(1 for r in strip if r["paid_on"]),
+                  "maturity_on": loan.maturity_on.isoformat() if loan.maturity_on else None,
+                  "collateral": loan.collateral, "coverage_display": _coverage_display(current),
+                  "repayments": strip, "unit": "mln UZS"} if loan else None),
+        "status": {"current": current.status if current else ("unknown" if loan else NOT_MONITORED), "since": since, "history": history,
                    "reason": current.reason if current else "", "indicators": current.indicators if current else {}},
         "alerts": [_finding_out(f) | {"date": f.created_at.date().isoformat() if f.created_at else None}
                    for f in alerts],

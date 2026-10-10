@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "converza"
     ENVIRONMENT: str = "development"
     DATABASE_URL: str = "postgresql+psycopg2://app:app@localhost:5462/app"
-    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["*"])
+    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["https://converza.uz", "https://app.converza.uz",
+                                                             "http://localhost:5173"])
 
     JWT_SECRET: str = Field(..., min_length=32)
     ACCESS_TOKEN_MINUTES: int = 60
@@ -18,7 +19,9 @@ class Settings(BaseSettings):
 
     SEED_ADMIN_EMAIL: str = ""
     SEED_ADMIN_PASSWORD: str = ""
-    DEMO_LOGIN_ENABLED: bool = True      # POST /auth/demo issues tokens for the seeded demo users
+    SEED_OWNER_PASSWORD: str = ""        # owner@converza.uz (Farovon Savdo MChJ), created only when absent
+    SEED_OFFICER_PASSWORD: str = ""      # officer@converza.uz (G. Abdullayeva), created only when absent
+    DEMO_LOGIN_ENABLED: bool = False     # POST /auth/demo (passwordless) — off in production; 404 when off
     SEED_DEMO: bool = False              # read by app.seed_demo (track C)
 
     # worker / job queue

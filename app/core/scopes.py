@@ -44,5 +44,9 @@ ROLE_SCOPES: Dict[Role, List[Scope]] = {
 PORTFOLIO_ROLES = {Role.ADMIN.value, Role.OFFICER.value, Role.DEMO_VIEWER.value}
 
 
+# Two apps, two sign-in surfaces: converza.uz (business owner) and app.converza.uz (bank officer).
+SURFACE_ROLES = {"owner": {Role.OWNER.value}, "bank": {Role.OFFICER.value, Role.ADMIN.value, Role.DEMO_VIEWER.value}}
+
+
 def scopes_for(role: str) -> List[str]:
     return [s.value for s in ROLE_SCOPES.get(Role(role), [])]

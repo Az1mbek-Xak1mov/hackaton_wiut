@@ -1,7 +1,9 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from app.core.schemas import Email, Stir
 
 
 class UserOut(BaseModel):
@@ -20,6 +22,22 @@ class TokenResponse(BaseModel):
     expires_in: int
     user: UserOut
     scopes: list[str]
+    surface: str
+
+
+class RegisterRequest(BaseModel):
+    email: Email
+    password: str = Field(min_length=8, max_length=128)
+    full_name: str = Field(min_length=1, max_length=255)
+    company_name: str = Field(min_length=1, max_length=255)
+    stir: Stir | None = None
+    industry: str = Field(default="", max_length=128)
+    region: str = Field(default="", max_length=128)
+
+    @field_validator("stir", mode="before")
+    @classmethod
+    def _blank_stir(cls, v):
+        return (v or "").replace(" ", "") or None
 
 
 class RefreshRequest(BaseModel):

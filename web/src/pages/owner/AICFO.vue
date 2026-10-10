@@ -122,7 +122,7 @@ function argText(a: Record<string, any>) {
             <h1>{{ t('AI CFO') }}<template v-if="business"> · {{ business }}</template></h1>
             <p class="meta" style="font-size: 13px">
               <template v-if="coverage">{{ t('Answers only from your records: {list}.', { list: coverage }) }}</template>
-              <template v-else>{{ t('Answers only from your records — none analysed yet.') }} <RouterLink to="/owner/upload">{{ t('Upload statements first.') }}</RouterLink></template>
+              <template v-else>{{ t('Answers only from your records — none analysed yet.') }} <RouterLink to="/upload">{{ t('Upload statements first.') }}</RouterLink></template>
               {{ t('Every number links to the record it came from.') }}
             </p>
           </div>

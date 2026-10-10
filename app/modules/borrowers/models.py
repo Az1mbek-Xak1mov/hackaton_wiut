@@ -9,7 +9,7 @@ from app.core.base_model import BaseModel
 class Borrower(BaseModel):
     __tablename__ = "borrowers"
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    stir: Mapped[str] = mapped_column(String(9), unique=True, nullable=False)
+    stir: Mapped[str | None] = mapped_column(String(9), unique=True, nullable=True)   # optional at sign-up
     industry: Mapped[str] = mapped_column(String(128), nullable=False, default="")
     region: Mapped[str] = mapped_column(String(128), nullable=False, default="")
     employees: Mapped[int | None] = mapped_column(Integer, nullable=True)

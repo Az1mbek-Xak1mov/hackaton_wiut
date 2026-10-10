@@ -1,32 +1,31 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuth } from '@/stores/auth'
 import { useApp } from '@/stores/app'
+import { surface } from '@/surface'
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuth()
 const app = useApp()
 
-// Layout mode follows the route's role; public pages use the visitor's session if there is one.
-const mode = computed<'officer' | 'owner' | 'public'>(() => {
-  if (route.meta.role) return route.meta.role
-  if (route.path === '/login' || route.path === '/kit') return 'public'
-  return auth.role ?? 'public'
-})
-const nav = computed(() => mode.value !== 'public' && route.path !== '/login')
+// The surface (hostname) decides the app; the session only decides whether navigation is shown.
+const mode = computed<'officer' | 'owner' | 'public'>(() => (surface === 'bank' ? 'officer' : auth.loggedIn ? 'owner' : 'public'))
+const nav = computed(() => auth.loggedIn && !route.meta.bare)
 
 onMounted(() => app.loadVersion())
 
 watch(
-  () => [auth.role, auth.loggedIn] as const,
-  ([role, logged]) => {
-    if (logged && role === 'officer') {
+  () => auth.loggedIn,
+  (logged) => {
+    if (logged && surface === 'bank') {
       app.loadLlm()
       app.loadOfficerCounts()
     }
-    if (logged && role === 'owner') app.loadOwner()
+    if (logged && surface === 'owner') app.loadOwner()
+    if (!logged && route.meta.auth) router.push({ path: '/login', query: { next: route.fullPath } })
   },
   { immediate: true },
 )

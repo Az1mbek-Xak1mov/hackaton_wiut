@@ -5,7 +5,7 @@ import { t } from '@/i18n'
 
 <template>
   <div class="proto" role="note">
-    <span class="main"><Icon name="info" :size="14" class="ic" />{{ t('Synthetic demonstration documents. All figures are computed live from them.') }}</span>
+    <span class="main"><Icon name="info" :size="14" class="ic" />{{ t('Prototype for the MKBANK pilot. Sample documents are synthetic; all figures are computed live from uploaded files.') }}</span>
     <span class="proto-extra">{{ t('No numeric credit score is produced; statuses are rule-based and their thresholds are disclosed.') }}</span>
   </div>
 </template>

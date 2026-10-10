@@ -26,8 +26,9 @@ const items = computed<Item[]>(() => {
     ]
   }
   return [
-    { to: '/owner/upload', label: t('Upload & analyze'), icon: 'upload', match: (p) => p === '/owner/upload' },
-    { to: '/owner/cfo', label: t('AI CFO'), icon: 'chat', match: (p) => p === '/owner/cfo' },
+    { to: '/', label: t('My business'), icon: 'grid', match: (p) => p === '/' },
+    { to: '/upload', label: t('Upload & analyze'), icon: 'upload', match: (p) => p === '/upload' },
+    { to: '/cfo', label: t('AI CFO'), icon: 'chat', match: (p) => p === '/cfo' },
     { to: '/analyse', label: t('Analyse a document'), icon: 'search', match: (p) => p === '/analyse' },
     { to: '/metrics', label: t('Evaluation metrics'), icon: 'chart', match: (p) => p === '/metrics' },
   ]
@@ -43,7 +44,7 @@ const items = computed<Item[]>(() => {
       </template>
       <template v-else>
         <div style="font-weight: 600; font-size: 14px">{{ mode === 'officer' ? t('SME lending') : t('Business owner') }}</div>
-        <div class="muted" style="font-size: 12px">{{ mode === 'officer' ? t('Credit analyst · demo session') : t('AI CFO · demo session') }}<template v-if="auth.name"> · {{ auth.name }}</template></div>
+        <div class="muted" style="font-size: 12px">{{ mode === 'officer' ? t('Credit analyst') : t('Business owner') }}<template v-if="auth.name"> · {{ auth.name }}</template></div>
       </template>
     </div>
     <div class="items">
@@ -59,7 +60,7 @@ const items = computed<Item[]>(() => {
     <div v-if="mode === 'owner' && app.ownerCoverage" class="card">
       <div class="eyebrow" style="margin-bottom: 6px">{{ t('Data coverage') }}</div>
       <div class="muted">{{ t('{a} of {b} documents analyzed', { a: app.ownerCoverage.analysed, b: app.ownerCoverage.total }) }}</div>
-      <RouterLink to="/owner/upload" style="display: inline-block; margin-top: 8px">{{ t('Review uploads') }}</RouterLink>
+      <RouterLink to="/upload" style="display: inline-block; margin-top: 8px">{{ t('Review uploads') }}</RouterLink>
     </div>
     <div id="side-extra"></div>
   </nav>

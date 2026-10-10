@@ -1,6 +1,9 @@
 from typing import Literal
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
@@ -9,6 +12,7 @@ from app.core.scopes import Scope
 from app.modules.applications.models import Decision
 from app.modules.audit import service as audit
 from app.modules.auth.deps import require_scope
+from app.modules.borrowers.models import Borrower, Loan
 from app.modules.borrowers.schemas import BorrowerCreate, LoanCreate, ReviewOutcomeCreate
 from app.modules.borrowers.service import BorrowerService
 from app.modules.monitoring.service import borrower_detail, borrower_items
@@ -19,14 +23,24 @@ write = require_scope(Scope.BORROWER_WRITE)
 
 
 @router.get("/borrowers")
-def list_borrowers(status: Literal["stable", "watch", "attn"] | None = None, db: Session = Depends(get_db),
+def list_borrowers(status: Literal["stable", "watch", "attn", "unknown", "not_monitored"] | None = None,
+                   db: Session = Depends(get_db),
                    _=Depends(read)):
     return borrower_items(db, status)
 
 
-@router.get("/borrowers/{loan_id}")
-def get_borrower(loan_id: str, db: Session = Depends(get_db), _=Depends(read)):
-    return borrower_detail(db, BorrowerService(db).loan_or_404(loan_id))
+@router.get("/borrowers/{ref}")
+def get_borrower(ref: str, db: Session = Depends(get_db), _=Depends(read)):
+    """`ref` = loan id (L-2025-0417) or, for a business without a loan, the borrower uuid."""
+    s = BorrowerService(db)
+    try:
+        b = db.scalars(select(Borrower).where(Borrower.uuid == UUID(ref))).first()
+    except ValueError:
+        b = None
+    if b is not None:
+        loan = db.scalars(select(Loan).where(Loan.borrower_id == b.id).order_by(Loan.disbursed_on.desc())).first()
+        return borrower_detail(db, loan, b)
+    return borrower_detail(db, s.loan_or_404(ref))
 
 
 @router.post("/borrowers", status_code=201)

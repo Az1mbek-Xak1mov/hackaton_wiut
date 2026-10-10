@@ -10,30 +10,22 @@ const props = defineProps<{ mode: 'officer' | 'owner' | 'public' }>()
 const auth = useAuth()
 const app = useApp()
 const router = useRouter()
-const switching = ref(false)
 const llmBusy = ref(false)
 const llmErr = ref('')
 
 const roleLabel = computed(() =>
-  props.mode === 'officer' ? t('Bank officer') : props.mode === 'owner' ? t('Business owner') : t('Public analysis'),
+  props.mode === 'officer' ? t('Bank officer') : t('Business owner'),
 )
 const LANGS: { code: Lang; label: string }[] = [
   { code: 'uz', label: 'UZ' },
   { code: 'ru', label: 'RU' },
   { code: 'en', label: 'EN' },
 ]
-const home = computed(() => (props.mode === 'officer' ? '/bank' : props.mode === 'owner' ? '/owner/cfo' : '/analyse'))
+const home = computed(() => (props.mode === 'officer' ? '/bank' : '/'))
 
-async function switchTo(role: 'officer' | 'owner') {
-  switching.value = true
-  try {
-    await auth.enter(role)
-    await router.push(role === 'officer' ? '/bank' : '/owner/cfo')
-  } catch (e) {
-    llmErr.value = errMessage(e)
-  } finally {
-    switching.value = false
-  }
+function logout() {
+  auth.logout()
+  router.push(props.mode === 'officer' ? '/login' : '/')
 }
 
 async function toggleLlm(enabled: boolean) {
@@ -74,18 +66,14 @@ async function toggleLlm(enabled: boolean) {
       <button v-for="l in LANGS" :key="l.code" type="button" :class="{ on: lang === l.code }" :aria-pressed="lang === l.code" :lang="l.code" @click="setLang(l.code)">{{ l.label }}</button>
     </div>
 
-    <template v-if="mode === 'officer'">
-      <button type="button" class="linkbtn muted switch" :disabled="switching" @click="switchTo('owner')">{{ t('Open business owner view →') }}</button>
+    <template v-if="auth.loggedIn">
+      <span class="avatar" :title="auth.name">{{ auth.initials }}</span>
+      <button type="button" class="linkbtn muted switch" @click="logout">{{ t('Log out') }}</button>
     </template>
-    <template v-else-if="mode === 'owner'">
-      <button type="button" class="linkbtn muted switch" :disabled="switching" @click="switchTo('officer')">{{ t('Open bank officer view →') }}</button>
+    <template v-else-if="mode !== 'officer'">
+      <RouterLink to="/login" class="switch">{{ t('Sign in') }}</RouterLink>
+      <RouterLink to="/register" class="btn btn-sm btn-primary">{{ t('Register') }}</RouterLink>
     </template>
-    <template v-else>
-      <button type="button" class="linkbtn switch" :disabled="switching" @click="switchTo('officer')">{{ t('Enter as bank officer') }}</button>
-      <button type="button" class="linkbtn switch" :disabled="switching" @click="switchTo('owner')">{{ t('Enter as business owner') }}</button>
-    </template>
-
-    <span v-if="mode !== 'public'" class="avatar" :title="auth.name">{{ auth.initials }}</span>
     <span v-if="llmErr" class="err" role="alert">{{ llmErr }}</span>
   </header>
 </template>
