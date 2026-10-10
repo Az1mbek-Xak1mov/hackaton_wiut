@@ -51,11 +51,11 @@ flowchart LR
 
 | Criterion (weight) | What the jury must see | Where in the demo | Proof artefact |
 |---|---|---|---|
-| Technology: complexity (25%) | Multi-stage pipeline with real OCR across 4 scripts/languages, line-code dictionary, statement categoriser trained on our labelled set, 10 reconciliation rules, a citation verifier that rejects the LLM, a Postgres job queue | live upload of the jury's file; "LLM off" toggle; rejected-generation log | `02-PIPELINE.md`, `/metrics` page, `docs/EVAL.md` |
+| Technology: complexity (25%) | Multi-stage pipeline with real OCR across 4 scripts/languages, line-code dictionary, statement categoriser trained on our labelled synthetic set, 12 reconciliation rules (R01–R12), a citation verifier that rejects the LLM, a Postgres job queue | live upload of the jury's file; "LLM off" toggle; rejected-generation log | `02-PIPELINE.md`, `/metrics` page, `docs/EVAL.md` |
 | Technology: originality (25%) | (1) Number-level provenance: chip → page image with bbox. (2) **The model cannot do arithmetic.** It calls `compute`, which registers a citable derived fact. (3) Verifier: any number in generated text that is not in the fact set means regenerate, then fall back to a template. (4) Uzbek statutory line-code dictionary in UZ-Latin, UZ-Cyrillic and RU | click a number in the narrative; show a rejected draft in the audit trail | `narrative_runs` rows with `verifier_report` |
 | Problem / user fit (inferred from the defence's "problem/user" minute) | officer workflow, 10-working-day baseline (assumed, to be confirmed with MKBANK) | minute 0–1 | `08-BUSINESS.md` |
-| Business viability / budget (inferred from "budget/ROI" 1.5 min) | pilot cost, cost per application in UZS measured from real token logs, officer-minutes measured in a timed trial | minute 5–6.5 | `08-BUSINESS.md` |
-| Partner integration / next steps (inferred) | on-prem path, local 7B model with the same prompts, CB audit requirements | minute 6.5–7 | `01-ARCHITECTURE.md` §Perimeter |
+| Business viability / budget (inferred from "budget/ROI" 1.5 min) | pilot cost; LLM cost per application in UZS from production token logs (`llm_calls`, n stated in 08); officer-minutes saved are **assumed scenarios, not measured** (timed trial T-035 not run) | minute 5–6.5 | `08-BUSINESS.md` |
+| Partner integration / next steps (inferred) | on-prem path designed for a local 7B model with the same prompts (not run or measured yet), CB audit requirements | minute 6.5–7 | `01-ARCHITECTURE.md` §Perimeter |
 
 ## Replication test: why a weekend clone doesn't get this
 
@@ -64,13 +64,13 @@ flowchart LR
 | Data | Synthetic Uzbek SME bundle generator with ground truth (Форма 1/2 layouts, xlsx statements, applications, scan noise) + hand-made hard cases | the generator encodes statutory layouts, Uzbek/RU payment-purpose vocabulary and planted contradictions with labels |
 | Domain | Line-code dictionary (codes ↔ UZ-Lat/UZ-Cyr/RU/EN labels ↔ sum relations); reconciliation rule library with tolerances (VAT-adjusted revenue ↔ inflows) | needs reading of real Форма 1/2 and Uzbek banking conventions (STIR, MFO, 20-digit accounts) |
 | Pipeline | deterministic first, LLM only as validated fallback; provenance (page, bbox) kept through OCR; verifier | most "AI for credit" demos are one prompt over raw text, which cannot show page/line evidence |
-| Integration | job queue in Postgres (no extra infra), on-prem compose, provider switch to a local model, audit log + officer decisions | fits a bank perimeter with no external calls (local-model path) |
+| Integration | job queue in Postgres (no extra infra), on-prem compose, provider switch to a local model, audit log + officer decisions | designed to fit a bank perimeter with no external calls (`LLM_PROVIDER=none` today; local-model path not yet measured) |
 
 ## Honesty rules (binding; also in `CLAUDE.md`)
 
 1. **No scripted outputs in the deployed demo.** Every figure, finding, status, ratio and AI sentence on screen is produced by the pipeline from uploaded files at runtime or at seed time. Seed = files pushed through the same pipeline, never SQL inserts of results.
 2. **The demo dataset is synthetic and declared** on the prototype strip: "Synthetic demonstration documents. All figures are computed live from them." Loan-book attributes (loan amount, term, installment) are declared synthetic inputs.
-3. **No invented metrics.** Every number on a slide comes from `eval/results/*.json`, `jobs` timings, `llm_calls` token logs or the timed trial. Each is stated with n and dataset ("synthetic test split, n=…"). Any metric not yet run says "not measured".
+3. **No invented metrics.** Every number on a slide comes from `eval/results/*.json`, `jobs` timings, `llm_calls` token logs or the timed trial (T-035 not run, so officer time saved is an assumption). Each is stated with n and dataset ("synthetic test split, n=…"). Any metric not yet run says "not measured".
 4. **No numeric credit score anywhere.** Status = Stable / Watch / Attention from disclosed rules, labelled "Thresholds are illustrative; calibration against bank history is pilot month 1".
 5. **The system never approves or rejects.** The officer's decision is recorded with the evidence reviewed.
 6. **Assumptions are labelled at the point of use**: 10-working-day baseline, 50 applications/month, officer-hour cost, FX rate, token prices.
@@ -81,7 +81,7 @@ flowchart LR
 
 | Decision | Reason |
 |---|---|
-| Local 7B model: **documented, not live** | server 159.195.213.245 has no GPU, 4 vCPU, 7.8 GiB RAM shared with 4 production apps. Live demo uses OpenAI (`LLM_PROVIDER=openai`); the switch and the ollama client are implemented and unit-tested against a fake |
+| Local 7B model: **documented, not live** | server 159.195.213.245 has no GPU, 4 vCPU, 7.8 GiB RAM shared with 4 production apps. Live demo uses OpenAI (`LLM_PROVIDER=openai`, paid, in 08). The provider switch is implemented; the narrative/CFO loops are tested against a fake provider. The Ollama path reuses the OpenAI-compatible client with a base URL and has not been run or measured on a local model |
 | OCR = Tesseract only (PaddleOCR dropped) | image size and RAM; Tesseract has `uzb`, `uzb_cyrl`, `rus`, `eng` Debian packages |
 | UI language EN; UZ/RU switch renders but is cut-list item #2 | project language is English; documents stay UZ/RU |
 | Owner Health page and phone layout are cut-list items | jury weight sits on the officer surface |

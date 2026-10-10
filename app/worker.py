@@ -44,6 +44,9 @@ def _housekeeping() -> None:
     with get_db_context() as db:
         requeue_stale(db)
     with get_db_context() as db:
+        from app.modules.analyse.bundle import BundleService
+        BundleService(db).purge_expired()   # public loan-file checks (application + placeholder business)
+    with get_db_context() as db:
         DocumentService(db).purge_expired_public()
 
 

@@ -158,6 +158,50 @@ export interface AnalyseResult {
 export interface CreatedWithJob {
   uuid: string
   job: Job
+  /** 'bundle' when a ZIP was posted to /analyse: uuid is then a loan-file uuid */
+  kind?: 'document' | 'bundle'
+}
+
+// ---------- Public loan-file check (/analyse/bundle) ----------
+export interface BundleDocument {
+  uuid: string
+  filename: string
+  doc_type: string
+  status: DocStatus
+  type_reason: string
+  failure_cause: string
+  size_bytes: number
+  period_start: string | null
+  period_end: string | null
+  partial: boolean
+  job?: { status: Job['status']; stage: string; progress: number } | null
+}
+
+export interface BundleSkipped {
+  filename: string
+  reason: string
+}
+
+export interface BundleCreated {
+  uuid: string
+  kind: 'bundle'
+  documents: BundleDocument[]
+  skipped: BundleSkipped[]
+  job: Job
+}
+
+export interface BundleResult {
+  uuid: string
+  expires_at: string | null
+  status: 'reading' | 'analysing' | 'done' | 'failed'
+  job: Job | null
+  documents: BundleDocument[]
+  skipped: BundleSkipped[]
+  required: { key: string; doc_type: string; title: string; present: boolean; document_uuid: string | null }[]
+  missing: { key: string; title: string }[]
+  review: Pick<ApplicationReview, 'request' | 'columns' | 'issues' | 'figures' | 'ratios' | 'indicator' | 'narrative' | 'facts'> & {
+    findings: Finding[]
+  } | null
 }
 
 // ---------- Officer ----------

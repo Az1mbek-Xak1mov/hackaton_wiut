@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import JSON, Date, DateTime, ForeignKey, Numeric, SmallInteger, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Date, DateTime, ForeignKey, Numeric, SmallInteger, String, Text, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.base_model import BaseModel
@@ -20,6 +20,9 @@ class Application(BaseModel):
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="processing")
     received_on: Mapped[date] = mapped_column(Date, nullable=False)
     analysed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Public "loan file" check from /analyse (no account): never in the bank's queue, deleted after expires_at.
+    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=false())
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
 
 class ApplicationDocument(BaseModel):

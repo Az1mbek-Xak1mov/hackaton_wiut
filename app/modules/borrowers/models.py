@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import JSON, Boolean, Date, ForeignKey, Integer, Numeric, SmallInteger, String
+from sqlalchemy import JSON, Boolean, Date, ForeignKey, Integer, Numeric, SmallInteger, String, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.base_model import BaseModel
@@ -16,6 +16,8 @@ class Borrower(BaseModel):
     since: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)   # year founded
     owner_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     is_synthetic: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # placeholder business of a public /analyse loan-file check; never listed in the bank's portfolio
+    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=false())
 
 
 class Loan(BaseModel):

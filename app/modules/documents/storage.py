@@ -8,7 +8,10 @@ from pathlib import Path
 from app.core.config import settings
 
 XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-SUPPORTED = {"application/pdf", XLSX_MIME, "image/jpeg", "image/png", "image/tiff"}
+XLS_MIME = "application/vnd.ms-excel"
+# image/heic is accepted so the pipeline answers with its specific message (HEIC is not read yet)
+SUPPORTED = {"application/pdf", XLSX_MIME, XLS_MIME, "text/csv", "image/jpeg", "image/png", "image/tiff", "image/heic"}
+_HEIC_BRANDS = (b"heic", b"heix", b"hevc", b"hevx", b"mif1", b"msf1", b"heim", b"heis", b"avic")
 
 
 def files_root() -> Path:
@@ -56,9 +59,19 @@ def detect_mime(content: bytes, filename: str) -> tuple[str, str]:
         return "image/png", "png"
     if content[:4] in (b"II*\x00", b"MM\x00*"):
         return "image/tiff", "tif"
-    if content[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":
-        return "application/vnd.ms-excel", "xls"
+    if content[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":   # OLE2: legacy Excel, or a legacy Word file
+        if "Workbook".encode("utf-16-le") in content or "Book".encode("utf-16-le") in content:
+            return XLS_MIME, "xls"
+        return "application/msword", "doc"
+    if content[4:8] == b"ftyp" and content[8:12] in _HEIC_BRANDS:
+        return "image/heic", "heic"
     ext = Path(filename).suffix.lower().lstrip(".") or "bin"
+    if b"\x00" not in content[:8192]:
+        low = content[:8192].lower()
+        if b"<table" in low and ext in ("xls", "htm", "html", "xml"):   # bank-client 'Excel' saved as HTML / XML
+            return XLS_MIME, "xls"
+        if ext == "csv":
+            return "text/csv", "csv"
     return "application/octet-stream", ext
 
 

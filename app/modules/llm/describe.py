@@ -20,6 +20,7 @@ MAX_ATTEMPTS = 2   # public path: keep inside the 55 s budget
 
 
 def register_readable_numbers(db: Session, doc: Document) -> dict:
+    from app.pipeline.readable import is_identifier, storable_value
     from app.pipeline.types import FactDraft
 
     existing = db.scalars(select(Fact).where(Fact.document_id == doc.id, Fact.method == "readable")).all()
@@ -28,7 +29,9 @@ def register_readable_numbers(db: Session, doc: Document) -> dict:
     readable = (doc.summary or {}).get("readable") or {}
     drafts = []
     for i, n in enumerate(readable.get("numbers") or []):
-        if n.get("value") is None:
+        # summaries stored before the identifier filter may still hold account numbers (20 digits): those are
+        # identifiers, and would not fit facts.value Numeric(20, 4) anyway
+        if not storable_value(n.get("value")) or is_identifier(str(n.get("text") or "")):
             continue
         drafts.append(FactDraft(field=f"readable.number.{i + 1}", label=(n.get("label") or f"Number on page {n.get('page_n')}")[:255],
                                 value=float(n["value"]), unit="count", kind="extracted", printed=str(n.get("text") or "")[:64],

@@ -34,10 +34,12 @@ KEYWORDS: dict[str, list[tuple[str, float]]] = {
         (r"чистая прибыль", 1), (r"sof foyda", 1), (r"соф фойда", 1),
     ],
     "bank_statement": [
-        (r"выписка", 3), (r"ko'chirma", 3), (r"кўчирма", 3), (r"bank statement", 3), (r"account statement", 3),
+        (r"выписк[аи]", 3), (r"ko'chirma", 3), (r"кўчирма", 3), (r"bank statement", 3), (r"account statement", 3),
         (r"назначение платежа", 2), (r"to'lov maqsadi", 2), (r"тўлов мақсади", 2), (r"остаток на", 1),
         (r"входящий остаток", 1.5), (r"исходящий остаток", 1.5), (r"\bмфо\b", 1), (r"\bmfo\b", 1),
         (r"debit", 0.5), (r"дебет", 0.5), (r"обороты", 1),
+        (r"hisob raqami", 1), (r"ҳисоб рақами", 1), (r"hisobvara[qg]", 1), (r"расчетн\w* сч[её]т", 1),
+        (r"kirish qoldig'?i", 1), (r"chiqish qoldig'?i", 1), (r"opening balance", 1), (r"closing balance", 1),
     ],
     "loan_application": [
         (r"заявка на (?:получение )?кредит", 4), (r"заявление на (?:получение )?кредит", 4),
@@ -68,8 +70,9 @@ def light_norm(text: str) -> str:
 
 
 def classify_text(text: str, *, codes_found: set[str] | None = None, xlsx_header_score: float = 0.0,
-                  kind: str = "pdf_text") -> tuple[str, float, str]:
-    """(doc_type, confidence 0-1, reason sentence)."""
+                  kind: str = "pdf_text", structure_hint: str = "") -> tuple[str, float, str]:
+    """(doc_type, confidence 0-1, reason sentence). `xlsx_header_score`: statement structure found in a sheet
+    or on PDF pages (described by `structure_hint`)."""
     t = light_norm(text)
     scores: dict[str, float] = {}
     hits: dict[str, list[str]] = {}
@@ -90,7 +93,7 @@ def classify_text(text: str, *, codes_found: set[str] | None = None, xlsx_header
         hits.setdefault("form2", []).append("line codes " + ", ".join(sorted(codes_found & {"010", "020", "030", "270"})))
     if xlsx_header_score:
         scores["bank_statement"] += xlsx_header_score
-        hits.setdefault("bank_statement", []).append("transaction table header (date, debit, credit, purpose)")
+        hits.setdefault("bank_statement", []).append(structure_hint or "transaction table header (date, debit, credit, purpose)")
     ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
     (top, s1), (second, s2) = ranked[0], ranked[1]
     if s1 >= 3.0 and (s2 == 0 or s1 >= 1.5 * s2):

@@ -1,5 +1,5 @@
 import type {
-  AnalyseResult, ApplicationListItem, ApplicationReview, BorrowerList, BorrowerProfile,
+  AnalyseResult, BundleCreated, BundleResult, ApplicationListItem, ApplicationReview, BorrowerList, BorrowerProfile,
   CfoHistoryItem, CfoResponse, CreatedWithJob, DocumentOut, Fact, Finding, Job, LlmSettings, OwnerApplication, OwnerBusiness,
   PortfolioSummary, TokenPair, VersionInfo, ApiErrorBody,
 } from './types'
@@ -216,6 +216,12 @@ export const api = {
     fd.append('file', file)
     return request<CreatedWithJob>('/analyse', { method: 'POST', form: fd, auth: false })
   },
+  analyseBundle: (files: File[]) => {
+    const fd = new FormData()
+    for (const f of files) fd.append('files', f)
+    return request<BundleCreated>('/analyse/bundle', { method: 'POST', form: fd, auth: false })
+  },
+  analyseBundleResult: (uuid: string) => request<BundleResult>(`/analyse/bundle/${encodeURIComponent(uuid)}`, { auth: false }),
   analyseResult: (uuid: string) => request<AnalyseResult>(`/analyse/${encodeURIComponent(uuid)}`, { auth: false }),
   metricsEval: () => request<Record<string, any>>('/metrics/eval', { auth: false }),
 

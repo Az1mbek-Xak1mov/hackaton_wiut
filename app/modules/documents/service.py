@@ -81,7 +81,7 @@ class DocumentService:
         if mime not in storage.SUPPORTED:
             # Nothing for the pipeline to read: answer truthfully and immediately.
             doc.status = "failed"
-            doc.failure_cause = (f"Unsupported file type ({ext.upper()}). Converza reads PDF, XLSX, JPG and PNG; "
+            doc.failure_cause = (f"Unsupported file type ({ext.upper()}). Converza reads PDF, XLSX, XLS, CSV, JPG and PNG; "
                                  "export the document to one of these formats and upload it again.")
             doc.type_reason = "Not analysed: unsupported format"
             job = jobs.enqueue("analyse_document", payload, ref=doc_ref(doc), priority=priority)

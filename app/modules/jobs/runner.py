@@ -290,12 +290,17 @@ def handle_analyse_document(db: Session, job: Job, st: Stages):
         describe = optional_fn("app.modules.llm.describe", "describe_document")
         if describe is not None:
             st.start("describe", 92)
+            # isolated in a savepoint: a failed insert here (e.g. a value the facts table cannot hold) rolls back
+            # only the description, and the analysis that was already read stays "done"
             try:
-                summary = dict(doc.summary or {})
-                summary["description"] = describe(db, doc)
-                doc.summary = summary
+                with db.begin_nested():
+                    description = describe(db, doc)
             except Exception:
                 logger.exception("describe_document failed for %s", doc.uuid)
+                description = {"text": "", "mode": "none", "note": "description not available for this document"}
+            summary = dict(doc.summary or {})
+            summary["description"] = description
+            doc.summary = summary
 
     doc.status = _final_status(doc, facts)
     if st.late():

@@ -21,8 +21,11 @@ class AnalyseService:
         self.db = db
 
     def submit(self, content: bytes, filename: str) -> dict:
+        from app.modules.analyse.bundle import BundleService, Item, _is_zip
+        if content and _is_zip(content, filename):   # a ZIP is a loan file: its members are analysed together
+            return BundleService(self.db).submit([Item(filename, content)])
         doc, job = DocumentService(self.db).upload(content, filename, owner_kind="public")
-        return {"uuid": str(doc.uuid), "job": JobOut.model_validate(job).model_dump(mode="json")}
+        return {"uuid": str(doc.uuid), "kind": "document", "job": JobOut.model_validate(job).model_dump(mode="json")}
 
     def public_doc_or_404(self, doc_uuid: UUID) -> Document:
         doc = self.db.scalars(select(Document).where(Document.uuid == doc_uuid,

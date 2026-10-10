@@ -52,5 +52,6 @@ class SettingsService:
         """The switch shows its effect: every analysed application gets a new narrative (LLM or template)."""
         from app.modules.applications.models import Application
         from app.modules.applications.service import enqueue_analysis
-        for app in self.db.scalars(select(Application).where(Application.analysed_at.is_not(None))).all():
+        for app in self.db.scalars(select(Application).where(Application.analysed_at.is_not(None),
+                                                         Application.is_public.is_(False))).all():
             enqueue_analysis(self.db, app, kind="narrative")

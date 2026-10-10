@@ -216,7 +216,8 @@ def borrower_items(db: Session, status: str | None = None) -> dict:
     loans = {}
     for loan in db.scalars(select(Loan).order_by(Loan.disbursed_on.desc())).all():
         loans.setdefault(loan.borrower_id, loan)
-    borrowers = db.scalars(select(Borrower)).all()   # incl. businesses without a loan (e.g. online applicants)
+    # incl. businesses without a loan (e.g. online applicants); never public /analyse loan-file placeholders
+    borrowers = db.scalars(select(Borrower).where(Borrower.is_public.is_(False))).all()
     periods = _latest_periods(db, [b.id for b in borrowers])
     items = []
     for b in borrowers:
@@ -273,7 +274,8 @@ def portfolio_summary(db: Session) -> dict:
 
     today = utcnow().date()
     apps = db.scalars(select(Application).where(Application.status.in_(
-        ("processing", "in_review", "waiting_on_applicant"))).order_by(Application.received_on)).all()
+        ("processing", "in_review", "waiting_on_applicant")), Application.is_public.is_(False))
+        .order_by(Application.received_on)).all()
     names = {b.id: b.name for b in db.scalars(select(Borrower)).all()}
     beyond = [a for a in apps if working_days_between(a.received_on, today) > 5]
 

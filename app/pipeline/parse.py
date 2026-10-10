@@ -15,7 +15,8 @@ from PIL import Image, ImageOps
 
 from app.pipeline import classify as cls
 from app.pipeline.parse_pdf import MIN_CHARS_TEXT_PAGE, PAGE_DPI, is_encrypted, render_page_png, text_layer_words
-from app.pipeline.parse_xlsx import read_xlsx, sheet_text
+from app.pipeline.numbers import parse_number
+from app.pipeline.parse_xlsx import read_csv, read_html_table, read_xls, read_xlsx, sheet_text
 from app.pipeline.rows import cluster_rows, row_text
 from app.pipeline.types import ParsedDoc, ParsedPage
 
@@ -33,9 +34,43 @@ _STATEMENT_HEADER = {
 }
 
 
+HEIC_UNSUPPORTED = ("iPhone HEIC photos are not supported yet. Please send the photo as JPG (on iPhone: Settings → "
+                    "Camera → Formats → Most Compatible) or as a PDF.")
+UNSUPPORTED_FORMAT = "Unsupported file format. Upload a PDF, XLSX, XLS, CSV, JPG or PNG file."
+
+
+def _looks_like_csv(head: bytes) -> bool:
+    if b"\x00" in head:
+        return False
+    text = head.decode("utf-8", errors="ignore") or head.decode("cp1251", errors="ignore")
+    lines = [ln for ln in text.splitlines()[:10] if ln.strip()]
+    if len(lines) < 2:
+        return False
+    for d in (";", "\t", ",", "|"):   # title lines may have no delimiter; the table rows do
+        with_d = [ln for ln in lines if ln.count(d) >= 1]
+        if len(with_d) >= 2 and len(with_d) * 2 >= len(lines):
+            return True
+    return False
+
+
 def sniff_kind(path: str, mime: str = "") -> str:
     with open(path, "rb") as f:
-        head = f.read(8)
+        head8k = f.read(8192)
+    head = head8k[:8]
+    ext = Path(path).suffix.lower().lstrip(".")
+    if head8k[4:8] == b"ftyp" and head8k[8:12] in (b"heic", b"heix", b"hevc", b"hevx", b"mif1", b"msf1", b"heim",
+                                                    b"heis", b"avic"):
+        return "heic"
+    if head == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":   # OLE2: legacy .xls (or .doc)
+        with open(path, "rb") as f:
+            blob = f.read()
+        if "Workbook".encode("utf-16-le") in blob or "Book".encode("utf-16-le") in blob:
+            return "xls"
+        return "doc"
+    lowered = head8k[:2048].lstrip().lower()
+    if lowered.startswith((b"<html", b"<!doctype html", b"<table", b"<?xml")) or b"<table" in lowered:
+        if b"<table" in head8k.lower() or ext in ("xls", "htm", "html"):
+            return "html_table"
     if head.startswith(b"%PDF"):
         return "pdf"
     if head.startswith(b"PK"):
@@ -52,6 +87,8 @@ def sniff_kind(path: str, mime: str = "") -> str:
     if head[:3] == b"\xff\xd8\xff" or head.startswith(b"\x89PNG") or head[:4] in (b"II*\x00", b"MM\x00*") \
             or head[:4] == b"RIFF":
         return "image"
+    if (ext == "csv" or mime == "text/csv") and _looks_like_csv(head8k):
+        return "csv"
     return "unsupported"
 
 
@@ -137,7 +174,9 @@ def _filename_hint(doc: ParsedDoc, filename: str) -> None:
     for pat, typ in _FILENAME_HINTS:
         if re.search(pat, name):
             doc.doc_type, doc.type_confidence = typ, 0.3
-            doc.type_reason = (f"Probably a {cls.TYPE_LABELS[typ]} (from the file name only; the content could not "
+            label = cls.TYPE_LABELS[typ]
+            article = "an" if label[:1].lower() in "aeiou" else "a"
+            doc.type_reason = (f"Probably {article} {label} (from the file name only; the content could not "
                                f"be read well enough to confirm). " + doc.type_reason)
             return
 
@@ -165,21 +204,31 @@ def _parse_document(path: str, mime: str = "", out_dir: str | Path = ".", *, max
     kind = sniff_kind(path, mime)
     doc = ParsedDoc(kind=kind)
 
-    if kind == "docx":
+    if kind in ("docx", "doc"):
         doc.kind = "unsupported"
         doc.failure_cause = "Word documents are not supported. Export the file as PDF and upload it again."
         doc.type_reason = "Unsupported format (Word document)."
         return doc
+    if kind == "heic":
+        doc.kind = "unsupported"
+        doc.failure_cause = HEIC_UNSUPPORTED
+        doc.type_reason = "Unsupported format (HEIC photo)."
+        return doc
     if kind == "unsupported":
-        doc.failure_cause = "Unsupported file format. Upload a PDF, XLSX, JPG or PNG file."
+        doc.failure_cause = UNSUPPORTED_FORMAT
         doc.type_reason = "Unsupported format."
         return doc
 
-    if kind == "xlsx":
+    if kind in ("xlsx", "xls", "csv", "html_table"):
+        reader = {"xlsx": read_xlsx, "xls": read_xls, "csv": read_csv, "html_table": read_html_table}[kind]
+        doc.kind = "xlsx"   # every spreadsheet-like format continues on the XLSX path
         try:
-            doc.sheets = read_xlsx(path)
+            doc.sheets = reader(path)
         except Exception as exc:  # corrupt workbook
             doc.failure_cause = f"The spreadsheet could not be opened ({exc.__class__.__name__})."
+            return doc
+        if not any(r for s_ in doc.sheets for r in s_.rows):
+            doc.failure_cause = "The spreadsheet is empty."
             return doc
         text = sheet_text(doc.sheets, max_rows=_title_rows(doc.sheets))  # title + header only: purpose texts mention invoices
         doc.doc_type, doc.type_confidence, doc.type_reason = cls.classify_text(
@@ -292,10 +341,91 @@ def _page_unreadable(p: ParsedPage) -> bool:
     return (p.blur_score or 0.0) < MIN_BLUR and conf < CONF_IF_BLURRED
 
 
+def _is_txn_row(text: str) -> bool:
+    """A statement transaction row: a date and an amount (≥ 1000, not a year, not an account number)."""
+    if not cls.find_dates(text):
+        return False
+    for tok in re.findall(r"\d[\d  .,]*\d", text):
+        t = tok.strip()
+        digits = sum(c.isdigit() for c in t)
+        if digits >= 13 or re.fullmatch(r"\d{1,2}[./]\d{1,2}[./]\d{2,4}", t) or re.fullmatch(r"(19|20)\d{2}", t):
+            continue
+        v = parse_number(t)
+        if v is not None and abs(v) >= 1000:
+            return True
+    return False
+
+
+def _is_statement_header(text: str) -> bool:
+    t = cls.light_norm(text)
+    hit = {k for k, pat in _STATEMENT_HEADER.items() if re.search(pat, t)}
+    return "date" in hit and (("debit" in hit and "credit" in hit) or len(hit) >= 4)
+
+
+def statement_layout(pages: list[ParsedPage], max_pages: int = 3) -> tuple[str, float, str]:
+    """(classification text, statement score, hint) from page rows.
+
+    A statement is recognised by its structure: a transaction-table header (date, debit, credit …) and rows that
+    carry a date and an amount. Only the text around that table (title, account, opening/closing balance) votes
+    for the document type, so 'hisob-faktura' inside a payment purpose does not make the statement an invoice."""
+    kept: list[str] = []
+    header = False
+    txn_rows = 0
+    for p in pages[:max_pages]:
+        rows = [row_text(r) for r in cluster_rows(p.words, p.n, ocr=p.ocr_used)]
+        flags = [_is_txn_row(t) for t in rows]
+        heads = [i for i, t in enumerate(rows) if _is_statement_header(t)]
+        txn_idx = [i for i, f in enumerate(flags) if f]
+        txn_rows += len(txn_idx)
+        header = header or bool(heads)
+        if heads or len(txn_idx) >= 3:
+            start = heads[0] if heads else txn_idx[0]
+            end = txn_idx[-1] if txn_idx and txn_idx[-1] > start else start
+            kept += rows[:start + 1] + rows[end + 1:]   # title + header, then the footer (closing balance)
+        else:
+            kept += rows
+    text = "\n".join(kept)
+    score, hint = 0.0, []
+    if header and txn_rows >= 1:
+        score += 3.0
+        hint.append("transaction table header (date, debit, credit)")
+    elif txn_rows >= 3:
+        score += 1.5
+    if txn_rows >= 3:
+        hint.append(f"{txn_rows} dated transaction rows")
+    if score and re.search(r"(?<!\d)\d{20}(?!\d)", re.sub(r"(?<=\d) (?=\d)", "", text)):
+        score += 1.0
+        hint.append("a 20-digit account number")
+    return text, score, ", ".join(hint)
+
+
 def _finish_classification(doc: ParsedDoc) -> None:
-    text = _page_text(doc.pages)
+    full = _page_text(doc.pages)
+    text, layout_score, hint = statement_layout(doc.pages)
+    if not layout_score:
+        text = full
     doc.doc_type, doc.type_confidence, doc.type_reason = cls.classify_text(
-        text, codes_found=_codes_in(doc.pages[:3]), kind=doc.kind)
-    doc.language = cls.detect_language(text)
-    doc.period_start, doc.period_end = cls.detect_period(text, doc.doc_type)
-    doc.stir = cls.detect_stir(text)
+        text, codes_found=_codes_in(doc.pages[:3]), kind=doc.kind, xlsx_header_score=layout_score,
+        structure_hint=hint)
+    doc.language = cls.detect_language(full)
+    doc.period_start, doc.period_end = cls.detect_period(full, doc.doc_type)
+    doc.stir = cls.detect_stir(full)
+    if doc.doc_type == "bank_statement":
+        _attach_statement_table(doc)
+
+
+PDF_STATEMENT_UNREADABLE = ("The transaction table of this bank statement could not be read from this PDF or photo. Please "
+                            "upload the Excel (XLSX) export from your bank-client.")
+
+
+def _attach_statement_table(doc: ParsedDoc) -> None:
+    """PDF / photo statements: rebuild the transaction table as a sheet for the statement categoriser."""
+    from app.pipeline.statements.pdf import has_transactions, pdf_statement_sheet
+    try:
+        sheet = pdf_statement_sheet(doc.pages)
+    except Exception:
+        sheet = None
+    if sheet is not None and has_transactions(sheet):
+        doc.sheets = [sheet]
+    elif not doc.failure_cause:
+        doc.failure_cause = PDF_STATEMENT_UNREADABLE

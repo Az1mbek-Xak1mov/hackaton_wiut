@@ -124,7 +124,9 @@ class ApplicationService:
         return app
 
     def list_stmt(self):
-        return select(Application).order_by(Application.received_on.desc(), Application.id.desc())
+        # public /analyse loan-file checks never enter the bank's queue
+        return (select(Application).where(Application.is_public.is_(False))
+                .order_by(Application.received_on.desc(), Application.id.desc()))
 
     def _next_number(self, year: int) -> str:
         prefix = f"APP-{year}-"

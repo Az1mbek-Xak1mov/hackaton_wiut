@@ -201,3 +201,7 @@ Field extraction on hard-case forms:
 - LLM narrative acceptance and token cost: this run uses the LLM off (template narrative); cost per application in UZS comes from production llm_calls
 - Production latency: added from server job timings
 - Real-document accuracy: pilot month 1 on anonymised bank files
+
+## LLM tokens and cost (outside this run)
+
+Measured separately on production `llm_calls` (2026-10-10 21:55, recorded in commit `a9e5ee8`; no JSON export in the repo): loan narrative 2.5 attempts × 4 025 input / 422 output tokens (n = 4 generations, 10 calls); borrower explanation 736 / 181 tokens per call (n = 120 calls). At the assumed list price and FX this is 71 UZS per application. Derivation and assumptions: [`docs/plan/08-BUSINESS.md`](plan/08-BUSINESS.md). What is sent to the provider: [`docs/DATA-SOURCES.md`](DATA-SOURCES.md).
