@@ -7,7 +7,8 @@ cd "$ROOT/repo"
 export COMPOSE_PROJECT_NAME=converza
 DC="docker compose -p converza --env-file $ROOT/.env -f compose.prod.yml"
 
-PREV=$(tail -n 50 "$ROOT/deploys.log" 2>/dev/null | awk '$5=="ok"{s=$2} END{print s}')
+touch "$ROOT/deploys.log"
+PREV=$(awk '$5=="ok"{s=$2} END{print s}' "$ROOT/deploys.log" || true)
 
 $DC build --build-arg GIT_SHA="$SHA" --build-arg BUILT_AT="$(date -Iseconds)"
 
