@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { api, errMessage } from '@/api/client'
 import type { ApplicationListItem, PortfolioSummary } from '@/api/types'
-import { fmtDate, fmtDateTime, hasUnit, severityPillClass, statusLabel, trueMinus } from '@/api/format'
+import { appStatusPill as appPill, fmtDate, fmtDateTime, hasUnit, severityPillClass, statusLabel, trueMinus } from '@/api/format'
 import { useApp } from '@/stores/app'
 import FigureStrip from '@/components/ui/FigureStrip.vue'
 import FigureCell from '@/components/ui/FigureCell.vue'
@@ -41,16 +41,10 @@ function queueLink(q: PortfolioSummary['queue'][number]) {
 function queuePillLabel(sev: string) {
   return ['stable', 'watch', 'attn'].includes(sev) ? statusLabel(sev) : sev === 'info' ? t('In review') : sev === 'neutral' ? t('Pending') : sev
 }
-function appPill(st: string) {
-  const m: Record<string, { cls: string; label: string }> = {
-    processing: { cls: 'pill-neutral', label: 'Processing documents' },
-    in_review: { cls: 'pill-info', label: 'In review' },
-    waiting_on_applicant: { cls: 'pill-watch', label: 'Waiting on applicant' },
-    decided: { cls: 'pill-stable', label: 'Decision recorded' },
-    ready: { cls: 'pill-stable', label: 'Ready for review' },
-  }
-  const p = m[st] || { cls: 'pill-info', label: st }
-  return { cls: p.cls, label: t(p.label) }
+function docsLabel(d: string | null | undefined) {
+  if (!d) return '—'
+  const [a, b] = d.split('/')
+  return b ? t('{a} of {b}', { a, b }) : d
 }
 const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' || a.status === 'ready') || apps.value[0])
 </script>
@@ -60,6 +54,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
     <div class="page-head">
       <div>
         <h1>{{ t('Portfolio overview') }}</h1>
+        <p class="muted page-help">{{ t('Start here: what needs you today, new loan applications to review, and how existing borrowers are doing. Click any name to open it.') }}</p>
         <p class="meta">
           <template v-if="s?.as_of">{{ t('Exposure as of {d}', { d: fmtDate(s.as_of) }) }} · </template>
           <template v-if="s?.run?.finished_at">{{ t('Monitoring run {d}', { d: fmtDateTime(s.run.finished_at) }) }} · </template>
@@ -68,7 +63,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
       </div>
       <div class="actions">
         <RouterLink v-if="nextApp" :to="`/bank/applications/${nextApp.number}`" class="btn">{{ t('Next application in queue') }}</RouterLink>
-        <RouterLink to="/bank/borrowers?status=attn" class="btn btn-primary">{{ t('Review alerts') }}</RouterLink>
+        <RouterLink to="/bank/borrowers?status=attn" class="btn btn-primary">{{ t('Borrowers needing attention') }}</RouterLink>
       </div>
     </div>
 
@@ -110,7 +105,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
             </div>
             <RouterLink :to="queueLink(q)" class="btn btn-sm">{{ t(q.action || 'Open') }}</RouterLink>
           </div>
-          <div v-if="!s.queue.length" class="empty" style="border-top: 1px solid var(--border-row)">{{ t('Nothing needs attention today.') }}</div>
+          <div v-if="!s.queue.length" class="empty" style="border-top: 1px solid var(--border-row)">{{ t('Nothing needs attention today. New applications and borrowers with warning signs appear here.') }}</div>
           <div v-else-if="s.queue.length > QUEUE_SHOWN" style="padding: 10px 16px; border-top: 1px solid var(--border-row)">
             <button type="button" class="linkbtn" @click="showAllQueue = !showAllQueue">{{ showAllQueue ? t('Show the first {n}', { n: QUEUE_SHOWN }) : t('Show all {n} items →', { n: s.queue.length }) }}</button>
           </div>
@@ -126,7 +121,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
               <span v-for="d in distBar" :key="d.status" :style="{ flex: `${d.n} 1 0`, background: MARK[d.status] }"></span>
             </div>
             <div class="scrollbox"><table class="tbl">
-              <thead><tr><th>{{ t('Status') }}</th><th>{{ t('Means') }}</th><th class="r">{{ t('Borrowers') }}</th><th class="r">{{ t('Exposure') }}</th></tr></thead>
+              <thead><tr><th>{{ t('Status') }}</th><th>{{ t('What it means') }}</th><th class="r">{{ t('Borrowers') }}</th><th class="r">{{ t('Exposure') }}</th></tr></thead>
               <tbody>
                 <tr v-for="d in s.status_distribution" :key="d.status">
                   <td><span class="pill" :class="severityPillClass(d.status)">{{ statusLabel(d.status) }}</span></td>
@@ -163,17 +158,17 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
           </div>
           <div class="scrollbox">
             <table class="tbl hover" style="min-width: 540px">
-              <thead><tr><th>{{ t('Applicant') }}</th><th class="r">{{ t('Requested, mln') }}</th><th class="r">{{ t('Term') }}</th><th>{{ t('Received') }}</th><th>{{ t('Documents') }}</th><th>{{ t('Status') }}</th></tr></thead>
+              <thead><tr><th>{{ t('Business') }}</th><th class="r">{{ t('Amount, mln UZS') }}</th><th class="r">{{ t('Term') }}</th><th>{{ t('Received') }}</th><th :title="t('Required documents received, out of the full set')">{{ t('Documents received') }}</th><th>{{ t('Status') }}</th></tr></thead>
               <tbody>
                 <tr v-for="a in apps.slice(0, 8)" :key="a.uuid">
-                  <td><RouterLink :to="`/bank/applications/${a.number}`" style="font-weight: 500">{{ a.name }}</RouterLink><div class="muted">{{ a.industry }} · {{ a.number }}</div></td>
-                  <td class="r num">{{ a.requested_display }}</td>
-                  <td class="r num">{{ t('{n} m', { n: a.term_months }) }}</td>
+                  <td><RouterLink :to="`/bank/applications/${a.number}`" style="font-weight: 500">{{ a.name }}</RouterLink><div class="muted">{{ [a.industry, a.number].filter(Boolean).join(' · ') }}</div></td>
+                  <td class="r num">{{ a.requested_display && a.requested_display !== 'n/a' ? a.requested_display : '—' }}</td>
+                  <td class="r num">{{ a.term_months ? tn(a.term_months, '{n} month', '{n} months') : '—' }}</td>
                   <td class="num">{{ fmtDate(a.received_on, { short: true }) }}</td>
-                  <td class="num">{{ a.docs }}</td>
+                  <td class="num">{{ docsLabel(a.docs) }}</td>
                   <td><span class="pill" :class="appPill(a.status).cls">{{ appPill(a.status).label }}</span><div v-if="a.issues_label" class="muted" style="font-size: 12px; margin-top: 2px">{{ a.issues_label }}</div></td>
                 </tr>
-                <tr v-if="!apps.length"><td colspan="6" class="muted">{{ t('No applications yet.') }}</td></tr>
+                <tr v-if="!apps.length"><td colspan="6" class="muted">{{ t('No applications yet. They appear here when a business submits one on converza.uz.') }}</td></tr>
               </tbody>
             </table>
           </div>
@@ -202,7 +197,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
                   <td class="num">{{ fmtDate(c.date, { short: true }) }}</td>
                   <td class="muted">{{ c.reason }}</td>
                 </tr>
-                <tr v-if="!s.status_changes.length"><td colspan="4" class="muted">{{ t('No status changes since the previous monitoring run.') }}</td></tr>
+                <tr v-if="!s.status_changes.length"><td colspan="4" class="muted">{{ s.run ? t('No status changes since the previous monitoring run.') : t('Not available yet: no monitoring run. Statuses appear after the first check of borrowers with a loan.') }}</td></tr>
               </tbody>
             </table>
           </div>
@@ -212,3 +207,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
     </template>
   </div>
 </template>
+
+<style scoped>
+.page-help { font-size: 13px; margin: 0 0 2px; max-width: 760px; }
+</style>

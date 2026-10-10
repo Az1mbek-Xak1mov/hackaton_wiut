@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { getAuth, login as clientLogin, logout as clientLogout, onAuthChange, register as clientRegister, type RegisterPayload, type Role } from '@/api/client'
+import { demoLogin as clientDemoLogin, getAuth, login as clientLogin, logout as clientLogout, onAuthChange, register as clientRegister, type RegisterPayload, type Role } from '@/api/client'
 
 export const useAuth = defineStore('auth', () => {
   const state = ref(getAuth())
@@ -19,6 +19,9 @@ export const useAuth = defineStore('auth', () => {
   async function login(email: string, password: string) {
     await clientLogin(email, password)
   }
+  async function demoLogin() {
+    await clientDemoLogin()
+  }
   async function register(p: RegisterPayload) {
     await clientRegister(p)
   }
@@ -26,5 +29,5 @@ export const useAuth = defineStore('auth', () => {
     clientLogout()
   }
 
-  return { state, role, loggedIn, name, initials, login, register, logout }
+  return { state, role, loggedIn, name, initials, login, demoLogin, register, logout }
 })

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PrototypeStrip from './PrototypeStrip.vue'
 import TopBar from './TopBar.vue'
 import SideNav from './SideNav.vue'
 import AppFooter from './AppFooter.vue'
@@ -9,7 +8,6 @@ defineProps<{ mode: 'officer' | 'owner' | 'public'; nav: boolean }>()
 
 <template>
   <div class="shell">
-    <PrototypeStrip />
     <TopBar :mode="mode" />
     <div class="body">
       <SideNav v-if="nav && mode !== 'public'" :mode="mode as 'officer' | 'owner'" />

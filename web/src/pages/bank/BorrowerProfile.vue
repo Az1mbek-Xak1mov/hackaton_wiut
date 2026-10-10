@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, errMessage } from '@/api/client'
 import type { BorrowerProfile } from '@/api/types'
-import { docStatusPill, fmtDate, severityPillClass, statusLabel } from '@/api/format'
+import { appStatusPill, docStatusPill, docTypeShort, fmtDate, ratioHelp, severityPillClass, statusLabel } from '@/api/format'
 import { useEvidence } from '@/stores/evidence'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import FindingRow from '@/components/evidence/FindingRow.vue'
@@ -37,6 +37,28 @@ onMounted(async () => {
 
 const b = computed(() => data.value?.business || {})
 const loan = computed(() => data.value?.loan || {})
+const hasLoan = computed(() => !!data.value?.loan)
+
+// Display-only extras from GET /borrowers/{ref}: applications, latest extracted figures and ratios (fact keys).
+type ProfileExtras = {
+  applications?: { number: string; status: string; received_on: string; requested_display: string | null; term_months: number | null; purpose: string }[]
+  figure_keys?: string[]
+  ratio_keys?: string[]
+}
+const extras = computed(() => (data.value || {}) as ProfileExtras)
+const applications = computed(() => extras.value.applications || [])
+const figureKeys = computed(() => (extras.value.figure_keys || []).filter((k) => data.value?.facts?.[k]))
+const ratioKeys = computed(() => (extras.value.ratio_keys || []).filter((k) => data.value?.facts?.[k]))
+function factLabel(k: string) {
+  const f = data.value?.facts?.[k]
+  return f ? String(f.label || '').split(',')[0] : ''
+}
+function factPeriod(k: string) {
+  const f = data.value?.facts?.[k]
+  if (!f) return ''
+  const lbl = String(f.label || '')
+  return lbl.includes(',') ? lbl.slice(lbl.indexOf(',') + 1).trim() : f.period_label || ''
+}
 
 function pick(o: Record<string, any>, ...keys: string[]) {
   for (const k of keys) if (o[k] != null && o[k] !== '') return o[k]
@@ -66,7 +88,8 @@ const loanCells = computed(() => {
   const m04 = data.value?.status?.indicators?.M04
   if (cov) {
     const thr = m04?.threshold_display ?? (m04?.threshold != null ? `${m04.threshold}×` : pick(l, 'coverage_threshold_display'))
-    cells.push({ label: t('Cash coverage of next installment'), main: cov, sub: thr ? t('threshold {v}', { v: thr }) : undefined, warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
+    const covMain = cov === 'n/a' ? t('Not available yet: needs a bank statement') : cov
+    cells.push({ label: t('Cash vs next payment'), main: covMain, sub: thr ? t('month-end cash ÷ next payment · warning below {v}', { v: thr }) : t('month-end cash ÷ next payment'), warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
   }
   return cells
 })
@@ -185,12 +208,18 @@ const statusHistory = computed(() => {
             <span v-if="statusHistory" class="muted">{{ t('previously {list}', { list: statusHistory }) }}</span>
           </div>
           <p v-if="data.status.reason" class="reason"><span class="eyebrow">{{ t('Why') }}</span> {{ data.status.reason }}</p>
+          <p v-else-if="data.status.current === 'unknown'" class="reason"><span class="eyebrow">{{ t('Why') }}</span> {{ t('No monitoring check has run for this loan yet.') }}</p>
           <p class="meta">
             <template v-if="b.industry">{{ b.industry }}</template><template v-if="b.region"> · {{ b.region }}</template><template v-if="b.stir"> · {{ t('STIR') }} <span class="num">{{ b.stir }}</span></template><template v-if="b.since"> · {{ t('operating since {y}', { y: b.since }) }}</template><template v-if="b.employees"> · {{ tn(b.employees, '{n} employee', '{n} employees') }}</template>
           </p>
         </div>
-        <div class="actions"><button type="button" class="btn btn-primary" @click="showOutcome = true">{{ t('Record review outcome') }}</button></div>
+        <div v-if="hasLoan" class="actions"><button type="button" class="btn btn-primary" @click="showOutcome = true">{{ t('Record review outcome') }}</button></div>
       </div>
+      <p class="muted page-help">
+        {{ hasLoan
+          ? t('Loan follow-up for this business: what changed in its latest statements, the evidence behind each warning, and its repayment record. Review the warnings, then record your conclusion.')
+          : t('This business has no loan with the bank yet, so there is nothing to monitor. Monitoring starts once a loan is disbursed. Below are its uploaded documents, the figures read from them and its loan applications.') }}
+      </p>
       <div v-if="outDone" class="note">{{ outDone }}</div>
 
       <section v-if="loanCells.length || stripCells.length" class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" :aria-label="t('Loan details')">
@@ -214,13 +243,59 @@ const statusHistory = computed(() => {
 
       <div class="twopane">
         <div class="main-col">
-          <section class="panel" aria-label="Monitoring alerts">
+          <section v-if="hasLoan" class="panel" :aria-label="t('Warning signs')">
             <div class="panel-head" style="padding: 12px 14px 8px">
-              <h2>{{ t('Why this borrower is under {s}', { s: statusLabel(data.status.current) }) }}</h2>
-              <span class="ctx">{{ data.alerts.length }} indicator{{ data.alerts.length === 1 ? '' : 's' }} moved · thresholds disclosed</span>
+              <h2>{{ t('Warning signs found') }}</h2>
+              <span class="ctx">{{ tn(data.alerts.length, '{n} warning sign', '{n} warning signs') }} · {{ t('click a figure to see its source') }}</span>
             </div>
             <FindingRow v-for="a in data.alerts" :key="a.uuid" :finding="a" />
-            <div v-if="!data.alerts.length" class="empty" style="border-top: 1px solid var(--border-row)">{{ t('No indicator crossed its threshold in the latest periods.') }}</div>
+            <div v-if="!data.alerts.length" class="empty" style="border-top: 1px solid var(--border-row)">
+              {{ data.status.current === 'unknown' ? t('Not available yet: no monitoring check has run for this loan.') : t('No warning sign in the latest periods.') }}
+            </div>
+          </section>
+
+          <section v-if="applications.length || !hasLoan" class="panel" :aria-label="t('Loan applications')">
+            <div class="panel-head" style="padding: 12px 14px 8px">
+              <h2>{{ t('Loan applications') }}</h2>
+              <span class="ctx">{{ t('Open one to review it and record your decision') }}</span>
+            </div>
+            <div class="scrollbox">
+              <table class="tbl hover" style="min-width: 520px">
+                <thead><tr><th>{{ t('Application') }}</th><th class="r">{{ t('Amount, mln UZS') }}</th><th class="r">{{ t('Term') }}</th><th>{{ t('Received') }}</th><th>{{ t('Status') }}</th></tr></thead>
+                <tbody>
+                  <tr v-for="a in applications" :key="a.number">
+                    <td><RouterLink :to="`/bank/applications/${a.number}`" style="font-weight: 500">{{ a.number }}</RouterLink><div v-if="a.purpose" class="muted" style="font-size: 12px">{{ a.purpose }}</div></td>
+                    <td class="r num">{{ a.requested_display || '—' }}</td>
+                    <td class="r num">{{ a.term_months ? tn(a.term_months, '{n} month', '{n} months') : '—' }}</td>
+                    <td class="num">{{ fmtDate(a.received_on) }}</td>
+                    <td><span class="pill" :class="appStatusPill(a.status).cls">{{ appStatusPill(a.status).label }}</span></td>
+                  </tr>
+                  <tr v-if="!applications.length"><td colspan="5" class="muted">{{ t('No applications yet. They appear here when the business applies for a loan on converza.uz.') }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section v-if="figureKeys.length || ratioKeys.length || !hasLoan" class="panel" :aria-label="t('Latest figures from the documents')">
+            <div class="panel-head" style="padding: 12px 14px 8px">
+              <h2>{{ t('Latest figures from the documents') }}</h2>
+              <span class="ctx">{{ t('click a value to see the page it came from') }}</span>
+            </div>
+            <div v-if="figureKeys.length || ratioKeys.length" class="scrollbox">
+              <table class="tbl" style="min-width: 480px">
+                <tbody>
+                  <tr v-for="k in figureKeys" :key="k">
+                    <td>{{ factLabel(k) }}<div class="muted" style="font-size: 12px">{{ factPeriod(k) }}</div></td>
+                    <td class="r"><EvidenceChip :fact-key="k" /> <span v-if="data.facts[k].display_unit" class="muted" style="font-size: 12px">{{ data.facts[k].display_unit }}</span></td>
+                  </tr>
+                  <tr v-for="k in ratioKeys" :key="k">
+                    <td :title="ratioHelp(factLabel(k))">{{ factLabel(k) }}<div class="muted" style="font-size: 12px">{{ ratioHelp(factLabel(k)) || factPeriod(k) }}</div></td>
+                    <td class="r"><EvidenceChip :fact-key="k" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else class="empty" style="border-top: 1px solid var(--border-row)">{{ t('Not available yet — upload Form 1 (balance sheet) and Form 2 (income statement) to see figures.') }}</div>
           </section>
 
           <section v-if="qLabels.length && qRevenue.some((v) => v != null)" class="panel" aria-label="Financial performance over time">
@@ -264,20 +339,20 @@ const statusHistory = computed(() => {
             </template>
           </section>
 
-          <section class="panel" aria-label="AI explanation" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+          <section v-if="hasLoan" class="panel" :aria-label="t('Explanation')" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
             <div class="panel-head">
               <h2>{{ t('What changed, and why it matters for repayment') }}</h2>
               <span v-if="data.narrative?.markdown" class="ctx">{{ data.narrative.mode === 'llm' ? t('AI explanation · every figure links to its source') : t('Template summary · AI draft not used') }}</span>
             </div>
             <NarrativeText v-if="data.narrative?.markdown && data.narrative.verified !== false" :markdown="data.narrative.markdown" />
-            <p v-else class="muted">{{ t('No written explanation yet; the alerts above are complete on their own.') }}</p>
+            <p v-else class="muted">{{ t('No written explanation yet. It is written only for loans under Watch or Attention; the warning signs above are complete on their own.') }}</p>
           </section>
 
           <div class="footer-line">{{ data.calibration_note }} {{ t("Statuses are rule-based monitoring indicators, not a credit score. The officer records the review outcome; the system status stays separate from the officer's assessment.") }}</div>
         </div>
 
         <div class="ev-col stack" style="gap: 16px">
-          <EvidencePane :sticky="false" />
+          <EvidencePane v-if="hasLoan || figureKeys.length || ratioKeys.length || data.alerts.length" :sticky="false" />
           <section v-if="data.timeline.length" class="panel" aria-label="How it developed" style="padding: 12px 14px">
             <div class="eyebrow" style="margin-bottom: 8px">{{ t('How it developed') }}</div>
             <div v-for="(t, i) in data.timeline" :key="i" class="tl">
@@ -286,11 +361,13 @@ const statusHistory = computed(() => {
               <span style="font-size: 12.5px; padding-bottom: 10px">{{ t.title }}</span>
             </div>
           </section>
-          <section v-if="data.documents.length" class="panel" aria-label="Documents" style="padding: 12px 14px 8px">
-            <div class="eyebrow" style="margin-bottom: 4px">{{ t('Documents & previous assessments') }}</div>
+          <section class="panel" :aria-label="t('Uploaded documents')" style="padding: 12px 14px 8px">
+            <div class="eyebrow" style="margin-bottom: 4px">{{ t('Uploaded documents') }} · {{ data.documents.length }}</div>
+            <div v-if="!data.documents.length" class="muted" style="font-size: 12.5px; padding: 4px 0 6px">{{ t('No documents yet. The business uploads them on converza.uz.') }}</div>
             <div v-for="(d, i) in data.documents" :key="i" class="doc" style="grid-template-columns: 1fr auto">
               <div style="min-width: 0">
-                <div style="font-weight: 500">{{ d.title || d.filename }}</div>
+                <div style="font-weight: 500">{{ d.title || docTypeShort(d.doc_type) }}</div>
+                <div class="muted mono" style="font-size: 11.5px; overflow-wrap: anywhere">{{ d.filename }}</div>
                 <div class="muted">{{ [d.uploaded_at || d.uploaded || d.date ? fmtDate(String(d.uploaded_at || d.uploaded || d.date).slice(0, 10)) : null, d.note].filter(Boolean).join(' · ') }}</div>
               </div>
               <span v-if="d.status" class="pill" :class="docStatusPill(d.status).cls">{{ docStatusPill(d.status).label }}</span>
@@ -324,6 +401,7 @@ const statusHistory = computed(() => {
 
 <style scoped>
 .reason { margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+.page-help { font-size: 13px; margin: -4px 0 12px; max-width: 760px; }
 .strip { display: grid; gap: 3px; }
 .strip span { height: 10px; border-radius: 2px; }
 .ok { background: var(--stable-mark); }

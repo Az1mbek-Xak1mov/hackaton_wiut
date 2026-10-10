@@ -47,6 +47,23 @@ def owner_applications(db: Session = Depends(get_db), user=Depends(require_scope
     return {"items": ApplicationService(db).owner_items(user)}
 
 
+class OwnerAddDocuments(BaseModel):
+    document_uuids: list[UUID] | None = None
+
+
+@router.post("/applications/{application_uuid}/documents")
+def owner_add_documents(application_uuid: UUID, data: OwnerAddDocuments, db: Session = Depends(get_db),
+                        user=Depends(require_scope(Scope.OWNER_FILES))):
+    app, job = ApplicationService(db).add_owner_documents(user, str(application_uuid), data.document_uuids)
+    return {"uuid": str(app.uuid), "number": app.number, "status": app.status, "job": JobOut.model_validate(job)}
+
+
+@router.get("/checklist")
+def owner_checklist(db: Session = Depends(get_db), user=Depends(require_scope(Scope.OWNER_FILES))):
+    """The documents the bank needs, each ticked when an uploaded document of that type is present (rule R10 logic)."""
+    return ApplicationService(db).owner_checklist(user)
+
+
 @router.get("/files")
 def owner_files(db: Session = Depends(get_db), user=Depends(require_scope(Scope.OWNER_FILES))):
     b = BorrowerService(db).owner_borrower(user)

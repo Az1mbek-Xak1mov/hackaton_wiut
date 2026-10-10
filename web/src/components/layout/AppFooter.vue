@@ -14,7 +14,7 @@ const app = useApp()
       · LLM {{ app.version.llm_enabled && app.version.llm_configured !== false ? app.version.llm_provider : t('off') }}
     </span>
     <span v-else>Converza</span>
-    <span>· {{ t('Synthetic demonstration data') }}</span>
+    <span class="disclosure">· {{ t('Prototype for the MKBANK pilot · sample documents are synthetic · figures computed live from uploaded files · no numeric credit score') }}</span>
   </footer>
 </template>
 

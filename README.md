@@ -13,6 +13,8 @@ Two apps, separate sign-in:
 
 An owner account cannot sign in to the bank app, and an officer account cannot sign in to the owner app.
 
+For the jury, each sign-in page also has **Sign in with the demo account**: a passwordless sign-in to the same two shared accounts (`POST /api/v1/auth/demo`; the button appears only when the server sets `DEMO_LOGIN_ENABLED=true`, off by default). All data behind them is synthetic and pushed through the pipeline by `python -m app.seed_demo`.
+
 | Route | Who | What it shows |
 |---|---|---|
 | converza.uz `/` | owner | upload documents (several at once), live analysis status, **Apply for a loan**, my applications |

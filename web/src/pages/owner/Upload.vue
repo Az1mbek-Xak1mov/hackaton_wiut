@@ -2,7 +2,9 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api, errMessage } from '@/api/client'
 import type { DocumentOut, Fact } from '@/api/types'
-import { confPill, docStatusPill, docTypeLabel, fileBadge, fmtBytes, fmtDateTime, fmtPeriod } from '@/api/format'
+import { confPill, fileBadge, fmtBytes, fmtDateTime, fmtPeriod, ownerDocStatus, ownerDocTypeLabel } from '@/api/format'
+import { useApp } from '@/stores/app'
+import DocChecklist from '@/components/owner/DocChecklist.vue'
 import { useEvidence } from '@/stores/evidence'
 import Dropzone from '@/components/ui/Dropzone.vue'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
@@ -10,6 +12,7 @@ import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import { t } from '@/i18n'
 
 const ev = useEvidence()
+const app = useApp()
 const files = ref<DocumentOut[]>([])
 const loading = ref(true)
 const err = ref('')
@@ -29,6 +32,7 @@ async function load() {
   } finally {
     loading.value = false
   }
+  app.loadChecklist()
   if (timer) clearTimeout(timer)
   if (files.value.some((f) => f.status === 'queued' || f.status === 'processing')) timer = setTimeout(load, 2000)
 }
@@ -84,14 +88,14 @@ function summaryText(d: DocumentOut): string {
   const parts: string[] = []
   if (s.transactions != null) parts.push(t('{n} transactions', { n: s.transactions }))
   if (s.categories != null) parts.push(t('{n} categories', { n: s.categories }))
-  if (s.fields != null) parts.push(t('{n} fields', { n: s.fields }))
-  if (s.low_confidence) parts.push(t('{n} below 80% confidence', { n: s.low_confidence }))
-  if (s.unmapped_count) parts.push(t('{n} unmapped lines', { n: s.unmapped_count }))
+  if (s.fields != null) parts.push(t('{n} figures', { n: s.fields }))
+  if (s.low_confidence) parts.push(t('{n} hard to read', { n: s.low_confidence }))
+  if (s.unmapped_count) parts.push(t('{n} lines not recognised', { n: s.unmapped_count }))
   return parts.join(' · ')
 }
 
 const counts = computed(() => ({
-  analysed: files.value.filter((f) => f.status === 'analyzed').length,
+  analysed: files.value.filter((f) => f.status === 'analyzed' || f.status === 'clarification').length,
   total: files.value.length,
 }))
 const openDoc = computed(() => files.value.find((f) => f.uuid === openUuid.value) || null)
@@ -104,27 +108,31 @@ const otherFacts = computed(() => openFacts.value.filter((f) => !f.line_code))
     <div class="page-head">
       <div>
         <h1>{{ t('Upload & analyze') }}</h1>
-        <p class="meta">{{ t("Bank statements, Форма 1 and Форма 2 feed the AI CFO and your bank's monitoring.") }} {{ t('{a} of {b} documents analyzed', { a: counts.analysed, b: counts.total }) }}</p>
+        <p class="meta">{{ t('Upload the documents the bank needs. Converza reads each one and shows the figures it found, with the page they came from.') }} {{ t('{a} of {b} ready', { a: counts.analysed, b: counts.total }) }}</p>
       </div>
       <RouterLink to="/cfo" class="btn btn-primary">{{ t('Ask the AI CFO →') }}</RouterLink>
     </div>
 
+    <section class="panel" :aria-label="t('What the bank needs')" style="padding: 16px">
+      <DocChecklist :checklist="app.ownerChecklist" />
+    </section>
+
     <section class="panel" :aria-label="t('Upload')" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
       <Dropzone multiple :disabled="uploading > 0" @files="upload" :title="uploading ? t('Uploading {n} file(s)…', { n: uploading }) : t('Drop statements and reports here')" :hint="t('PDF · XLSX · JPG · PNG · up to 20 MB each')" :button="t('Choose files')" />
       <div v-if="upErr" class="error-box">{{ upErr }}</div>
-      <div class="muted" style="font-size: 12px">{{ t('Recognised: bank statement (XLSX), balance sheet (Форма 1), income statement (Форма 2). Values you correct are recorded with your name.') }}</div>
+      <div class="muted" style="font-size: 12px">{{ t('You can upload several files at once, in any order. Each one is ticked in the list above when it is recognised.') }}</div>
     </section>
 
     <section class="panel" aria-label="Uploaded files">
       <div class="panel-head" style="padding: 12px 14px 8px">
         <h2>{{ t('Uploaded files') }}</h2>
-        <span class="ctx">{{ t('Click a file to see what was extracted') }}</span>
+        <span class="ctx">{{ t('Click a file to see the figures read from it') }}</span>
       </div>
       <div v-if="loading" class="empty">{{ t('Loading…') }}</div>
       <div v-else-if="err" class="error-box" style="margin: 12px">{{ err }}</div>
       <div v-else class="scrollbox">
         <table class="tbl hover" style="min-width: 820px">
-          <thead><tr><th>{{ t('File') }}</th><th>{{ t('Recognised as') }}</th><th>{{ t('Period') }}</th><th>{{ t('Status') }}</th><th>{{ t('Extracted') }}</th></tr></thead>
+          <thead><tr><th>{{ t('File') }}</th><th>{{ t('What it is') }}</th><th>{{ t('Period') }}</th><th>{{ t('Status') }}</th><th>{{ t('Found in the file') }}</th></tr></thead>
           <tbody>
             <tr v-for="d in files" :key="d.uuid" class="clickable" :class="{ sel: openUuid === d.uuid }" @click="toggle(d)">
               <td>
@@ -133,15 +141,15 @@ const otherFacts = computed(() => openFacts.value.filter((f) => !f.line_code))
                   <div style="min-width: 0"><div class="mono" style="font-size: 12.5px; overflow-wrap: anywhere">{{ d.filename }}</div><div class="muted" style="font-size: 12px">{{ fmtBytes(d.size_bytes) }} · {{ fmtDateTime(d.created_at) }}</div></div>
                 </div>
               </td>
-              <td>{{ d.status === 'queued' || d.status === 'processing' ? '…' : docTypeLabel(d.doc_type) }}</td>
+              <td>{{ d.status === 'queued' || d.status === 'processing' ? '…' : ownerDocTypeLabel(d.doc_type) }}</td>
               <td class="num">{{ fmtPeriod(d.period_start, d.period_end) }}</td>
               <td>
-                <span class="pill" :class="docStatusPill(d.status).cls">{{ docStatusPill(d.status).label }}</span>
-                <div v-if="d.status === 'failed' && d.failure_cause" class="muted" style="font-size: 12px; margin-top: 3px; max-width: 280px">{{ d.failure_cause }}</div>
+                <span class="pill" :class="ownerDocStatus(d).cls">{{ ownerDocStatus(d).label }}</span>
+                <div v-if="ownerDocStatus(d).explain" class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ ownerDocStatus(d).explain }}</div>
               </td>
               <td class="muted" style="font-size: 12px">{{ summaryText(d) }}</td>
             </tr>
-            <tr v-if="!files.length"><td colspan="5" class="muted">{{ t('No files yet. Upload a bank statement to start.') }}</td></tr>
+            <tr v-if="!files.length"><td colspan="5" class="muted">{{ t('No files yet. Start with the documents in the list above.') }}</td></tr>
           </tbody>
         </table>
       </div>

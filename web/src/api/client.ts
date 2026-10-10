@@ -165,6 +165,19 @@ export async function login(email: string, password: string): Promise<TokenPair>
   return tp
 }
 
+/** Shared jury/visitor demo account for this surface (passwordless; the server answers 404 when it is switched off). */
+export async function demoLogin(): Promise<TokenPair> {
+  const res = await fetch(`${BASE}/auth/demo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ role: surface === 'bank' ? 'officer' : 'owner' }),
+  })
+  if (!res.ok) throw await parseError(res)
+  const tp = (await res.json()) as TokenPair
+  storeTokens(tp)
+  return tp
+}
+
 export interface RegisterPayload {
   full_name: string
   company_name: string

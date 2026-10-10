@@ -30,6 +30,8 @@ SEVERITY = {"attn": 0, "watch": 1, "stable": 2, "unknown": 3, "not_monitored": 4
 NOT_MONITORED = "not_monitored"
 CALIBRATION_NOTE = "Illustrative thresholds; calibration against bank history is pilot month 1."
 TERMINAL_DOC = {"analyzed", "clarification", "failed"}
+APP_STATUS_TEXT = {"processing": "Documents still being read", "in_review": "Waiting for your review",
+                   "waiting_on_applicant": "Waiting for the applicant"}
 
 
 def start_run(db: Session, actor, as_of: date | None = None, borrower_ids: list[int] | None = None):
@@ -284,8 +286,9 @@ def portfolio_summary(db: Session) -> dict:
         n = open_counts.get(a.id, 0)
         day = working_days_between(a.received_on, today)
         queue.append({"kind": "application", "ref": a.number, "name": names.get(a.borrower_id, ""),
-                      "reason": (f"{n} issue{'s' if n != 1 else ''} to resolve · day {day} of 5" if n
-                                 else f"{a.status.replace('_', ' ')} · day {day} of 5"),
+                      "reason": (f"{n} issue{'s' if n != 1 else ''} to check" if n
+                                 else APP_STATUS_TEXT.get(a.status, a.status.replace('_', ' ')))
+                                + f" · working day {day} of the 5-day target",
                       "severity": "info", "action": "Review"})
     loans = {}
     for loan in db.scalars(select(Loan).order_by(Loan.disbursed_on.desc())).all():
@@ -405,8 +408,22 @@ def borrower_detail(db: Session, loan: Loan | None, borrower: Borrower | None = 
                          "title": f"Uploaded: {d.filename}", "status": "neutral"})
     timeline = sorted([t for t in timeline if t["date"]], key=lambda t: t["date"])
 
+    # display only: the borrower's applications, and the latest extracted figures / computed ratios (fact keys)
+    from app.modules.applications.review import FIGURE_ROWS, _latest_per_field
+    apps = db.scalars(select(Application).where(Application.borrower_id == b.id)
+                      .order_by(Application.received_on.desc(), Application.id.desc())).all()
+    app_facts = db.scalars(select(Fact).where(Fact.application_id.in_([a.id for a in apps] or [-1]),
+                                              Fact.document_id.is_(None), Fact.field.startswith("ratio."))).all()
+    figure_keys = []
+    for _label, form, code, _indent in FIGURE_ROWS:
+        cands = [f for f in doc_facts if f.line_code == code and f.field.startswith(form)
+                 and label_end(f.period_label or "")]
+        if cands:
+            figure_keys.append(max(cands, key=lambda f: (label_end(f.period_label), f.confidence)).key)
+    ratio_keys = [f.key for f in _latest_per_field(list(app_facts))]
+
     ser = FactSerializer(db)
-    facts = ser.by_key(list(doc_facts) + list(own_facts))
+    facts = ser.by_key(list(doc_facts) + list(own_facts) + list(app_facts))
     return {
         "business": {"uuid": str(b.uuid), "name": b.name, "industry": b.industry, "region": b.region,
                      "stir": b.stir, "since": b.since, "employees": b.employees},
@@ -421,7 +438,9 @@ def borrower_detail(db: Session, loan: Loan | None, borrower: Borrower | None = 
                   "collateral": loan.collateral, "coverage_display": _coverage_display(current),
                   "repayments": strip, "unit": "mln UZS"} if loan else None),
         "status": {"current": current.status if current else ("unknown" if loan else NOT_MONITORED), "since": since, "history": history,
-                   "reason": current.reason if current else "", "indicators": current.indicators if current else {}},
+                   "reason": current.reason if current else ("" if loan else "No loan with the bank yet, so there is nothing "
+                                                                   "to monitor. Monitoring starts once a loan is disbursed."),
+                   "indicators": current.indicators if current else {}},
         "alerts": [_finding_out(f) | {"date": f.created_at.date().isoformat() if f.created_at else None}
                    for f in alerts],
         "quarterly": series,
@@ -431,6 +450,12 @@ def borrower_detail(db: Session, loan: Loan | None, borrower: Borrower | None = 
                        "uploaded": d.created_at.date().isoformat() if d.created_at else None,
                        "note": (f"{(d.summary or {}).get('transactions')} transactions"
                                 if (d.summary or {}).get("transactions") is not None else "")} for d in docs],
+        "applications": [{"number": a.number, "status": a.status, "received_on": a.received_on.isoformat(),
+                          "requested_display": (kuzs_to_mln(a.requested_amount)
+                                                if a.requested_amount is not None else None),
+                          "term_months": a.term_months, "purpose": a.purpose} for a in apps],
+        "figure_keys": figure_keys,
+        "ratio_keys": ratio_keys,
         "run": _run_out(run),
         "calibration_note": CALIBRATION_NOTE,
         "facts": facts,

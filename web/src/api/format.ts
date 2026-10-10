@@ -151,7 +151,44 @@ export function severityPillClass(s: Severity | MonStatus | string): string {
   }
 }
 
-export const STATUS_LABEL: Record<string, string> = { stable: 'Stable', watch: 'Watch', attn: 'Attention', unknown: 'Not yet monitored' }
+export const STATUS_LABEL: Record<string, string> = {
+  stable: 'Stable',
+  watch: 'Watch',
+  attn: 'Attention',
+  unknown: 'Not yet monitored',
+  not_monitored: 'No loan yet',
+}
+
+/** Loan-application workflow status → pill class and plain label. */
+export const APP_STATUS: Record<string, { cls: string; label: string }> = {
+  processing: { cls: 'pill-neutral', label: 'Reading documents' },
+  in_review: { cls: 'pill-info', label: 'Waiting for your review' },
+  waiting_on_applicant: { cls: 'pill-watch', label: 'Waiting for the applicant' },
+  decided: { cls: 'pill-stable', label: 'Decision recorded' },
+  ready: { cls: 'pill-stable', label: 'Ready for review' },
+}
+
+export function appStatusPill(st: string | null | undefined): { cls: string; label: string } {
+  const p = (st && APP_STATUS[st]) || { cls: 'pill-neutral', label: st ? st.replace(/_/g, ' ') : '—' }
+  return { cls: p.cls, label: t(p.label) }
+}
+
+/** Plain-language meaning of each ratio label the backend computes (definitions only, no thresholds). */
+const RATIO_HELP: [string, string][] = [
+  ['Est. debt service coverage', 'Money the business earns per month divided by its monthly loan payments (DSCR). Below 1 means earnings do not cover the payments.'],
+  ['Current ratio', 'Current assets divided by current liabilities: can short-term assets pay short-term debts.'],
+  ['Quick ratio', 'Same as the current ratio but without inventory, which may be slow to sell.'],
+  ['Debt to equity', "Liabilities divided by the owners' equity: how much of the business is funded by debt."],
+  ['Net margin', 'Net profit as a share of revenue.'],
+  ['Receivable days', 'Average number of days customers take to pay.'],
+  ['Installment vs average monthly revenue', 'The new monthly payment as a share of average monthly revenue.'],
+]
+
+export function ratioHelp(label: string | null | undefined): string {
+  if (!label) return ''
+  const hit = RATIO_HELP.find(([k]) => label.startsWith(k))
+  return hit ? t(hit[1]) : ''
+}
 
 export function statusLabel(s: string | null | undefined): string {
   if (!s) return '—'
@@ -258,7 +295,7 @@ function humanise(k: string): string {
 export function thresholdText(t: Record<string, any> | null | undefined): string[] {
   if (!t || typeof t !== 'object') return []
   if (Array.isArray(t.rules)) {
-    return t.rules.map((r: any) => [r.id, r.indicator].filter(Boolean).join(' ') + (r.rule ? `: ${r.rule}` : ''))
+    return t.rules.map((r: any) => (r.indicator || r.id || '') + (r.rule ? `: ${r.rule}` : ''))
   }
   const out: string[] = []
   for (const [k, v] of Object.entries(t)) {
@@ -271,4 +308,55 @@ export function thresholdText(t: Record<string, any> | null | undefined): string
     }
   }
   return out
+}
+
+// ---------- owner-clarity: plain-language variants for the business-owner app ----------
+const OWNER_DOC_TYPE: Record<string, string> = {
+  form1: 'Balance sheet (Form 1)',
+  form2: 'Income statement (Form 2)',
+  bank_statement: 'Bank statement',
+  loan_application: 'Loan application form',
+  tax_declaration: 'Tax declaration',
+  invoice: 'Invoice (kept on file, not required)',
+  sales_ledger: 'Sales ledger (kept on file, not required)',
+  unknown: 'Not recognised as a required document',
+}
+
+export function ownerDocTypeLabel(dt: string | null | undefined): string {
+  if (!dt) return t('Not recognised as a required document')
+  return OWNER_DOC_TYPE[dt] ? t(OWNER_DOC_TYPE[dt]) : dt
+}
+
+/** Owner-facing status: a plain label plus one line saying what it means and what to do. */
+export function ownerDocStatus(d: { status: string; failure_cause?: string; doc_type?: string; summary?: Record<string, any> }): {
+  cls: string
+  label: string
+  explain: string
+} {
+  switch (d.status) {
+    case 'analyzed':
+      return d.doc_type === 'unknown'
+        ? { cls: 'pill-neutral', label: t('Read'), explain: t('This file is not one of the documents the bank needs. Check the list above.') }
+        : { cls: 'pill-stable', label: t('Ready'), explain: '' }
+    case 'clarification': {
+      const n = Number(d.summary?.low_confidence || 0)
+      const what = n ? t('{n} figure(s) were hard to read, for example on a blurry scan or photo.', { n }) : t('Some figures were hard to read, for example on a blurry scan or photo.')
+      return {
+        cls: 'pill-watch',
+        label: t('Ready, some figures unclear'),
+        explain: `${what} ${t('You can still send it: a bank officer will check those figures against the page. For a faster review, upload the original PDF or Excel file, or a sharper photo.')}`,
+      }
+    }
+    case 'failed':
+      return {
+        cls: 'pill-attn',
+        label: t('Could not read'),
+        explain: `${d.failure_cause ? d.failure_cause + ' ' : ''}${t('Please upload it again as a PDF, an Excel file, or a sharp, well-lit photo of each page.')}`,
+      }
+    case 'queued':
+    case 'processing':
+      return { cls: 'pill-info', label: t('Reading…'), explain: t('This page updates by itself.') }
+    default:
+      return { cls: 'pill-neutral', label: d.status, explain: '' }
+  }
 }

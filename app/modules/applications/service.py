@@ -31,6 +31,10 @@ REQUIRED_DOCS = [
     ("bank_statement", "Bank statement, last 8 months"),
     ("tax_declaration", "Tax declaration, latest quarter"),
 ]
+# Stable keys for REQUIRED_DOCS (same order), used by the owner checklist so the UI can translate each item.
+REQUIRED_KEYS = ["loan_application", "form1_fy", "form1_half", "form2_fy", "form2_half", "bank_statement",
+                 "tax_declaration"]
+FINAL_OUTCOMES = ("recommend", "decline")
 
 
 def app_ref(application: Application) -> str:
@@ -178,7 +182,8 @@ class ApplicationService:
                        reasoning=data["reasoning"], evidence_reviewed=list(data.get("evidence_reviewed") or []))
         self.db.add(dec)
         before = {"status": app.status}
-        app.status = "decided"
+        # "Request more information" hands the application back to the applicant; only a final outcome closes it.
+        app.status = "waiting_on_applicant" if data["outcome"] == "request_info" else "decided"
         self.db.flush()
         audit.record(self.db, actor, "decision", "application", app.uuid, before=before,
                      after=audit.snapshot(dec, DECISION_FIELDS))
@@ -222,6 +227,10 @@ class ApplicationService:
         self.db.refresh(app)
         return app, job
 
+    def latest_decision(self, app: Application) -> Decision | None:
+        return self.db.scalars(select(Decision).where(Decision.application_id == app.id)
+                               .order_by(Decision.id.desc())).first()
+
     def owner_items(self, user) -> list[dict]:
         from app.core.formatting import kuzs_to_mln
         borrower = BorrowerService(self.db).owner_borrower(user)
@@ -229,14 +238,78 @@ class ApplicationService:
                                .order_by(Application.id.desc())).all()
         out = []
         for a in apps:
-            n_docs = len(linked_documents(self.db, a))
+            docs = linked_documents(self.db, a)
+            checklist = required_checklist(docs)
+            dec = self.latest_decision(a)
+            final = a.status == "decided" and (dec is None or dec.outcome in FINAL_OUTCOMES)
             out.append({"uuid": str(a.uuid), "number": a.number, "status": a.status,
                         "status_label": STATUS_LABELS.get(a.status, a.status),
                         "requested_display": kuzs_to_mln(a.requested_amount) if a.requested_amount is not None else "n/a",
                         "requested_unit": "mln UZS", "term_months": a.term_months, "purpose": a.purpose,
-                        "received_on": a.received_on.isoformat(), "documents": n_docs,
-                        "analysed_at": a.analysed_at.isoformat() if a.analysed_at else None})
+                        "received_on": a.received_on.isoformat(), "documents": len(docs),
+                        "analysed_at": a.analysed_at.isoformat() if a.analysed_at else None,
+                        # 1 upload · 2 send · 3 bank officer reviews · 4 decision
+                        "step": 4 if final else 3,
+                        # waiting on the applicant (older records stored a request for information as "decided")
+                        "action_needed": a.status == "waiting_on_applicant" or (a.status == "decided" and not final),
+                        "can_add_documents": not final,
+                        "missing_documents": [{"key": c["key"], "title": c["title"]} for c in checklist
+                                              if not c["present"]],
+                        # written by the officer (H5); the system never fills it
+                        "decision": ({"outcome": dec.outcome, "message": dec.reasoning,
+                                      "decided_at": dec.created_at.isoformat() if dec.created_at else None}
+                                     if dec is not None else None)})
         return out
+
+    def owner_checklist(self, user) -> dict:
+        borrower = BorrowerService(self.db).owner_borrower(user)
+        docs = self.db.scalars(select(Document).where(Document.borrower_id == borrower.id)
+                               .order_by(Document.id)).all()
+        items = required_checklist(list(docs))
+        return {"items": items, "present": sum(1 for i in items if i["present"]), "total": len(items)}
+
+    def add_owner_documents(self, user, ref: str, document_uuids: list | None) -> tuple[Application, Job]:
+        """The applicant adds documents to an open application (typically after the bank asked for more)."""
+        from uuid import UUID as _UUID
+        borrower = BorrowerService(self.db).owner_borrower(user)
+        try:
+            app = self.db.scalars(select(Application).where(Application.uuid == _UUID(str(ref)),
+                                                            Application.borrower_id == borrower.id)).first()
+        except ValueError:
+            app = None
+        if app is None:
+            raise NotFoundError("application")
+        dec = self.latest_decision(app)
+        if app.status == "decided" and (dec is None or dec.outcome in FINAL_OUTCOMES):
+            raise AppException(code="application_decided", status_code=409,
+                               detail="The bank has already recorded a decision on this application")
+        linked = {d.id for d in linked_documents(self.db, app)}
+        own = {d.uuid: d for d in self.db.scalars(select(Document).where(Document.borrower_id == borrower.id,
+                                                                         Document.owner_kind == "owner")).all()}
+        if document_uuids:
+            docs = []
+            for u in document_uuids:
+                d = own.get(_UUID(str(u)))
+                if d is None:
+                    raise NotFoundError("document", f"Document {u} is not one of your uploads")
+                if d.id not in linked:
+                    docs.append(d)
+        else:
+            docs = [d for d in own.values() if d.status in ("analyzed", "clarification") and d.id not in linked]
+        if not docs:
+            raise AppException(code="no_documents", status_code=422,
+                               detail="No new analysed documents to add. Upload the requested documents first")
+        for d in sorted(docs, key=lambda d: d.id):
+            self.db.add(ApplicationDocument(application_id=app.id, document_id=d.id))
+        before = {"status": app.status}
+        app.status = "processing"
+        self.db.flush()
+        audit.record(self.db, user, "add_documents", "application", app.uuid, before=before,
+                     after={"status": app.status, "documents": len(docs)})
+        job = enqueue_analysis(self.db, app)
+        self.db.commit()
+        self.db.refresh(app)
+        return app, job
 
     def docs_count(self, app: Application) -> tuple[int, int]:
         docs = linked_documents(self.db, app)
@@ -284,4 +357,25 @@ def present_required(docs: list[Document]) -> list[bool]:
             out.append(True)
         else:
             out.append(False)
+    return out
+
+
+def required_checklist(docs: list[Document]) -> list[dict]:
+    """The required list with the document matched to each item, using the same counting as present_required (R10).
+    Within a type the earlier period fills the earlier item (last financial year before latest half-year)."""
+    present = present_required(docs)
+    pool: dict[str, list[Document]] = {}
+    for d in sorted((d for d in docs if d.status != "failed"),
+                    key=lambda d: (d.period_end is None, d.period_end or date.min, d.id)):
+        pool.setdefault(d.doc_type, []).append(d)
+    out = []
+    for key, (doc_type, title), ok in zip(REQUIRED_KEYS, REQUIRED_DOCS, present):
+        d = pool[doc_type].pop(0) if ok else None
+        out.append({"key": key, "doc_type": doc_type, "title": title, "present": ok,
+                    "state": ("missing" if d is None else "reading" if d.status in ("queued", "processing")
+                              else "ready"),
+                    "document": ({"uuid": str(d.uuid), "filename": d.filename, "status": d.status,
+                                  "period_start": d.period_start.isoformat() if d.period_start else None,
+                                  "period_end": d.period_end.isoformat() if d.period_end else None}
+                                 if d is not None else None)})
     return out

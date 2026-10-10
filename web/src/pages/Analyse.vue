@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { api, errMessage } from '@/api/client'
 import type { AnalyseResult, Fact } from '@/api/types'
 import {
-  categoryLabel, confPill, docStatusPill, docTypeLabel, fmtBytes, fmtPeriod, langLabel, stageLabel, trueMinus,
+  categoryLabel, confPill, docStatusPill, docTypeLabel, fmtBytes, fmtPeriod, langLabel, severityPillClass, stageLabel, trueMinus,
 } from '@/api/format'
 import { useEvidence } from '@/stores/evidence'
 import Dropzone from '@/components/ui/Dropzone.vue'
@@ -12,6 +12,7 @@ import ProgressBar from '@/components/ui/ProgressBar.vue'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import FindingRow from '@/components/evidence/FindingRow.vue'
+import InlineEvidence from '@/components/evidence/InlineEvidence'
 import { t, tn } from '@/i18n'
 
 const route = useRoute()
@@ -95,7 +96,8 @@ async function poll() {
     registerReadable(r)
     const st = r.job?.stage
     if (st && !seenStages.value.includes(st)) seenStages.value = [...seenStages.value, st]
-    const first = r.facts.find((f) => f.page_n != null) || r.facts[0]
+    const kf = keyFigures.value.find((k) => k.cur.page_n != null) || keyFigures.value[0]
+    const first = kf?.cur || r.facts.find((f) => f.page_n != null) || r.facts[0]
     if (first) ev.selectDefault(first.key)
     if (r.job && (r.job.status === 'done' || r.job.status === 'failed')) {
       if (tick) clearInterval(tick)
@@ -242,6 +244,127 @@ const readableKeys = computed(() => {
 })
 
 const showExcerpt = ref(false)
+
+// ----- plain-language summary (everything below comes from the API response; nothing is computed here) -----
+const RECOGNISED = ['form1', 'form2', 'bank_statement', 'loan_application']
+const TYPE_EXPLAIN: Record<string, string> = {
+  form1: 'A balance sheet shows what the business owns and what it owes on one date.',
+  form2: 'An income statement shows how much the business sold over a period and what was left after costs.',
+  bank_statement: 'A bank statement lists the money that came into and went out of the account.',
+  loan_application: 'A loan application states how much the business asks to borrow and on what terms.',
+  unknown: 'Converza could not match this file to a form it knows. Below is what it could still read from it.',
+}
+const typeExplain = computed(() => {
+  const d = doc.value
+  if (!d) return ''
+  const e = TYPE_EXPLAIN[d.doc_type] || (RECOGNISED.includes(d.doc_type) ? '' : TYPE_EXPLAIN.unknown)
+  return e ? t(e) : ''
+})
+const applicantName = computed(() => {
+  const f = (result.value?.facts || []).find((x) => x.field === 'application.applicant_name')
+  return f ? (f.note || f.printed || '').trim() : ''
+})
+const docStir = computed(() => (doc.value as any)?.stir || result.value?.readable?.stirs?.[0] || '')
+const plainStatus = computed(() => {
+  const d = doc.value
+  if (!d) return ''
+  if (d.status === 'analyzed') return t('Read successfully.')
+  if (d.status === 'clarification') return t('Read, but some values are uncertain. They are marked below; check them on the page before relying on them.')
+  if (d.status === 'failed') return t('Could not be read as a whole.')
+  return ''
+})
+const lowConfCount = computed(() => {
+  const n = doc.value?.summary?.low_confidence
+  return typeof n === 'number' ? n : 0
+})
+
+interface KeyDef { field: (f: Fact) => boolean; label: string; explain: string; latest?: boolean }
+const formField = (form: string, slug: string) => (f: Fact) => f.kind === 'extracted' && f.field.startsWith(form + '.') && f.field.endsWith('.' + slug)
+const KEY_DEFS: Record<string, KeyDef[]> = {
+  form2: [
+    { field: formField('form2', 'net_revenue'), label: 'Revenue (sales)', explain: 'Money earned from sales in the period' },
+    { field: formField('form2', 'cost_of_sales'), label: 'Cost of what was sold', explain: 'Direct cost of the goods or services sold' },
+    { field: formField('form2', 'gross_profit'), label: 'Gross profit', explain: 'Revenue minus the cost of what was sold' },
+    { field: formField('form2', 'operating_profit'), label: 'Operating profit', explain: 'Profit from day-to-day business' },
+    { field: formField('form2', 'net_profit'), label: 'Net profit', explain: 'What is left after all costs and taxes' },
+  ],
+  form1: [
+    { field: formField('form1', 'total_assets'), label: 'Everything the business owns', explain: 'Total assets' },
+    { field: formField('form1', 'cash_total'), label: 'Cash', explain: 'Cash in hand and in bank accounts at the end of the period' },
+    { field: formField('form1', 'receivables_total'), label: 'Owed to the business', explain: 'Money customers and others still have to pay' },
+    { field: formField('form1', 'inventory_total'), label: 'Stock', explain: 'Goods and materials held' },
+    { field: formField('form1', 'equity_total'), label: "Owner's equity", explain: 'What belongs to the owners after all debts' },
+    { field: formField('form1', 'liabilities_total'), label: 'Debts and obligations', explain: 'Everything the business owes' },
+  ],
+  bank_statement: [
+    { field: (f) => f.field === 'statement.inflow.sales_receipt.total', label: 'Received from customers', explain: 'Sum of customer payments over the statement' },
+    { field: (f) => f.field === 'statement.avg_monthly_inflow', label: 'Customer receipts per month, on average', explain: 'Average over the months covered' },
+    { field: (f) => f.field.startsWith('statement.balance_end.'), label: 'Account balance at the end', explain: 'Balance at the end of the last month covered', latest: true },
+  ],
+  loan_application: [
+    { field: (f) => f.field === 'application.requested_amount', label: 'Amount requested', explain: 'How much the business asks to borrow' },
+    { field: (f) => f.field === 'application.term_months', label: 'Loan term', explain: 'How long the loan would run' },
+    { field: (f) => f.field === 'application.rate_pct', label: 'Interest rate', explain: 'Rate stated in the application' },
+    { field: (f) => f.field === 'application.declared_revenue_fy', label: 'Declared yearly revenue', explain: 'Revenue the applicant states for the year' },
+    { field: (f) => f.field === 'application.declared_debts_total', label: 'Existing debts declared', explain: 'Other loans the applicant says they have' },
+  ],
+}
+const keyFigures = computed(() => {
+  const d = doc.value
+  const facts = (result.value?.facts || []).filter((f) => (f.unit as string) !== 'text')
+  if (!d || !KEY_DEFS[d.doc_type]) return []
+  const cur = periods.value[0]
+  const prev = periods.value[1]
+  const out: { label: string; explain: string; cur: Fact; prev: Fact | null; unit: string; uncertain: boolean }[] = []
+  for (const def of KEY_DEFS[d.doc_type]) {
+    const hits = facts.filter(def.field)
+    if (!hits.length) continue
+    let c: Fact | undefined
+    let p: Fact | null = null
+    if (def.latest) c = [...hits].sort((a, b) => b.field.localeCompare(a.field))[0]
+    else if (d.doc_type === 'form1' || d.doc_type === 'form2') {
+      c = hits.find((f) => f.period_label === cur) || hits[0]
+      p = (prev && hits.find((f) => f.period_label === prev && f !== c)) || null
+    } else c = hits[0]
+    if (!c) continue
+    const unit = c.display_unit || (c.field === 'application.term_months' ? t('months') : '')
+    out.push({ label: t(def.label), explain: t(def.explain), cur: c, prev: p, unit, uncertain: Number.isFinite(c.confidence) && c.confidence < 0.8 })
+    if (out.length >= 6) break
+  }
+  return out
+})
+function periodText(p: string) {
+  if (!p || p === 'cur') return t('this period')
+  if (p === 'prev') return t('prior period')
+  return p
+}
+
+interface Plain { what: string; todo: string }
+const RULE_PLAIN: Record<string, Plain> = {
+  R01: { what: 'The balance sheet does not balance: what the business owns does not equal what it owes plus the owners’ equity.', todo: 'Compare the totals with the page. If the page itself does not balance, ask the accountant for a corrected balance sheet.' },
+  R02: { what: 'A total on the balance sheet is not equal to the sum of its lines.', todo: 'Open the page and compare the total with its lines. It is either a typing error in the document or a value that was misread.' },
+  R03: { what: 'A total on the income statement is not equal to the sum of its lines.', todo: 'Open the page and compare the total with its lines. It is either a typing error in the document or a value that was misread.' },
+  R04: { what: 'The profit for the period does not explain the change in owners’ equity.', todo: 'Ask whether dividends were paid or earlier figures were adjusted; neither is visible in this document.' },
+  R05: { what: 'Revenue in the statements is different from the money received in the bank account.', todo: 'Ask about cash sales or other bank accounts, and compare with statements for the same months.' },
+  R06: { what: 'The bank statement shows regular loan payments that were not declared.', todo: 'Ask the business about this loan and add it to the declared debts.' },
+  R07: { what: 'Two sources state different things.', todo: 'Check which one is correct and ask for a corrected document.' },
+  R08: { what: 'Part of the period is not covered by the documents.', todo: 'Upload documents for the missing months.' },
+  R09: { what: 'The documents belong to different taxpayers (different STIR).', todo: 'Make sure every document is for the same company.' },
+  R10: { what: 'A required document is missing.', todo: 'Upload the missing document.' },
+  R11: { what: 'Revenue follows an unusual pattern.', todo: 'Ask the business to explain it, for example seasonal or one-off sales.' },
+  R12: { what: 'The same document or figure appears twice with different values.', todo: 'Keep one version and check which figure is right.' },
+}
+function plainFor(rule: string, title: string): Plain {
+  const p = RULE_PLAIN[rule]
+  return p ? { what: t(p.what), todo: t(p.todo) } : { what: title, todo: t('Click a dashed value to open its page and check the figures.') }
+}
+const checksRan = computed(() => {
+  const tm = job.value?.stage_timings || {}
+  return 'reconcile' in tm || seenStages.value.includes('reconcile')
+})
+const allValuesCount = computed(() => (result.value?.facts || []).length + (result.value?.unmapped?.length || 0))
+const doneStages = computed(() => stageRows.value.filter((s) => !s.current))
+const finished = computed(() => !!doc.value && !running.value && doc.value.status !== 'queued' && doc.value.status !== 'processing')
 </script>
 
 <template>
@@ -250,7 +373,7 @@ const showExcerpt = ref(false)
       <div>
         <h1>{{ t('Analyse a document') }}</h1>
         <p class="meta" style="max-width: 760px">
-          {{ t('Upload a statutory form (Форма 1 or Форма 2), a bank statement, a loan application or a photo of a document. Converza recognises it, reads it and shows only what it can trace back to the page. Answers arrive in under a minute.') }}
+          {{ t('Upload one document: a balance sheet, an income statement, a bank statement or a loan application. Converza tells you what it is, shows its main figures in plain words, and links every number to the page it came from.') }}
         </p>
       </div>
       <button v-if="uuid" type="button" class="btn" @click="reset">{{ t('Analyse another document') }}</button>
@@ -287,7 +410,7 @@ const showExcerpt = ref(false)
           </div>
         </section>
 
-        <!-- Progress -->
+        <!-- File + progress -->
         <section v-if="uuid" class="panel" :aria-label="t('Processing')" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
           <div class="row" style="justify-content: space-between">
             <div class="row" style="min-width: 0">
@@ -296,46 +419,48 @@ const showExcerpt = ref(false)
                 <div class="mono" style="font-size: 13px; overflow-wrap: anywhere">{{ doc?.filename || file?.name || t('Document') }}</div>
                 <div class="muted" style="font-size: 12px">
                   <template v-if="doc && isSheet">{{ fmtBytes(doc.size_bytes) }} · {{ t('spreadsheet') }}</template>
-                  <template v-else-if="doc">{{ fmtBytes(doc.size_bytes) }} · {{ tn(doc.page_count || 0, '{n} page', '{n} pages') }} · {{ doc.text_layer ? t('text layer') : t('scanned / image — OCR') }}</template>
+                  <template v-else-if="doc">{{ fmtBytes(doc.size_bytes) }}<template v-if="doc.page_count"> · {{ tn(doc.page_count, '{n} page', '{n} pages') }}</template></template>
                   <template v-else-if="file">{{ fmtBytes(file.size) }}</template>
                 </div>
               </div>
             </div>
-            <span v-if="doc" class="pill" :class="docStatusPill(doc.status).cls">{{ docStatusPill(doc.status).label }}</span>
-            <span v-else class="pill pill-info">{{ t('Uploaded') }}</span>
+            <span v-if="!running && totalMs != null" class="muted num" style="font-size: 12px">{{ t('Done in {s} s', { s: (totalMs / 1000).toFixed(1) }) }}</span>
           </div>
           <template v-if="running">
+            <div class="now" aria-live="polite">
+              <span class="pill pill-info">{{ t('Working') }}</span>
+              <span>{{ (stageLabel(job?.status === 'queued' ? 'queued' : job?.stage) || t('Starting')) + '…' }}</span>
+            </div>
             <div class="row" style="flex-wrap: nowrap">
               <ProgressBar :value="job?.progress ?? 0" />
               <span class="muted num" style="font-size: 12px; white-space: nowrap">{{ job?.progress ?? 0 }}% · {{ elapsed }} s</span>
             </div>
-            <div class="muted" style="font-size: 12px">{{ stageLabel(job?.status === 'queued' ? 'queued' : job?.stage) || t('Starting…') }}</div>
+            <div v-if="doneStages.length" class="muted" style="font-size: 12px">
+              {{ t('Done so far:') }} {{ doneStages.map((s) => stageLabel(s.name)).join(' · ') }}
+            </div>
+            <div class="muted" style="font-size: 12px">{{ t('Most documents take under a minute. You can keep this page open; the result appears here.') }}</div>
           </template>
-          <ol v-if="stageRows.length" class="stages" :aria-label="t('Pipeline stages run')">
-            <li v-for="s in stageRows" :key="s.name" :class="{ cur: s.current }">{{ stageLabel(s.name) }}<span v-if="s.ms != null" class="num"> · {{ s.ms }} ms</span></li>
-          </ol>
-          <div v-if="!running && totalMs != null" class="muted num" style="font-size: 12px">{{ t('Processed in {ms} ms on the server (measured, this upload).', { ms: totalMs }) }}</div>
           <div v-if="job?.status === 'failed' && job.error" class="error-box">{{ t('Processing failed:') }} {{ job.error }}</div>
           <div v-if="pollErr" class="error-box">{{ pollErr }}</div>
           <div v-if="result?.partial || doc?.summary?.partial" class="note"><strong>{{ t('Partial result.') }}</strong> {{ t('Processing stopped at the time or page budget for public uploads; everything below is what was completed.') }}</div>
         </section>
 
-        <!-- Recognition -->
-        <section v-if="doc && doc.status !== 'queued' && doc.status !== 'processing'" class="panel" :aria-label="t('What this document is')" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
-          <div class="row">
-            <span class="eyebrow">{{ t('Recognised as') }}</span>
-            <span class="pill" :class="typePill.cls">{{ typePill.label }}</span>
-            <span v-if="doc.type_confidence" class="muted num" style="font-size: 12px">{{ t('score {p}%', { p: Math.round(doc.type_confidence * (doc.type_confidence > 1 ? 1 : 100)) }) }}</span>
-          </div>
-          <p v-if="doc.type_reason">{{ doc.type_reason }}</p>
-          <div class="kv">
-            <div><div class="eyebrow">{{ t('Language') }}</div><div>{{ langLabel(doc.language) }}</div></div>
-            <div><div class="eyebrow">{{ t('Period') }}</div><div class="num">{{ fmtPeriod(doc.period_start, doc.period_end) }}</div></div>
-            <div v-if="!isSheet"><div class="eyebrow">{{ t('Pages') }}</div><div class="num">{{ doc.page_count || '—' }}</div></div>
-            <div><div class="eyebrow">{{ t('Read with') }}</div><div>{{ isSheet ? t('Spreadsheet cells') : doc.text_layer ? t('PDF text layer') : t('OCR (Tesseract)') }}</div></div>
-          </div>
+        <!-- 1. What this is -->
+        <section v-if="finished && doc" class="panel" :aria-label="t('What this document is')" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px">
+          <div class="eyebrow">{{ t('What this document is') }}</div>
+          <div class="doc-title">{{ doc.status === 'failed' && doc.doc_type === 'unknown' ? t('Could not analyze') : docTypeLabel(doc.doc_type) }}</div>
+          <p v-if="typeExplain" class="plain">{{ typeExplain }}</p>
+          <ul class="facts-line">
+            <li v-if="applicantName"><span class="muted">{{ t('Company') }}</span> {{ applicantName }}</li>
+            <li v-if="docStir"><span class="muted">{{ t('Taxpayer ID (STIR)') }}</span> <span class="num">{{ docStir }}</span></li>
+            <li v-if="doc.period_start || doc.period_end"><span class="muted">{{ t('Period') }}</span> <span class="num">{{ fmtPeriod(doc.period_start, doc.period_end) }}</span></li>
+            <li v-if="doc.language"><span class="muted">{{ t('Written in') }}</span> {{ langLabel(doc.language) }}</li>
+          </ul>
+          <p v-if="plainStatus" class="status-line">
+            <span class="pill" :class="docStatusPill(doc.status).cls">{{ docStatusPill(doc.status).label }}</span>
+            <span>{{ plainStatus }}<template v-if="lowConfCount && doc.status !== 'failed'"> {{ tn(lowConfCount, '{n} value was read with low certainty.', '{n} values were read with low certainty.') }}</template></span>
+          </p>
           <div v-if="doc.status === 'failed'" class="stack" style="gap: 8px">
-            <div class="row"><span class="pill pill-attn">{{ t('Could not analyze') }}</span></div>
             <p>{{ doc.failure_cause || t('No cause was recorded.') }}</p>
             <div class="row">
               <button type="button" class="btn btn-sm btn-primary" @click="reset">{{ t('Re-upload a clearer file') }}</button>
@@ -343,143 +468,75 @@ const showExcerpt = ref(false)
             </div>
             <p class="muted" style="font-size: 12px">{{ t('What could still be read from it is listed below.') }}</p>
           </div>
-          <div v-if="result?.description?.text && result.description.mode === 'llm'" class="stack" style="gap: 4px">
-            <div class="eyebrow">{{ t('Summary · written by the language model from the values below; every number was checked against them') }}</div>
-            <p>{{ result.description.text }}</p>
+          <div v-if="result?.description?.text && result.description.mode === 'llm'" class="stack" style="gap: 4px; border-top: 1px solid var(--border-row); padding-top: 10px">
+            <div class="eyebrow">{{ t('In short') }}</div>
+            <p class="plain">{{ result.description.text }}</p>
+            <div class="muted" style="font-size: 12px">{{ t('Written by the language model from the values below; every number in it was checked against them.') }}</div>
           </div>
         </section>
 
-        <!-- Findings -->
-        <section v-if="result?.findings?.length" class="panel" :aria-label="t('Checks that did not pass')">
-          <div class="panel-head" style="padding: 12px 14px 8px">
-            <h2>{{ t('Checks that did not pass') }}</h2>
-            <span class="ctx">{{ t('Reconciliation rules run on this document alone') }}</span>
+        <!-- 2. Main figures -->
+        <section v-if="finished && keyFigures.length" class="panel" :aria-label="t('Main figures')">
+          <div class="panel-head" style="padding: 12px 16px 4px">
+            <h2>{{ t('Main figures') }}</h2>
+            <span class="ctx">{{ t('Click a dashed number to see it on the page') }}</span>
           </div>
-          <FindingRow v-for="f in result.findings" :key="f.uuid" :finding="f" />
-        </section>
-
-        <!-- Extracted lines -->
-        <section v-if="lineRows.length" class="panel" :aria-label="t('Extracted lines')">
-          <div class="panel-head" style="padding: 12px 14px 8px">
-            <h2>{{ t('Extracted from {file}', { file: doc?.filename || '' }) }}</h2>
-            <span class="ctx">{{ t('Values as printed · click a value to see it on the page') }}</span>
-          </div>
-          <div class="scrollbox">
-            <table class="tbl" style="min-width: 520px">
-              <thead>
-                <tr>
-                  <th>{{ t('Line') }}</th>
-                  <th>{{ t('Interpreted as') }}</th>
-                  <th v-for="p in periods" :key="p" class="r">{{ periodHead(p) }}</th>
-                  <th>{{ t('Confidence') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="r in lineRows" :key="r.code">
-                  <td class="mono">{{ r.code }}</td>
-                  <td>{{ r.label }}</td>
-                  <td v-for="p in periods" :key="p" class="r">
-                    <EvidenceChip v-if="r.cells[p]" :fact-key="r.cells[p].key" :text="r.cells[p].printed || r.cells[p].display" class="mono" />
-                    <span v-else class="muted" :title="t('Cell blank in the document')">—</span>
-                  </td>
-                  <td>
-                    <span v-if="confPill(r.conf)" class="pill" :class="confPill(r.conf)!.cls">{{ confPill(r.conf)!.label }}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="figstrip keyfigs">
+            <div v-for="k in keyFigures" :key="k.cur.key" class="fig" :class="{ flagged: k.uncertain }">
+              <div class="kf-label">{{ k.label }}</div>
+              <div class="big num"><EvidenceChip :fact-key="k.cur.key" /><span v-if="k.unit" class="unit">{{ k.unit }}</span></div>
+              <div class="kf-sub muted">
+                {{ k.explain }}<template v-if="k.cur.period_label && (doc?.doc_type === 'form1' || doc?.doc_type === 'form2' || doc?.doc_type === 'bank_statement')"> · {{ periodText(k.cur.period_label) }}</template>
+              </div>
+              <div v-if="k.prev" class="kf-sub muted">{{ t('Previous period ({p}):', { p: periodText(k.prev.period_label) }) }} <EvidenceChip :fact-key="k.prev.key" /></div>
+              <div v-if="k.uncertain" class="kf-sub" style="color: var(--watch-fg)">{{ t('Uncertain reading; check it on the page.') }}</div>
+            </div>
           </div>
         </section>
 
-        <!-- Statement -->
-        <section v-if="result?.transactions_preview && result.transactions_preview.count" class="panel" :aria-label="t('Where the money went')">
+        <!-- 3. Problems -->
+        <section v-if="finished && result?.findings?.length" class="panel" :aria-label="t('Problems found')">
+          <div class="panel-head" style="padding: 12px 16px 8px">
+            <h2>{{ tn(result.findings.length, '{n} problem found', '{n} problems found') }}</h2>
+            <span class="ctx">{{ t('Arithmetic checks on this document alone') }}</span>
+          </div>
+          <ol class="problems">
+            <li v-for="f in result.findings" :key="f.uuid">
+              <div class="row" style="gap: 8px; align-items: baseline">
+                <span class="pill" :class="severityPillClass(f.severity)">{{ f.label }}</span>
+                <span class="p-what">{{ plainFor(f.rule_id, f.title).what }}</span>
+              </div>
+              <div class="p-todo"><strong>{{ t('What to do:') }}</strong> {{ plainFor(f.rule_id, f.title).todo }}</div>
+              <div class="muted p-detail"><InlineEvidence :text="f.detail" :keys="f.evidence" :max-trailing="3" /></div>
+            </li>
+          </ol>
+        </section>
+        <section v-else-if="finished && checksRan && doc && RECOGNISED.includes(doc.doc_type)" class="panel" :aria-label="t('Problems found')" style="padding: 12px 16px">
+          <div class="row"><span class="pill pill-stable">{{ t('No problems found') }}</span><span>{{ t('The arithmetic checks on this document found nothing to flag.') }}</span></div>
+        </section>
+
+        <!-- Statement: where the money went -->
+        <section v-if="finished && result?.transactions_preview && result.transactions_preview.count" class="panel" :aria-label="t('Where the money went')">
           <div class="panel-head" style="padding: 12px 14px 8px">
             <h2>{{ t('Where the money went') }}</h2>
-            <span class="ctx num">{{ t('{n} transactions categorised', { n: result.transactions_preview.count }) }}</span>
+            <span class="ctx num">{{ t('{n} transactions sorted into categories', { n: result.transactions_preview.count }) }}</span>
           </div>
           <div class="scrollbox">
-            <table class="tbl" style="min-width: 480px">
-              <thead><tr><th>{{ t('Category') }}</th><th class="r">{{ t('Rows') }}</th><th class="r">{{ t('In, mln UZS') }}</th><th class="r">{{ t('Out, mln UZS') }}</th></tr></thead>
+            <table class="tbl" style="min-width: 420px">
+              <thead><tr><th>{{ t('Category') }}</th><th class="r">{{ t('Money in, mln UZS') }}</th><th class="r">{{ t('Money out, mln UZS') }}</th></tr></thead>
               <tbody>
                 <tr v-for="c in result.transactions_preview.by_category" :key="c.category">
                   <td>{{ categoryLabel(c.category) }}</td>
-                  <td class="r num">{{ c.count }}</td>
                   <td class="r num">{{ trueMinus(c.inflow_display) || '—' }}</td>
                   <td class="r num">{{ trueMinus(c.outflow_display) || '—' }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <template v-if="result.transactions_preview.recurring.length">
-            <div class="panel-head" style="padding: 14px 14px 8px; border-top: 1px solid var(--border-row)">
-              <h2>{{ t('Recurring payments detected') }}</h2>
-              <span class="ctx">{{ t('Same counterparty, similar amount, same day of month') }}</span>
-            </div>
-            <div class="scrollbox">
-              <table class="tbl" style="min-width: 480px">
-                <thead><tr><th>{{ t('Payment') }}</th><th class="r">{{ t('Times') }}</th><th class="r">{{ t('Amount, mln') }}</th><th class="r">{{ t('Day') }}</th><th>{{ t('Other sources') }}</th></tr></thead>
-                <tbody>
-                  <tr v-for="g in result.transactions_preview.recurring" :key="g.group">
-                    <td>{{ g.label }}</td>
-                    <td class="r num">{{ g.count }}</td>
-                    <td class="r num">
-                      <template v-if="g.amount_display">{{ g.amount_display }}</template>
-                      <EvidenceChip v-else-if="g.evidence[0]" :fact-key="g.evidence[0]" />
-                    </td>
-                    <td class="r num">{{ g.day_of_month ?? '—' }}</td>
-                    <td><span class="row" style="gap: 4px"><EvidenceChip v-for="k in g.evidence.slice(g.amount_display ? 0 : 1)" :key="k" :fact-key="k" /></span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </template>
         </section>
 
-        <section v-if="otherFacts.length" class="panel" :aria-label="t('Other values found')">
-          <div class="panel-head" style="padding: 12px 14px 8px">
-            <h2>{{ t('Other values found') }}</h2>
-            <span class="ctx">{{ t('Each links to the rows or page it came from') }}</span>
-          </div>
-          <div class="scrollbox">
-            <table class="tbl">
-              <thead><tr><th>{{ t('Value') }}</th><th>{{ t('Period') }}</th><th class="r">{{ t('Amount') }}</th><th>{{ t('How') }}</th></tr></thead>
-              <tbody>
-                <tr v-for="f in otherShown" :key="f.key">
-                  <td>{{ f.label }}</td>
-                  <td class="muted">{{ f.period_label || '—' }}</td>
-                  <td class="r"><EvidenceChip :fact-key="f.key" /> <span class="muted">{{ f.display_unit }}</span></td>
-                  <td class="muted" style="font-size: 12px">{{ HOW[f.kind] ? t(HOW[f.kind]) : f.kind }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div v-if="otherFacts.length > OTHER_SHOWN" style="padding: 10px 14px; border-top: 1px solid var(--border-row)">
-            <button type="button" class="linkbtn" @click="showAllOther = !showAllOther">{{ showAllOther ? t('Show the first {n}', { n: OTHER_SHOWN }) : t('Show all {n} values', { n: otherFacts.length }) }}</button>
-          </div>
-        </section>
-
-        <!-- Unmapped -->
-        <section v-if="result?.unmapped?.length" class="panel" :aria-label="t('Lines not mapped to a statutory code')">
-          <div class="panel-head" style="padding: 12px 14px 8px">
-            <h2>{{ t('Lines not mapped to a statutory code') }}</h2>
-            <span class="ctx">{{ t('Shown as printed; not used in any check') }}</span>
-          </div>
-          <div class="scrollbox">
-            <table class="tbl">
-              <thead><tr><th>{{ t('Page') }}</th><th>{{ t('Text') }}</th><th class="r">{{ t('Value as printed') }}</th></tr></thead>
-              <tbody>
-                <tr v-for="(u, i) in result.unmapped" :key="i">
-                  <td class="num">{{ u.page_n }}</td>
-                  <td>{{ u.text }}</td>
-                  <td class="r mono">{{ u.value_printed || '—' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Readable -->
-        <section v-if="result?.readable && doc && (!['form1', 'form2', 'bank_statement', 'loan_application'].includes(doc.doc_type) || doc.status === 'failed')" class="panel" :aria-label="t('What I could read')" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+        <!-- Readable (unrecognised or failed documents) -->
+        <section v-if="result?.readable && doc && (!RECOGNISED.includes(doc.doc_type) || doc.status === 'failed')" class="panel" :aria-label="t('What I could read')" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
           <div class="panel-head">
             <h2>{{ t('What I could read') }}</h2>
             <span class="ctx">{{ t('Not interpreted — shown as it appears in the file') }}</span>
@@ -503,6 +560,148 @@ const showExcerpt = ref(false)
           </div>
         </section>
 
+        <!-- 4. Full detail, collapsed -->
+        <details v-if="finished && (allValuesCount || stageRows.length)" class="panel more">
+          <summary>
+            <span>{{ t('Show all extracted lines') }}</span>
+            <span class="muted num" style="font-size: 12px">{{ t('{n} values, line codes, certainty and processing steps', { n: allValuesCount }) }}</span>
+          </summary>
+
+          <div class="more-body">
+            <!-- Technical recognition -->
+            <div class="kv" style="padding: 12px 14px">
+              <div><div class="eyebrow">{{ t('Recognised as') }}</div><div><span class="pill" :class="typePill.cls">{{ typePill.label }}</span></div></div>
+              <div v-if="doc?.type_confidence"><div class="eyebrow">{{ t('Recognition score') }}</div><div class="num">{{ Math.round(doc.type_confidence * (doc.type_confidence > 1 ? 1 : 100)) }}%</div></div>
+              <div><div class="eyebrow">{{ t('Read with') }}</div><div>{{ isSheet ? t('Spreadsheet cells') : doc?.text_layer ? t('PDF text layer') : t('OCR (Tesseract)') }}</div></div>
+              <div v-if="!isSheet"><div class="eyebrow">{{ t('Pages') }}</div><div class="num">{{ doc?.page_count || '—' }}</div></div>
+            </div>
+            <p v-if="doc?.type_reason" class="muted" style="padding: 0 14px 12px; font-size: 12.5px">{{ doc.type_reason }}</p>
+
+            <!-- Extracted lines -->
+            <template v-if="lineRows.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Extracted from {file}', { file: doc?.filename || '' }) }}</h2>
+                <span class="ctx">{{ t('Values as printed · click a value to see it on the page') }}</span>
+              </div>
+              <div class="scrollbox">
+                <table class="tbl" style="min-width: 520px">
+                  <thead>
+                    <tr>
+                      <th>{{ t('Line') }}</th>
+                      <th>{{ t('Interpreted as') }}</th>
+                      <th v-for="p in periods" :key="p" class="r">{{ periodHead(p) }}</th>
+                      <th>{{ t('Confidence') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="r in lineRows" :key="r.code">
+                      <td class="mono">{{ r.code }}</td>
+                      <td>{{ r.label }}</td>
+                      <td v-for="p in periods" :key="p" class="r">
+                        <EvidenceChip v-if="r.cells[p]" :fact-key="r.cells[p].key" :text="r.cells[p].printed || r.cells[p].display" class="mono" />
+                        <span v-else class="muted" :title="t('Cell blank in the document')">—</span>
+                      </td>
+                      <td>
+                        <span v-if="confPill(r.conf)" class="pill" :class="confPill(r.conf)!.cls">{{ confPill(r.conf)!.label }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+
+            <!-- Recurring payments -->
+            <template v-if="result?.transactions_preview?.recurring?.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Recurring payments detected') }}</h2>
+                <span class="ctx">{{ t('Same counterparty, similar amount, same day of month') }}</span>
+              </div>
+              <div class="scrollbox">
+                <table class="tbl" style="min-width: 480px">
+                  <thead><tr><th>{{ t('Payment') }}</th><th class="r">{{ t('Times') }}</th><th class="r">{{ t('Amount, mln') }}</th><th class="r">{{ t('Day') }}</th><th>{{ t('Other sources') }}</th></tr></thead>
+                  <tbody>
+                    <tr v-for="g in result.transactions_preview.recurring" :key="g.group">
+                      <td>{{ g.label }}</td>
+                      <td class="r num">{{ g.count }}</td>
+                      <td class="r num">
+                        <template v-if="g.amount_display">{{ g.amount_display }}</template>
+                        <EvidenceChip v-else-if="g.evidence[0]" :fact-key="g.evidence[0]" />
+                      </td>
+                      <td class="r num">{{ g.day_of_month ?? '—' }}</td>
+                      <td><span class="row" style="gap: 4px"><EvidenceChip v-for="k in g.evidence.slice(g.amount_display ? 0 : 1)" :key="k" :fact-key="k" /></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="muted" style="font-size: 12px; padding: 8px 14px 0">{{ t('Rows per category') }}: <span v-for="(c, i) in result.transactions_preview.by_category" :key="c.category" class="num">{{ i ? ' · ' : '' }}{{ categoryLabel(c.category) }} {{ c.count }}</span></div>
+            </template>
+
+            <!-- Other values -->
+            <template v-if="otherFacts.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Other values found') }}</h2>
+                <span class="ctx">{{ t('Each links to the rows or page it came from') }}</span>
+              </div>
+              <div class="scrollbox">
+                <table class="tbl">
+                  <thead><tr><th>{{ t('Value') }}</th><th>{{ t('Period') }}</th><th class="r">{{ t('Amount') }}</th><th>{{ t('How') }}</th></tr></thead>
+                  <tbody>
+                    <tr v-for="f in otherShown" :key="f.key">
+                      <td>{{ f.label }}</td>
+                      <td class="muted">{{ f.period_label || '—' }}</td>
+                      <td class="r"><EvidenceChip :fact-key="f.key" /> <span class="muted">{{ f.display_unit }}</span></td>
+                      <td class="muted" style="font-size: 12px">{{ HOW[f.kind] ? t(HOW[f.kind]) : f.kind }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div v-if="otherFacts.length > OTHER_SHOWN" style="padding: 10px 14px">
+                <button type="button" class="linkbtn" @click="showAllOther = !showAllOther">{{ showAllOther ? t('Show the first {n}', { n: OTHER_SHOWN }) : t('Show all {n} values', { n: otherFacts.length }) }}</button>
+              </div>
+            </template>
+
+            <!-- Unmapped -->
+            <template v-if="result?.unmapped?.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Lines not mapped to a statutory code') }}</h2>
+                <span class="ctx">{{ t('Shown as printed; not used in any check') }}</span>
+              </div>
+              <div class="scrollbox">
+                <table class="tbl">
+                  <thead><tr><th>{{ t('Page') }}</th><th>{{ t('Text') }}</th><th class="r">{{ t('Value as printed') }}</th></tr></thead>
+                  <tbody>
+                    <tr v-for="(u, i) in result.unmapped" :key="i">
+                      <td class="num">{{ u.page_n }}</td>
+                      <td>{{ u.text }}</td>
+                      <td class="r mono">{{ u.value_printed || '—' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+
+            <!-- Rules -->
+            <template v-if="result?.findings?.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Checks that did not pass') }}</h2>
+                <span class="ctx">{{ t('Reconciliation rules run on this document alone') }}</span>
+              </div>
+              <FindingRow v-for="f in result.findings" :key="f.uuid" :finding="f" />
+            </template>
+
+            <!-- Pipeline -->
+            <template v-if="stageRows.length">
+              <div class="panel-head sub">
+                <h2>{{ t('Processing steps') }}</h2>
+                <span v-if="totalMs != null" class="ctx num">{{ t('Processed in {ms} ms on the server (measured, this upload).', { ms: totalMs }) }}</span>
+              </div>
+              <ol class="stages" :aria-label="t('Pipeline stages run')" style="padding: 0 14px 14px">
+                <li v-for="s in stageRows" :key="s.name" :class="{ cur: s.current }">{{ stageLabel(s.name) }}<span v-if="s.ms != null" class="num"> · {{ s.ms }} ms</span></li>
+              </ol>
+            </template>
+          </div>
+        </details>
+
         <div v-if="doc && !running" class="footer-line">
           {{ t('Every value above links to its page. Nothing is shown that was not read from the file; the system does not score, approve or reject.') }}
         </div>
@@ -516,6 +715,27 @@ const showExcerpt = ref(false)
 </template>
 
 <style scoped>
+.now { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); }
+.doc-title { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.plain { font-size: 14px; line-height: 1.5; color: var(--ink-2); max-width: 680px; }
+.facts-line { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; }
+.facts-line .muted { margin-right: 4px; }
+.status-line { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13.5px; }
+.keyfigs .fig { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 14px; border-top: 1px solid var(--border-row); }
+.kf-label { font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.kf-sub { font-size: 12px; line-height: 1.4; }
+.problems { list-style: none; margin: 0; padding: 0; }
+.problems li { padding: 12px 16px; border-top: 1px solid var(--border-row); display: flex; flex-direction: column; gap: 6px; }
+.p-what { font-weight: 500; font-size: 14px; flex: 1 1 260px; }
+.p-todo { font-size: 13.5px; }
+.p-detail { font-size: 12.5px; }
+.more > summary { cursor: pointer; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; font-weight: 600; font-size: 14px; list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::before { content: '▸'; color: var(--ink-muted); width: 12px; display: inline-block; }
+.more[open] > summary::before { content: '▾'; }
+.more > summary:hover { background: var(--surface-2); }
+.more-body { border-top: 1px solid var(--border-row); }
+.panel-head.sub { padding: 14px 14px 8px; border-top: 1px solid var(--border-row); }
 .stages { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-muted); }
 .stages li::before { content: '✓ '; color: var(--stable-fg); }
 .stages li.cur { color: var(--ink); }

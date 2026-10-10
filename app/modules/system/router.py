@@ -23,7 +23,7 @@ def version(db: Session = Depends(get_db)):
     return {"git_sha": settings.GIT_SHA, "built_at": settings.BUILT_AT,
             "deployed_at": settings.DEPLOYED_AT or _STARTED_AT,
             "llm_provider": settings.LLM_PROVIDER, "llm_enabled": enabled,
-            "llm_configured": llm_configured()}
+            "llm_configured": llm_configured(), "demo_login": settings.DEMO_LOGIN_ENABLED}
 
 
 def latest_eval_result() -> dict:

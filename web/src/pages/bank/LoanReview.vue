@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, errMessage } from '@/api/client'
 import type { ApplicationReview } from '@/api/types'
-import { confPill, docStatusPill, fileBadge, fmtDate, fmtDateTime, fmtTime, hasUnit, withUnit } from '@/api/format'
+import { confPill, docStatusPill, fileBadge, fmtDate, fmtDateTime, fmtTime, hasUnit, ratioHelp } from '@/api/format'
 import { useEvidence } from '@/stores/evidence'
 import { useApp } from '@/stores/app'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
@@ -78,18 +78,18 @@ onBeforeUnmount(() => timer && clearTimeout(timer))
 const statusPill = computed(() => {
   const a = data.value?.application
   if (!a) return null
-  const day = a.sla_day != null && a.sla_days != null ? ` · ${t('day {d} of {n}', { d: a.sla_day, n: a.sla_days })}` : ''
+  const day = a.sla_day != null && a.sla_days != null ? ` · ${t('working day {d} of {n}', { d: a.sla_day, n: a.sla_days })}` : ''
   switch (a.status) {
     case 'processing':
-      return { cls: 'pill-neutral', label: t('Processing documents') }
+      return { cls: 'pill-neutral', label: t('Reading documents') }
     case 'in_review':
-      return { cls: a.sla_day != null && a.sla_days != null && a.sla_day > a.sla_days ? 'pill-watch' : 'pill-info', label: `${t('In review')}${day}` }
+      return { cls: a.sla_day != null && a.sla_days != null && a.sla_day > a.sla_days ? 'pill-watch' : 'pill-info', label: `${t('Waiting for your review')}${day}` }
     case 'waiting_on_applicant':
-      return { cls: 'pill-watch', label: `${t('Waiting on applicant')}${day}` }
+      return { cls: 'pill-watch', label: `${t('Waiting for the applicant')}${day}` }
     case 'decided':
       return { cls: 'pill-stable', label: t('Decision recorded') }
     default:
-      return { cls: 'pill-info', label: a.status }
+      return { cls: 'pill-info', label: a.status.replace(/_/g, ' ') }
   }
 })
 
@@ -121,6 +121,16 @@ function colHead(k: string) {
 
 const docsReceived = computed(() => (data.value?.documents || []).filter((d) => d.status !== 'missing').length)
 const docsMissing = computed(() => (data.value?.documents || []).filter((d) => d.status === 'missing').length)
+const docsProblem = computed(() => (data.value?.documents || []).filter((d) => d.status === 'failed' || d.status === 'needs clarification').length)
+const missingTitles = computed(() => (data.value?.documents || []).filter((d) => d.status === 'missing').map((d) => d.title))
+const decided = computed(() => data.value?.application.status === 'decided')
+type DecisionOut = { outcome: string; reasoning: string; officer: string; created_at: string | null }
+const lastDecision = computed<DecisionOut | null>(() => ((data.value as any)?.decisions as DecisionOut[] | undefined)?.[0] || null)
+const OUTCOME_TEXT: Record<string, string> = {
+  recommend: 'You recommended approval',
+  decline: 'You recommended decline',
+  request_info: 'You asked the applicant for more information',
+}
 
 const showRejected = ref(false)
 const narrativeLabel = computed(() => {
@@ -199,7 +209,7 @@ async function submitDecision() {
         </div>
         <div class="actions">
           <button type="button" class="btn" :disabled="regenerating" @click="regenerate">{{ regenerating ? t('Regenerating…') : t('Regenerate summary') }}</button>
-          <button type="button" class="btn btn-primary" @click="showDecision = true">{{ t('Record officer decision') }}</button>
+          <a v-if="!decided" href="#decision" class="btn btn-primary">{{ t('Your decision') }}</a>
         </div>
       </div>
       <div v-if="decDone" class="note">{{ decDone }}</div>
@@ -207,13 +217,31 @@ async function submitDecision() {
         {{ t('Documents are still being processed. Figures, issues and ratios appear here as each pipeline stage finishes; this page refreshes itself.') }}
       </div>
 
-      <section class="panel" style="padding: 12px 16px" :aria-label="t('Request summary')">
+      <section class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" :aria-label="t('Request summary')">
+        <p class="summary-line">
+          {{ t('{name} asks for {amount} mln UZS', { name: data.applicant.name, amount: data.request.amount_display && data.request.amount_display !== 'n/a' ? data.request.amount_display : '—' }) }}<template v-if="data.request.term_months"> {{ t('over {term}', { term: tn(data.request.term_months, '{n} month', '{n} months') }) }}</template>.
+          {{ tn(docsReceived, '{n} document received', '{n} documents received') }}<template v-if="docsMissing">, {{ tn(docsMissing, '{n} required document missing', '{n} required documents missing') }}</template>.
+          <template v-if="data.application.status === 'processing'">{{ t('Documents are still being read.') }}</template>
+          <template v-else-if="openIssues.length">{{ tn(openIssues.length, '{n} issue to check before you decide.', '{n} issues to check before you decide.') }}</template>
+          <template v-else>{{ t('The automatic checks found no open issue.') }}</template>
+        </p>
         <div class="kv">
           <div><div class="eyebrow">{{ t('Requested') }}</div><div class="num" style="font-size: 18px; font-weight: 500">{{ data.request.amount_display || '—' }} <span v-if="data.request.amount_display && !hasUnit(data.request.amount_display)" class="muted" style="font-size: 12px; font-weight: 400">{{ t('mln UZS') }}</span></div></div>
           <div><div class="eyebrow">{{ t('Term & repayment') }}</div><div style="font-size: 14px">{{ data.request.term_months ? tn(data.request.term_months, '{n} month', '{n} months') : '—' }}</div><div v-if="data.request.installment_display" class="muted num">{{ t('{amount} mln / month', { amount: data.request.installment_display }) }}</div></div>
           <div><div class="eyebrow">{{ t('Purpose') }}</div><div style="font-size: 14px">{{ data.request.purpose || '—' }}</div></div>
           <div><div class="eyebrow">{{ t('Proposed collateral') }}</div><div style="font-size: 14px">{{ data.request.collateral || '—' }}</div></div>
           <div><div class="eyebrow">{{ t('Received') }}</div><div style="font-size: 14px" class="num">{{ fmtDate(data.application.received_on) }}</div><div class="muted">{{ data.application.analysed_at ? t('analysed {when}', { when: fmtDateTime(data.application.analysed_at) }) : t('analysis pending') }}</div></div>
+          <div>
+            <div class="eyebrow">{{ t('Documents') }}</div>
+            <div style="font-size: 14px"><a href="#documents">{{ t('{n} received', { n: docsReceived }) }}</a><template v-if="docsMissing">, <span style="color: var(--watch-fg)">{{ t('{n} missing', { n: docsMissing }) }}</span></template></div>
+            <div v-if="missingTitles.length" class="muted" style="font-size: 12px">{{ t('Missing: {list}', { list: missingTitles.join('; ') }) }}</div>
+            <div v-else-if="docsProblem" class="muted" style="font-size: 12px">{{ tn(docsProblem, '{n} could not be read fully', '{n} could not be read fully') }}</div>
+          </div>
+          <div>
+            <div class="eyebrow">{{ t('Issues to check') }}</div>
+            <div style="font-size: 14px"><a href="#issues">{{ openIssues.length ? tn(openIssues.length, '{n} open', '{n} open') : t('None open') }}</a></div>
+            <div v-if="data.issues.length > openIssues.length" class="muted" style="font-size: 12px">{{ t('{n} already concluded', { n: data.issues.length - openIssues.length }) }}</div>
+          </div>
         </div>
       </section>
 
@@ -223,6 +251,7 @@ async function submitDecision() {
         <a href="#ratios">{{ t('Ratios') }}</a>
         <a href="#analysis">{{ t('AI analysis') }}</a>
         <a href="#documents">{{ t('Documents') }} · {{ data.documents.length }}</a>
+        <a href="#decision">{{ t('Your decision') }}</a>
       </nav>
 
       <div class="twopane">
@@ -230,7 +259,7 @@ async function submitDecision() {
           <section id="issues" class="panel" :aria-label="t('Issues to resolve before a decision')">
             <div class="panel-head" style="padding: 12px 14px 8px">
               <h2>{{ t('Issues to resolve before a decision') }}</h2>
-              <span class="ctx">{{ t("Found automatically by reconciliation rules; each needs an officer's conclusion") }}</span>
+              <span class="ctx">{{ t('Found by automatic cross-checks between the documents. For each one, mark it resolved or not relevant and write why.') }}</span>
             </div>
             <FindingRow v-for="i in data.issues" :key="i.uuid" :finding="i" actions @changed="load(true)" />
             <div v-if="!data.issues.length" class="empty" style="border-top: 1px solid var(--border-row)">
@@ -250,7 +279,7 @@ async function submitDecision() {
                     <th>{{ t('Figure') }}</th>
                     <th v-for="c in figureCols" :key="c" class="r">{{ colHead(c) }}</th>
                     <th>{{ t('Source') }}</th>
-                    <th>{{ t('Confidence') }}</th>
+                    <th :title="t('How sure the system is that it read the number correctly. Below 80% needs checking against the page.')">{{ t('Reading confidence') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -267,7 +296,7 @@ async function submitDecision() {
                     </td>
                   </tr>
                   <tr v-if="!data.figures.length">
-                    <td :colspan="figureCols.length + 3" class="muted">{{ t('n/a — upload Форма 1 and Форма 2 to extract figures.') }}</td>
+                    <td :colspan="figureCols.length + 3" class="muted">{{ t('Not available yet — the applicant has not uploaded Form 1 (balance sheet) and Form 2 (income statement).') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -281,16 +310,17 @@ async function submitDecision() {
             </div>
             <div v-if="data.ratios.length" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px">
               <div v-for="r in data.ratios" :key="r.label" class="ratio" :class="{ flag: !!r.flag }">
-                <span class="eyebrow">{{ r.label }}</span>
+                <span class="eyebrow" :title="ratioHelp(r.label)">{{ r.label }}</span>
                 <span class="v num">
                   <template v-if="r.fact_keys && r.fact_keys.length === 2"><EvidenceChip :fact-key="r.fact_keys[0]" /> <span class="muted" style="font-size: 13px; font-weight: 400">→</span> <EvidenceChip :fact-key="r.fact_keys[1]" /></template>
                   <EvidenceChip v-else-if="r.fact_key" :fact-key="r.fact_key" :text="r.value_display" />
                   <template v-else>{{ r.value_display }}</template>
                 </span>
                 <span class="muted" style="font-size: 12px"><InlineEvidence :text="r.note" /><template v-if="r.period"> · {{ r.period }}</template></span>
+                <span v-if="ratioHelp(r.label)" class="muted help">{{ ratioHelp(r.label) }}</span>
               </div>
             </div>
-            <div v-else class="muted">{{ t('n/a — ratios need both Форма 1 and Форма 2.') }}</div>
+            <div v-else class="muted">{{ t('Not available yet — ratios need both Form 1 (balance sheet) and Form 2 (income statement).') }}</div>
           </section>
 
           <section id="analysis" class="panel" :aria-label="t('Preliminary assessment and AI analysis')">
@@ -363,6 +393,24 @@ async function submitDecision() {
             </div>
           </section>
 
+          <section id="decision" class="panel" :aria-label="t('Your decision')" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px">
+            <h2>{{ t('Your decision') }}</h2>
+            <div v-if="lastDecision" class="note">
+              <div style="font-weight: 600">{{ t(OUTCOME_TEXT[lastDecision.outcome] || lastDecision.outcome) }}</div>
+              <div class="muted" style="font-size: 12px">{{ lastDecision.officer }}<template v-if="lastDecision.created_at"> · {{ fmtDateTime(lastDecision.created_at) }}</template></div>
+              <p style="margin-top: 6px; white-space: pre-wrap">{{ lastDecision.reasoning }}</p>
+              <p v-if="data.application.status === 'waiting_on_applicant'" class="muted" style="font-size: 12.5px; margin-top: 6px">{{ t('The applicant sees this message on converza.uz. When they add documents, the file is analysed again and comes back to your queue.') }}</p>
+            </div>
+            <template v-if="decided">
+              <p>{{ t('A decision has been recorded for this application. See the review trail for who recorded it and when.') }}</p>
+            </template>
+            <template v-else>
+              <p class="muted" style="font-size: 13px">{{ t('Converza does not approve or reject. When you have checked the issues and figures above, record one of: recommend for approval, recommend decline, or request more information. Your reasoning is stored with the evidence you opened ({n}).', { n: ev.opened.length }) }}</p>
+              <p v-if="openIssues.length" class="muted" style="font-size: 12.5px; color: var(--watch-fg)">{{ tn(openIssues.length, '{n} issue is still open.', '{n} issues are still open.') }}</p>
+              <div><button type="button" class="btn btn-primary" @click="showDecision = true">{{ t('Record your decision') }}</button></div>
+            </template>
+          </section>
+
           <div class="footer-line">{{ t("The system prepares the file; it does not approve or reject. The officer's decision and reasoning are recorded with the evidence reviewed.") }}</div>
         </div>
 
@@ -382,9 +430,10 @@ async function submitDecision() {
       </div>
     </template>
 
-    <Modal v-if="showDecision && data" :title="t('Record officer decision')" @close="showDecision = false">
+    <Modal v-if="showDecision && data" :title="t('Record your decision')" @close="showDecision = false">
       <form class="stack" @submit.prevent="submitDecision">
         <p class="muted" style="font-size: 13px">{{ t('Converza does not approve or reject. Your outcome and reasoning are stored with the evidence you opened on this page ({n}).', { n: ev.opened.length }) }}</p>
+        <p class="muted" style="font-size: 13px">{{ t('The applicant will see your reasoning as a message from the bank, so write it in plain words.') }}</p>
         <fieldset class="stack" style="border: 0; padding: 0; margin: 0; gap: 6px">
           <legend class="eyebrow" style="margin-bottom: 6px">{{ t('Outcome') }}</legend>
           <label v-for="o in OUTCOMES" :key="o.v" class="row" style="gap: 8px; font-size: 13px">
@@ -409,3 +458,8 @@ async function submitDecision() {
     </Modal>
   </div>
 </template>
+
+<style scoped>
+.summary-line { font-size: 14px; line-height: 1.5; max-width: 860px; }
+.help { font-size: 11.5px; }
+</style>

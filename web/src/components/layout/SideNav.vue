@@ -57,10 +57,11 @@ const items = computed<Item[]>(() => {
       <div>{{ fmtDateTime(app.monitoringRunAt) }}</div>
       <div class="muted">{{ t('Statuses computed from uploaded statements') }}</div>
     </div>
-    <div v-if="mode === 'owner' && app.ownerCoverage" class="card">
-      <div class="eyebrow" style="margin-bottom: 6px">{{ t('Data coverage') }}</div>
-      <div class="muted">{{ t('{a} of {b} documents analyzed', { a: app.ownerCoverage.analysed, b: app.ownerCoverage.total }) }}</div>
-      <RouterLink to="/upload" style="display: inline-block; margin-top: 8px">{{ t('Review uploads') }}</RouterLink>
+    <div v-if="mode === 'owner' && (app.ownerChecklist || app.ownerCoverage)" class="card">
+      <div class="eyebrow" style="margin-bottom: 6px">{{ t('Documents for the bank') }}</div>
+      <div v-if="app.ownerChecklist">{{ t('{a} of {b} provided', { a: app.ownerChecklist.present, b: app.ownerChecklist.total }) }}</div>
+      <div v-if="app.ownerCoverage" class="muted">{{ t('{a} of {b} files ready', { a: app.ownerCoverage.analysed, b: app.ownerCoverage.total }) }}</div>
+      <RouterLink to="/upload" style="display: inline-block; margin-top: 8px">{{ t('See what is missing') }}</RouterLink>
     </div>
     <div id="side-extra"></div>
   </nav>

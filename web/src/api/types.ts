@@ -89,6 +89,7 @@ export interface VersionInfo {
   llm_provider: string
   llm_enabled: boolean
   llm_configured?: boolean
+  demo_login?: boolean
 }
 
 export interface TokenPair {
@@ -373,6 +374,28 @@ export interface OwnerApplication {
   created_at?: string
   documents?: number | string
   issues_label?: string
+  /** 1 upload · 2 send · 3 bank officer reviews · 4 decision */
+  step?: number
+  action_needed?: boolean
+  can_add_documents?: boolean
+  missing_documents?: { key: string; title: string }[]
+  /** Latest decision recorded by a bank officer; the system never fills it. */
+  decision?: { outcome: 'recommend' | 'decline' | 'request_info' | string; message: string; decided_at: string | null } | null
+}
+
+export interface OwnerChecklistItem {
+  key: string
+  doc_type: string
+  title: string
+  present: boolean
+  state: 'missing' | 'reading' | 'ready'
+  document: { uuid: string; filename: string; status: DocStatus; period_start: string | null; period_end: string | null } | null
+}
+
+export interface OwnerChecklist {
+  items: OwnerChecklistItem[]
+  present: number
+  total: number
 }
 
 export interface OwnerBusiness {

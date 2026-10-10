@@ -4,7 +4,7 @@ from tests.conftest import auth, demo_auth, make_user
 def test_health_and_version(client):
     assert client.get("/health").json() == {"status": "ok"}
     v = client.get("/api/v1/version").json()
-    assert set(v) == {"git_sha", "built_at", "deployed_at", "llm_provider", "llm_enabled", "llm_configured"}
+    assert set(v) == {"git_sha", "built_at", "deployed_at", "llm_provider", "llm_enabled", "llm_configured", "demo_login"}
 
 
 def test_demo_login_officer_and_owner(client):

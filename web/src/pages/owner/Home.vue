@@ -2,10 +2,12 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { api, errMessage } from '@/api/client'
 import type { DocumentOut, OwnerApplication } from '@/api/types'
-import { docStatusPill, docTypeLabel, fileBadge, fmtBytes, fmtDate, fmtPeriod } from '@/api/format'
+import { fileBadge, fmtBytes, fmtDate, fmtDateTime, fmtPeriod, ownerDocStatus, ownerDocTypeLabel } from '@/api/format'
 import { useAuth } from '@/stores/auth'
-import { useApp } from '@/stores/app'
+import { ownerApi, useApp } from '@/stores/app'
 import Dropzone from '@/components/ui/Dropzone.vue'
+import DocChecklist from '@/components/owner/DocChecklist.vue'
+import StepLine from '@/components/owner/StepLine.vue'
 import { t } from '@/i18n'
 
 const auth = useAuth()
@@ -18,6 +20,7 @@ const loadErr = ref('')
 const upErr = ref('')
 const uploading = ref(0)
 let timer: ReturnType<typeof setTimeout> | null = null
+let appTimer: ReturnType<typeof setTimeout> | null = null
 
 async function loadFiles() {
   try {
@@ -29,6 +32,7 @@ async function loadFiles() {
   } catch (e) {
     loadErr.value = errMessage(e)
   }
+  app.loadChecklist()
   if (timer) clearTimeout(timer)
   if (files.value.some((f) => f.status === 'queued' || f.status === 'processing')) timer = setTimeout(loadFiles, 2000)
 }
@@ -40,6 +44,8 @@ async function loadApps() {
   } catch {
     apps.value = []
   }
+  if (appTimer) clearTimeout(appTimer)
+  if (apps.value.some((a) => a.status === 'processing')) appTimer = setTimeout(loadApps, 3000)
 }
 
 watch(
@@ -52,7 +58,10 @@ watch(
   },
   { immediate: true },
 )
-onBeforeUnmount(() => timer && clearTimeout(timer))
+onBeforeUnmount(() => {
+  if (timer) clearTimeout(timer)
+  if (appTimer) clearTimeout(appTimer)
+})
 
 async function upload(list: File[]) {
   upErr.value = ''
@@ -124,17 +133,76 @@ async function apply() {
   }
 }
 
-const STATUS: Record<string, { cls: string; label: string }> = {
-  processing: { cls: 'pill-neutral', label: 'Processing documents' },
-  in_review: { cls: 'pill-info', label: 'In review' },
-  waiting_on_applicant: { cls: 'pill-watch', label: 'Waiting on applicant' },
-  decided: { cls: 'pill-stable', label: 'Decision recorded' },
-  submitted: { cls: 'pill-info', label: 'Submitted' },
+// ----- application status in plain words -----
+const STATUS: Record<string, { cls: string; label: string; explain: string }> = {
+  processing: { cls: 'pill-neutral', label: 'Checking your documents', explain: 'Converza is reading the documents attached to this application before it goes to a bank officer.' },
+  in_review: { cls: 'pill-info', label: 'A bank officer is reviewing', explain: 'You do not need to do anything now. The decision and any message from the bank will appear here.' },
+  waiting_on_applicant: { cls: 'pill-watch', label: 'The bank needs more from you', explain: 'Read the message from the bank, upload what it asks for, then add the new documents to this application.' },
+  decided: { cls: 'pill-stable', label: 'Decision made', explain: '' },
 }
-function appPill(s: string) {
-  const p = STATUS[s] || { cls: 'pill-neutral', label: s }
-  return { cls: p.cls, label: t(p.label) }
+function appPill(a: OwnerApplication) {
+  const p = STATUS[a.status] || { cls: 'pill-neutral', label: a.status, explain: '' }
+  if (a.action_needed) return { cls: STATUS.waiting_on_applicant.cls, label: t(STATUS.waiting_on_applicant.label), explain: t(STATUS.waiting_on_applicant.explain) }
+  return { cls: p.cls, label: t(p.label), explain: p.explain ? t(p.explain) : '' }
 }
+const OUTCOME: Record<string, { cls: string; label: string; explain: string }> = {
+  recommend: { cls: 'pill-stable', label: 'Bank recommended approval', explain: 'A bank officer recommended your application for approval. The bank will contact you about the next steps.' },
+  decline: { cls: 'pill-attn', label: 'Declined', explain: 'A bank officer declined this application. The message below explains why.' },
+  request_info: { cls: 'pill-watch', label: 'The bank asked for more information', explain: '' },
+}
+function outcome(o: string) {
+  const p = OUTCOME[o] || { cls: 'pill-neutral', label: o, explain: '' }
+  return { cls: p.cls, label: t(p.label), explain: p.explain ? t(p.explain) : '' }
+}
+const REQUIRED_TITLE: Record<string, string> = {
+  loan_application: 'Loan application form',
+  form1_fy: 'Form 1 — Balance sheet, last financial year',
+  form1_half: 'Form 1 — Balance sheet, latest half-year',
+  form2_fy: 'Form 2 — Income statement, last financial year',
+  form2_half: 'Form 2 — Income statement, latest half-year',
+  bank_statement: 'Bank statement, last 8 months',
+  tax_declaration: 'Tax declaration, latest quarter',
+}
+const reqTitle = (m: { key: string; title: string }) => (REQUIRED_TITLE[m.key] ? t(REQUIRED_TITLE[m.key]) : m.title)
+
+// ----- add new documents to an open application -----
+const adding = ref('')
+const addMsg = ref<Record<string, { ok: boolean; text: string }>>({})
+async function addDocs(a: OwnerApplication) {
+  if (!a.uuid) return
+  adding.value = a.uuid
+  try {
+    await ownerApi.addDocuments(a.uuid)
+    addMsg.value[a.uuid] = { ok: true, text: t('New documents added. The bank will see them once they are checked.') }
+    await loadApps()
+  } catch (e) {
+    addMsg.value[a.uuid] = { ok: false, text: errMessage(e) }
+  } finally {
+    adding.value = ''
+  }
+}
+
+// ----- what to do now -----
+const reading = computed(() => files.value.some((f) => f.status === 'queued' || f.status === 'processing'))
+const next = computed<{ step: number; attention: boolean; title: string; text: string; href?: string; cta?: string }>(() => {
+  const cl = app.ownerChecklist
+  const waiting = apps.value.find((a) => a.action_needed)
+  if (waiting)
+    return { step: 3, attention: true, title: t('The bank asked for more information on {n}', { n: waiting.number }), text: t('Read the message from the bank below, upload what it asks for, then press "Add new documents to this application".'), href: '#my-applications', cta: t('See the message') }
+  if (!files.value.length)
+    return { step: 1, attention: false, title: t('Start by uploading your documents'), text: t('The list below shows which documents the bank needs and what each one is. You can upload them all at once.'), href: '#documents', cta: t('See the list') }
+  if (reading.value)
+    return { step: 1, attention: false, title: t('Reading your files'), text: t('Each file is checked and recognised by itself. This page updates by itself.') }
+  const latest = apps.value[0]
+  if (!latest) {
+    if (cl && cl.present < cl.total)
+      return { step: 2, attention: false, title: t('{a} of {b} documents provided', { a: cl.present, b: cl.total }), text: t('You can send the application now, but the bank will ask for the missing documents before it decides. Adding them first saves time.'), href: '#apply', cta: t('Go to the application form') }
+    return { step: 2, attention: false, title: t('Your documents are ready: send your application'), text: t('Enter the amount, term and purpose below. Your analysed documents are attached automatically.'), href: '#apply', cta: t('Go to the application form') }
+  }
+  if (latest.status === 'decided')
+    return { step: 4, attention: false, title: t('The bank recorded a decision on {n}', { n: latest.number }), text: t('See the decision and the message from the bank below.'), href: '#my-applications', cta: t('See the decision') }
+  return { step: 3, attention: false, title: t('Application {n} is with the bank', { n: latest.number }), text: t('A bank officer is reviewing it. You do not need to do anything now; the decision will appear on this page.') }
+})
 </script>
 
 <template>
@@ -154,63 +222,53 @@ function appPill(s: string) {
     </div>
   </div>
 
-  <!-- Logged-in owner -->
+  <!-- Logged-in owner: what to do now → documents → apply → my applications -->
   <div v-else class="page">
     <div class="page-head">
       <div>
         <h1>{{ business || app.ownerBusiness?.name || t('My business') }}</h1>
-        <p class="meta">{{ t('{a} of {b} documents analyzed', { a: analysed.length, b: files.length }) }}</p>
+        <p class="meta">{{ t('Apply for a business loan in four steps. Converza reads your documents; a bank officer makes the decision.') }}</p>
       </div>
       <RouterLink to="/cfo" class="btn">{{ t('Ask the AI CFO →') }}</RouterLink>
     </div>
     <div v-if="loadErr" class="error-box">{{ loadErr }}</div>
 
-    <div class="grid-2">
-      <section class="panel" :aria-label="t('Upload documents')" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
-        <div class="panel-head"><h2>{{ t('Upload documents') }}</h2><RouterLink to="/upload" class="ctx">{{ t('Details →') }}</RouterLink></div>
-        <Dropzone
-          multiple
-          compact
-          :disabled="uploading > 0"
-          :title="uploading ? t('Uploading {n} file(s)…', { n: uploading }) : t('Drop statements and reports here')"
-          :hint="t('PDF · XLSX · JPG · PNG · up to 20 MB each')"
-          :button="t('Choose files')"
-          @files="upload"
-        />
-        <div v-if="upErr" class="error-box">{{ upErr }}</div>
-      </section>
+    <section class="panel next" :class="{ attention: next.attention }" :aria-label="t('What to do now')">
+      <div class="eyebrow">{{ t('What to do now') }}</div>
+      <div class="next-row">
+        <div>
+          <div class="next-title">{{ next.title }}</div>
+          <p class="muted next-text">{{ next.text }}</p>
+        </div>
+        <a v-if="next.href" :href="next.href" class="btn" :class="{ 'btn-primary': !next.attention }">{{ next.cta }}</a>
+      </div>
+      <StepLine :current="next.step" :attention="next.attention" details />
+    </section>
 
-      <section class="panel" :aria-label="t('Apply for a loan')" style="padding: 16px">
-        <form class="stack" style="gap: 10px" @submit.prevent="apply">
-          <div class="panel-head"><h2>{{ t('Apply for a loan') }}</h2></div>
-          <div class="apply-grid">
-            <label class="field"><span class="eyebrow">{{ t('Amount, mln UZS') }}</span><input v-model.number="amount" class="input num" type="number" min="1" step="0.1" :placeholder="t('e.g. 850')" required /><span class="amount-hint" :class="{ warn: amountHint.warn }">{{ amountHint.text }}</span></label>
-            <label class="field"><span class="eyebrow">{{ t('Term, months') }}</span><input v-model.number="term" class="input num" type="number" min="1" max="120" required /></label>
-            <label class="field wide"><span class="eyebrow">{{ t('Purpose') }}</span><input v-model="purpose" class="input" required /></label>
-          </div>
-          <fieldset class="docs">
-            <legend class="eyebrow">{{ t('Documents to include') }}</legend>
-            <label v-for="d in analysed" :key="d.uuid" class="row" style="gap: 8px; font-size: 13px; flex-wrap: nowrap">
-              <input v-model="picked" type="checkbox" :value="d.uuid" />
-              <span><span class="mono">{{ d.filename }}</span> <span class="muted">· {{ docTypeLabel(d.doc_type) }} · {{ fmtPeriod(d.period_start, d.period_end) }}</span></span>
-            </label>
-            <p v-if="!analysed.length" class="muted" style="font-size: 13px">{{ t('No analysed documents yet — upload them first.') }}</p>
-          </fieldset>
-          <div v-if="applyErr" class="error-box">{{ applyErr }}</div>
-          <div v-if="applyDone" class="note">{{ applyDone }}</div>
-          <div class="row">
-            <button type="submit" class="btn btn-primary" :disabled="applying || !analysed.length">{{ applying ? t('Sending…') : t('Send application') }}</button>
-            <span class="muted" style="font-size: 12px">{{ t('The bank reviews it; Converza does not approve or reject.') }}</span>
-          </div>
-        </form>
-      </section>
-    </div>
+    <section id="documents" class="panel docs-panel" :aria-label="t('Your documents')">
+      <div class="docs-grid">
+        <DocChecklist :checklist="app.ownerChecklist" />
+        <div class="stack" style="gap: 10px">
+          <div class="panel-head"><h2>{{ t('Upload documents') }}</h2><RouterLink to="/upload" class="ctx">{{ t('See what was read from each file →') }}</RouterLink></div>
+          <Dropzone
+            multiple
+            :disabled="uploading > 0"
+            :title="uploading ? t('Uploading {n} file(s)…', { n: uploading }) : t('Drop your documents here')"
+            :hint="t('PDF · XLSX · JPG · PNG · up to 20 MB each')"
+            :button="t('Choose files')"
+            @files="upload"
+          />
+          <div v-if="upErr" class="error-box">{{ upErr }}</div>
+          <p class="muted" style="font-size: 12px">{{ t('You can upload several files at once, in any order. Each one is ticked in the list when it is recognised.') }}</p>
+        </div>
+      </div>
+    </section>
 
     <section class="panel" :aria-label="t('Uploaded files')">
-      <div class="panel-head" style="padding: 12px 14px 8px"><h2>{{ t('Uploaded files') }}</h2></div>
+      <div class="panel-head" style="padding: 12px 14px 8px"><h2>{{ t('Uploaded files') }}</h2><span class="ctx">{{ t('{a} of {b} ready', { a: analysed.length, b: files.length }) }}</span></div>
       <div class="scrollbox">
         <table class="tbl" style="min-width: 640px">
-          <thead><tr><th>{{ t('File') }}</th><th>{{ t('Recognised as') }}</th><th>{{ t('Period') }}</th><th>{{ t('Status') }}</th></tr></thead>
+          <thead><tr><th>{{ t('File') }}</th><th>{{ t('What it is') }}</th><th>{{ t('Period') }}</th><th>{{ t('Status') }}</th></tr></thead>
           <tbody>
             <tr v-for="d in files" :key="d.uuid">
               <td>
@@ -219,36 +277,80 @@ function appPill(s: string) {
                   <div style="min-width: 0"><div class="mono" style="font-size: 12.5px; overflow-wrap: anywhere">{{ d.filename }}</div><div class="muted" style="font-size: 12px">{{ fmtBytes(d.size_bytes) }}</div></div>
                 </div>
               </td>
-              <td>{{ d.status === 'queued' || d.status === 'processing' ? '…' : docTypeLabel(d.doc_type) }}</td>
+              <td>{{ d.status === 'queued' || d.status === 'processing' ? '…' : ownerDocTypeLabel(d.doc_type) }}</td>
               <td class="num">{{ fmtPeriod(d.period_start, d.period_end) }}</td>
               <td>
-                <span class="pill" :class="docStatusPill(d.status).cls">{{ docStatusPill(d.status).label }}</span>
-                <div v-if="d.status === 'failed' && d.failure_cause" class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ d.failure_cause }}</div>
+                <span class="pill" :class="ownerDocStatus(d).cls">{{ ownerDocStatus(d).label }}</span>
+                <div v-if="ownerDocStatus(d).explain" class="muted" style="font-size: 12px; margin-top: 3px; max-width: 360px">{{ ownerDocStatus(d).explain }}</div>
               </td>
             </tr>
-            <tr v-if="!files.length"><td colspan="4" class="muted">{{ t('No files yet. Upload a bank statement to start.') }}</td></tr>
+            <tr v-if="!files.length"><td colspan="4" class="muted">{{ t('No files yet. Start with the documents in the list above.') }}</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <section class="panel" :aria-label="t('My applications')">
+    <section id="apply" class="panel" :aria-label="t('Apply for a loan')" style="padding: 16px">
+      <form class="stack" style="gap: 10px" @submit.prevent="apply">
+        <div class="panel-head"><h2>{{ t('Apply for a loan') }}</h2><span class="ctx">{{ t('Step 2 of 4') }}</span></div>
+        <div class="apply-grid">
+          <label class="field"><span class="eyebrow">{{ t('Amount, mln UZS') }}</span><input v-model.number="amount" class="input num" type="number" min="1" step="0.1" :placeholder="t('e.g. 850')" required /><span class="amount-hint" :class="{ warn: amountHint.warn }">{{ amountHint.text }}</span></label>
+          <label class="field"><span class="eyebrow">{{ t('Term, months') }}</span><input v-model.number="term" class="input num" type="number" min="1" max="120" required /></label>
+          <label class="field wide"><span class="eyebrow">{{ t('Purpose') }}</span><input v-model="purpose" class="input" :placeholder="t('e.g. buy a second sewing line')" required /></label>
+        </div>
+        <fieldset class="docs">
+          <legend class="eyebrow">{{ t('Documents to include') }}</legend>
+          <label v-for="d in analysed" :key="d.uuid" class="row" style="gap: 8px; font-size: 13px; flex-wrap: nowrap">
+            <input v-model="picked" type="checkbox" :value="d.uuid" />
+            <span>{{ ownerDocTypeLabel(d.doc_type) }} <span class="muted">· {{ fmtPeriod(d.period_start, d.period_end) }} · <span class="mono">{{ d.filename }}</span></span></span>
+          </label>
+          <p v-if="!analysed.length" class="muted" style="font-size: 13px">{{ t('No documents are ready yet. Upload them first.') }}</p>
+          <p v-else-if="app.ownerChecklist && app.ownerChecklist.present < app.ownerChecklist.total" class="muted" style="font-size: 12px">{{ t('Not uploaded yet: {list}. You can send now and add them later.', { list: app.ownerChecklist.items.filter((i) => !i.present).map((i) => reqTitle(i)).join('; ') }) }}</p>
+        </fieldset>
+        <div v-if="applyErr" class="error-box">{{ applyErr }}</div>
+        <div v-if="applyDone" class="note">{{ applyDone }}</div>
+        <div class="row">
+          <button type="submit" class="btn btn-primary" :disabled="applying || !analysed.length">{{ applying ? t('Sending…') : t('Send application') }}</button>
+          <span class="muted" style="font-size: 12px">{{ t('A bank officer reviews it and decides. Converza itself never approves or rejects.') }}</span>
+        </div>
+      </form>
+    </section>
+
+    <section id="my-applications" class="panel" :aria-label="t('My applications')">
       <div class="panel-head" style="padding: 12px 14px 8px"><h2>{{ t('My applications') }}</h2></div>
-      <div class="scrollbox">
-        <table class="tbl" style="min-width: 560px">
-          <thead><tr><th>{{ t('Application') }}</th><th class="r">{{ t('Requested, mln') }}</th><th class="r">{{ t('Term') }}</th><th>{{ t('Sent') }}</th><th>{{ t('Status') }}</th></tr></thead>
-          <tbody>
-            <tr v-for="a in apps" :key="a.number">
-              <td><span class="mono">{{ a.number }}</span><div v-if="a.purpose" class="muted" style="font-size: 12px">{{ a.purpose }}</div></td>
-              <td class="r num">{{ a.requested_display ?? '—' }}</td>
-              <td class="r num">{{ a.term_months ? t('{n} m', { n: a.term_months }) : '—' }}</td>
-              <td class="num">{{ fmtDate((a.received_on || a.created_at || '').slice(0, 10) || null) }}</td>
-              <td><span class="pill" :class="appPill(a.status).cls">{{ appPill(a.status).label }}</span><div v-if="a.issues_label" class="muted" style="font-size: 12px">{{ a.issues_label }}</div></td>
-            </tr>
-            <tr v-if="!apps.length"><td colspan="5" class="muted">{{ t('No applications yet.') }}</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <p v-if="!apps.length" class="muted" style="padding: 0 14px 14px; font-size: 13px">{{ t('No applications yet. After you send one, you can follow it here step by step.') }}</p>
+      <article v-for="a in apps" :key="a.number" class="appcard">
+        <div class="app-head">
+          <div>
+            <span class="mono">{{ a.number }}</span>
+            <span class="muted"> · {{ a.requested_display ?? '—' }} {{ t('mln UZS') }} · {{ a.term_months ? t('{n} months', { n: a.term_months }) : '—' }} · {{ t('sent {d}', { d: fmtDate((a.received_on || a.created_at || '').slice(0, 10) || null) }) }}</span>
+            <div v-if="a.purpose" class="muted" style="font-size: 12.5px">{{ a.purpose }}</div>
+          </div>
+          <span class="pill" :class="appPill(a).cls">{{ appPill(a).label }}</span>
+        </div>
+        <StepLine :current="a.step || (a.status === 'decided' ? 4 : 3)" :attention="!!a.action_needed" />
+        <p v-if="appPill(a).explain" class="muted" style="font-size: 12.5px">{{ appPill(a).explain }}</p>
+
+        <div v-if="a.decision" class="decision" :class="outcome(a.decision.outcome).cls">
+          <div class="row" style="justify-content: space-between; gap: 8px">
+            <strong>{{ outcome(a.decision.outcome).label }}</strong>
+            <span class="muted" style="font-size: 12px">{{ fmtDateTime(a.decision.decided_at) }}</span>
+          </div>
+          <p v-if="outcome(a.decision.outcome).explain" style="font-size: 12.5px">{{ outcome(a.decision.outcome).explain }}</p>
+          <div class="eyebrow" style="margin-top: 4px">{{ t('Message from the bank') }}</div>
+          <p class="msg">{{ a.decision.message }}</p>
+        </div>
+
+        <div v-if="a.can_add_documents && a.missing_documents && a.missing_documents.length" class="missing">
+          <div class="eyebrow">{{ t('The bank does not have these yet') }}</div>
+          <ul><li v-for="m in a.missing_documents" :key="m.key">{{ reqTitle(m) }}</li></ul>
+        </div>
+        <div v-if="a.can_add_documents && (a.action_needed || (a.missing_documents && a.missing_documents.length))" class="row">
+          <button type="button" class="btn" :class="{ 'btn-primary': a.action_needed }" :disabled="adding === a.uuid" @click="addDocs(a)">{{ adding === a.uuid ? t('Adding…') : t('Add new documents to this application') }}</button>
+          <span class="muted" style="font-size: 12px">{{ t('Upload the files above first; every ready document not yet in this application is added.') }}</span>
+        </div>
+        <div v-if="a.uuid && addMsg[a.uuid]" :class="addMsg[a.uuid].ok ? 'note' : 'error-box'">{{ addMsg[a.uuid].text }}</div>
+      </article>
     </section>
   </div>
 </template>
@@ -263,4 +365,19 @@ function appPill(s: string) {
 @media (max-width: 720px) { .hero { font-size: 22px; } }
 .amount-hint { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
 .amount-hint.warn { color: var(--watch-fg); font-weight: 500; }
+.next { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-left: 3px solid var(--accent); }
+.next.attention { border-left-color: var(--watch-fg); }
+.next-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.next-title { font-size: 16px; font-weight: 600; }
+.next-text { font-size: 13px; margin-top: 2px; max-width: 640px; }
+.docs-panel { padding: 16px; }
+.docs-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 900px) { .docs-grid { grid-template-columns: 1fr; } }
+.appcard { padding: 12px 14px; border-top: 1px solid var(--border-row); display: flex; flex-direction: column; gap: 10px; }
+.app-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.decision { padding: 10px 12px; border-radius: var(--r-control); font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.decision.pill-stable, .decision.pill-attn, .decision.pill-watch { color: var(--ink); }
+.decision .msg { white-space: pre-wrap; color: var(--ink); }
+.missing { font-size: 13px; }
+.missing ul { margin: 4px 0 0; padding-left: 18px; }
 </style>

@@ -83,6 +83,11 @@ def test_owner_application_reaches_the_officer(client, db, session_factory, monk
     assert row["status"] == "not_monitored" and row["loan_id"] is None and "no loan" in row["reason"]
     detail = client.get(f"/api/v1/borrowers/{row['uuid']}", headers=bank)
     assert detail.status_code == 200 and detail.json()["loan"] is None
+    d = detail.json()
+    assert d["status"]["current"] == "not_monitored" and "Monitoring starts" in d["status"]["reason"]
+    assert [a["number"] for a in d["applications"]] == [number] and d["applications"][0]["requested_display"] == "300.0"
+    assert len(d["documents"]) == 1 and d["documents"][0]["doc_type"]
+    assert all(k in d["facts"] for k in d["figure_keys"] + d["ratio_keys"])
     s = session_factory()
     assert s.query(Application).count() == 1
     s.close()
@@ -139,3 +144,53 @@ def test_reset_data_keeps_users(client, db, session_factory, monkeypatch):
     assert {u.email for u in s.query(User).all()} >= {"dilnoza@example.uz", "owner@converza.uz"}
     assert [b.name for b in s.query(Borrower).all()] == ["Farovon Savdo MChJ"]   # re-seeded owner business
     s.close()
+
+
+def test_owner_sees_checklist_decision_and_can_answer_a_request(client, db, session_factory, monkeypatch):
+    fakes.install(monkeypatch)
+    make_user(db, "officer@bank.uz", "officer")
+    owner = {"Authorization": f"Bearer {_register(client).json()['access_token']}"}
+    empty = client.get("/api/v1/owner/checklist", headers=owner).json()
+    assert empty["present"] == 0 and empty["total"] == 7 and [i["key"] for i in empty["items"]][:3] == \
+        ["loan_application", "form1_fy", "form1_half"]
+    client.post("/api/v1/owner/files", headers=owner, files={"file": ("Forma2_2025.pdf", PDF, "application/pdf")})
+    fakes.run_all_jobs(session_factory)
+    cl = {i["key"]: i for i in client.get("/api/v1/owner/checklist", headers=owner).json()["items"]}
+    assert cl["form2_fy"]["present"] and cl["form2_fy"]["state"] == "ready"
+    assert cl["form2_fy"]["document"]["period_end"] == "2025-12-31"
+    assert not cl["form2_half"]["present"] and not cl["loan_application"]["present"]
+
+    number = client.post("/api/v1/owner/applications", headers=owner,
+                         json={"requested_amount_mln": 300, "term_months": 12, "purpose": "Working capital"}).json()["number"]
+    fakes.run_all_jobs(session_factory)
+    item = client.get("/api/v1/owner/applications", headers=owner).json()["items"][0]
+    assert item["step"] == 3 and item["decision"] is None and not item["action_needed"]
+    assert {m["key"] for m in item["missing_documents"]} >= {"loan_application", "form2_half", "bank_statement"}
+
+    bank = auth(client, "officer@bank.uz")
+    msg = "Please upload the income statement for the first half of 2026 so we can compare periods."
+    r = client.post(f"/api/v1/applications/{number}/decision", headers=bank, json={"outcome": "request_info", "reasoning": msg})
+    assert r.status_code == 201
+    item = client.get("/api/v1/owner/applications", headers=owner).json()["items"][0]
+    assert item["status"] == "waiting_on_applicant" and item["action_needed"] and item["can_add_documents"]
+    assert item["decision"]["outcome"] == "request_info" and item["decision"]["message"] == msg
+    assert item["decision"]["decided_at"]
+
+    add = f"/api/v1/owner/applications/{item['uuid']}/documents"
+    assert client.post(add, headers=owner, json={}).json()["code"] == "no_documents"   # nothing new yet
+    h1 = b"%PDF-1.4\n" + b"q" * 60 + b"\n%%EOF Form2 H1 2026 owner upload"
+    client.post("/api/v1/owner/files", headers=owner, files={"file": ("Forma2_H1_2026.pdf", h1, "application/pdf")})
+    fakes.run_all_jobs(session_factory)
+    r = client.post(add, headers=owner, json={})
+    assert r.status_code == 200 and r.json()["status"] == "processing"
+    fakes.run_all_jobs(session_factory)
+    item = client.get("/api/v1/owner/applications", headers=owner).json()["items"][0]
+    assert item["status"] == "in_review" and item["documents"] == 2 and not item["action_needed"]
+    assert "form2_half" not in {m["key"] for m in item["missing_documents"]}
+
+    client.post(f"/api/v1/applications/{number}/decision", headers=bank,
+                json={"outcome": "recommend", "reasoning": "Figures reconcile across both periods; recommended to committee."})
+    item = client.get("/api/v1/owner/applications", headers=owner).json()["items"][0]
+    assert item["status"] == "decided" and item["step"] == 4 and not item["can_add_documents"]
+    assert item["decision"]["outcome"] == "recommend"
+    assert client.post(add, headers=owner, json={}).json()["code"] == "application_decided"

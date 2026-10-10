@@ -1,7 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api, errMessage } from '@/api/client'
-import type { LlmSettings, OwnerBusiness, VersionInfo } from '@/api/types'
+import { api, errMessage, request } from '@/api/client'
+import type { CreatedWithJob, LlmSettings, OwnerBusiness, OwnerChecklist, VersionInfo } from '@/api/types'
+
+/** Owner endpoints used by the owner app (documents checklist; adding documents to an open application). */
+export const ownerApi = {
+  checklist: () => request<OwnerChecklist>('/owner/checklist'),
+  addDocuments: (applicationUuid: string, documentUuids?: string[]) =>
+    request<CreatedWithJob & { number?: string; status?: string }>(`/owner/applications/${applicationUuid}/documents`, {
+      method: 'POST',
+      body: documentUuids?.length ? { document_uuids: documentUuids } : {},
+    }),
+}
 
 export const useApp = defineStore('app', () => {
   const version = ref<VersionInfo | null>(null)
@@ -15,6 +25,15 @@ export const useApp = defineStore('app', () => {
   const monitoringRunAt = ref<string | null>(null)
   const ownerBusiness = ref<OwnerBusiness | null>(null)
   const ownerCoverage = ref<{ analysed: number; total: number } | null>(null)
+  const ownerChecklist = ref<OwnerChecklist | null>(null)
+
+  async function loadChecklist() {
+    try {
+      ownerChecklist.value = await ownerApi.checklist()
+    } catch {
+      ownerChecklist.value = null
+    }
+  }
 
   async function loadOwner() {
     try {
@@ -24,6 +43,7 @@ export const useApp = defineStore('app', () => {
     } catch {
       ownerBusiness.value = null
     }
+    await loadChecklist()
   }
 
   async function loadVersion() {
@@ -59,5 +79,5 @@ export const useApp = defineStore('app', () => {
     }
   }
 
-  return { version, llm, llmError, llmChanges, counts, monitoringRunAt, ownerBusiness, ownerCoverage, loadVersion, loadLlm, setLlm, loadOfficerCounts, loadOwner }
+  return { version, llm, llmError, llmChanges, counts, monitoringRunAt, ownerBusiness, ownerCoverage, ownerChecklist, loadChecklist, loadVersion, loadLlm, setLlm, loadOfficerCounts, loadOwner }
 })

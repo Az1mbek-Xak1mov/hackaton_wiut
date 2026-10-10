@@ -198,8 +198,19 @@ def build_review(db: Session, app: Application) -> dict:
         "narrative": narrative,
         "documents": documents,
         "review_trail": _trail(db, app, docs_list),
+        "decisions": _decisions(db, app),
         "facts": all_facts,
     }
+
+
+def _decisions(db: Session, app: Application) -> list[dict]:
+    """Officer decisions on this file, newest first (the applicant reads the reasoning as the bank's message)."""
+    out = []
+    for dec in db.scalars(select(Decision).where(Decision.application_id == app.id).order_by(Decision.id.desc())).all():
+        u = db.get(User, dec.officer_id) if dec.officer_id else None
+        out.append({"outcome": dec.outcome, "reasoning": dec.reasoning, "officer": u.full_name if u else "",
+                    "created_at": dec.created_at.isoformat() if dec.created_at else None})
+    return out
 
 
 def _fmt_stir(stir: str) -> str:
@@ -386,7 +397,7 @@ def _trail(db: Session, app: Application, docs: list[Document]) -> list[dict]:
             events.append((rv.created_at, f"{u.full_name if u else 'Officer'} {verb} {fact.label} {pretty(fact.period_label)}".strip()))
     for dec in db.scalars(select(Decision).where(Decision.application_id == app.id)).all():
         u = db.get(User, dec.officer_id) if dec.officer_id else None
-        events.append((dec.created_at, f"{u.full_name if u else 'Officer'} recorded the decision: {dec.outcome}"))
+        events.append((dec.created_at, f"{u.full_name if u else 'Officer'} recorded the decision: " + {"recommend": "recommend approval", "decline": "recommend decline", "request_info": "request more information"}.get(dec.outcome, dec.outcome)))
     for a in db.scalars(select(AuditLog).where(AuditLog.entity == "application", AuditLog.entity_uuid == app.uuid)).all():
         if a.action == "analyse":
             n = (a.after or {}).get("documents")
