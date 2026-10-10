@@ -1045,5 +1045,7 @@ const ru: Record<string, string> = {
   "median of {n} documents, 4 vCPU, no GPU": "медиана по {n} документам, 4 vCPU, без GPU",
   "share of planted problems found": "доля найденных заложенных ошибок",
   "{n} synthetic documents in {b} loan files that we generated and labelled; accuracy on real bank documents is measured in pilot month 1.": "{n} синтетических документов в {b} кредитных досье, которые мы сгенерировали и разметили; точность на реальных документах банка измеряется в первый месяц пилота.",
+  "Of the problems it raises, the share that are real": "Доля реальных проблем среди найденных",
+  "the rest are false alarms the officer dismisses": "остальное — ложные срабатывания, которые специалист отклоняет",
 }
 export default ru

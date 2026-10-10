@@ -26,6 +26,7 @@ const measured = computed(() => {
   add('Form 1 field F1', 'Reads the lines of the balance sheet (Форма 1)', 'F1 score, 1 = perfect')
   add('Form 2 field F1', 'Reads the lines of the income statement (Форма 2)', 'F1 score, 1 = perfect')
   add('Contradiction detection recall (micro)', 'Finds figures that do not agree between documents', 'share of planted problems found')
+  add('Contradiction detection precision (micro)', 'Of the problems it raises, the share that are real', 'the rest are false alarms the officer dismisses')
   add('Hard cases passed', 'Hard cases: scans, blurred photos, English IFRS, wrong periods', 'built by hand')
   const lp = ev.value?.latency_production?.by_doc_type as any[] | undefined
   const textPdf = lp?.find((r) => r.doc_type === 'form1' && /text/i.test(r.path))

@@ -1027,5 +1027,7 @@ const uz: Record<string, string> = {
   "median of {n} documents, 4 vCPU, no GPU": "{n} ta hujjat bo'yicha mediana, 4 vCPU, GPUsiz",
   "share of planted problems found": "topilgan atayin qo'yilgan xatolar ulushi",
   "{n} synthetic documents in {b} loan files that we generated and labelled; accuracy on real bank documents is measured in pilot month 1.": "Biz yaratgan va belgilagan {b} ta kredit arizasidagi {n} ta sintetik hujjat; haqiqiy bank hujjatlaridagi aniqlik pilotning birinchi oyida o'lchanadi.",
+  "Of the problems it raises, the share that are real": "Ko'rsatilgan muammolar ichida haqiqiylari ulushi",
+  "the rest are false alarms the officer dismisses": "qolgani — xodim rad etadigan yolg'on signallar",
 }
 export default uz
