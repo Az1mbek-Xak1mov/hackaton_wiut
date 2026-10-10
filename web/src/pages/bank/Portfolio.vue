@@ -150,7 +150,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
             <span class="ctx">{{ apps.length }} in the queue</span>
           </div>
           <div class="scrollbox">
-            <table class="tbl hover" style="min-width: 600px">
+            <table class="tbl hover" style="min-width: 540px">
               <thead><tr><th>Applicant</th><th class="r">Requested, mln</th><th class="r">Term</th><th>Received</th><th>Documents</th><th>Status</th></tr></thead>
               <tbody>
                 <tr v-for="a in apps.slice(0, 8)" :key="a.uuid">
@@ -159,7 +159,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
                   <td class="r num">{{ a.term_months }} m</td>
                   <td class="num">{{ fmtDate(a.received_on, { short: true }) }}</td>
                   <td class="num">{{ a.docs }}</td>
-                  <td><span class="pill" :class="appPill(a.status).cls">{{ appPill(a.status).label }}</span> <span v-if="a.issues_label" class="muted">{{ a.issues_label }}</span></td>
+                  <td><span class="pill" :class="appPill(a.status).cls">{{ appPill(a.status).label }}</span><div v-if="a.issues_label" class="muted" style="font-size: 12px; margin-top: 2px">{{ a.issues_label }}</div></td>
                 </tr>
                 <tr v-if="!apps.length"><td colspan="6" class="muted">No applications yet.</td></tr>
               </tbody>

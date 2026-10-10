@@ -241,6 +241,16 @@ def handle_analyse_document(db: Session, job: Job, st: Stages):
         st.start("extract", 65)
         extract_forms = pipeline_fn("app.pipeline.extract_forms", "extract_forms")
         drafts, unmapped = extract_forms(parsed)
+        if unmapped:   # LLM fallback for rows the dictionary could not map (skipped when the LLM is off)
+            try:
+                from app.modules.llm.unmapped import resolve_unmapped
+                extra, unmapped = resolve_unmapped(db, parsed.doc_type, drafts, unmapped,
+                                                   max_rows=8 if public else 20,
+                                                   deadline=(deadline_epoch - 10) if deadline_epoch else None,
+                                                   document_id=doc.id)
+                drafts = list(drafts) + extra
+            except Exception:
+                logger.exception("unmapped-line fallback failed for %s", doc.uuid)
         facts, _ = persist_facts(db, drafts, document=doc)
         summary["unmapped"] = _jsonable(unmapped or [])
         summary["fields"] = len(facts)
@@ -529,11 +539,19 @@ def handle_monitoring_run(db: Session, job: Job, st: Stages):
     run_monitoring(db, job, st)
 
 
+def handle_borrower_narrative(db: Session, job: Job, st: Stages):
+    from app.modules.llm.borrower import generate_borrower_narrative
+    st.start("narrative", 20)
+    generate_borrower_narrative(db, int(job.payload["borrower_id"]), int(job.payload["run_id"]))
+    db.commit()
+
+
 HANDLERS = {
     "analyse_document": handle_analyse_document,
     "analyse_application": handle_analyse_application,
     "narrative": handle_narrative,
     "monitoring_run": handle_monitoring_run,
+    "borrower_narrative": handle_borrower_narrative,
 }
 
 

@@ -57,7 +57,7 @@ async function toggleLlm(enabled: boolean) {
     <div style="flex: 1"></div>
 
     <div v-if="mode === 'officer' && app.llm" class="llm" :title="app.llm.configured === false ? 'No LLM provider key is configured: narratives fall back to template summaries' : app.llm.provider + ' · ' + app.llm.model">
-      <span class="muted llm-label">LLM</span>
+      <span class="muted llm-label">LLM<template v-if="app.llm.configured === false"> · no provider key</template></span>
       <div class="seg" role="group" aria-label="Language model on or off">
         <button type="button" :class="{ on: app.llm.enabled }" :disabled="llmBusy" :aria-pressed="app.llm.enabled" @click="toggleLlm(true)">On</button>
         <button type="button" :class="{ on: !app.llm.enabled }" :disabled="llmBusy" :aria-pressed="!app.llm.enabled" @click="toggleLlm(false)">Off</button>

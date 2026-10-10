@@ -78,12 +78,10 @@ services:
     image: converza-app:${GIT_SHA:-dev}
     pull_policy: never
     profiles: [seed]
-    command: ["python", "-m", "app.seed_demo"]
+    command: ["python", "-m", "app.seed_demo"]   # seed bundles are baked into the image (/srv/data/seed)
     <<: *app-env
     volumes:
       - files:/data/files
-      - ./data:/srv/data:ro
-      - ./eval:/srv/eval:ro
     depends_on: { api: { condition: service_healthy } }
 
 volumes:

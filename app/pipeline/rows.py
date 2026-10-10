@@ -75,7 +75,7 @@ def merge_numeric_tokens(words: list[Word], *, ocr: bool = False) -> list[Word]:
             head_ok = re.fullmatch(r"\(?[\-−–]?\d{1,3}(?: \d{3})*", pt) is not None
             if not head_ok and ocr:  # OCR may drop one thousands space: "1339" "800"
                 head_ok = re.fullmatch(r"\(?[\-−–]?\d{4,6}(?: \d{3})*", pt) is not None
-            tail_ok = re.fullmatch(r"\d{3}(?:[.,]\d+)?\)?", wt) is not None
+            tail_ok = re.fullmatch(r"\d{3}(?: \d{3})*(?:[.,]\d+)?\)?", wt) is not None
             if head_ok and tail_ok and gap <= max(1.6 * char_w, 0.45 * _height(w)) and gap > -1:
                 text = f"{pt} {wt}"
                 if ocr:

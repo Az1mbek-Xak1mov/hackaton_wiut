@@ -1,0 +1,208 @@
+{
+ "id": "H05",
+ "case": "units in mln UZS instead of thousands",
+ "expected": "unit detected from the header; values x1000 into kUZS",
+ "tolerance_kuzs": 50,
+ "documents": [
+  {
+   "file": "form2_mln.pdf",
+   "doc_type": "form2",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 5782972,
+     "printed_cur": "5 783.0",
+     "prev": 4853600,
+     "printed_prev": "4 853.6"
+    },
+    "020": {
+     "page": 1,
+     "cur": 4136398,
+     "printed_cur": "4 136.4",
+     "prev": 3480413,
+     "printed_prev": "3 480.4"
+    },
+    "030": {
+     "page": 1,
+     "cur": 1646574,
+     "printed_cur": "1 646.6",
+     "prev": 1373187,
+     "printed_prev": "1 373.2"
+    },
+    "040": {
+     "page": 1,
+     "cur": 1216352,
+     "printed_cur": "1 216.4",
+     "prev": 1067338,
+     "printed_prev": "1 067.3"
+    },
+    "050": {
+     "page": 1,
+     "cur": 462212,
+     "printed_cur": "462.2",
+     "prev": 405587,
+     "printed_prev": "405.6"
+    },
+    "060": {
+     "page": 1,
+     "cur": 632501,
+     "printed_cur": "632.5",
+     "prev": 555016,
+     "printed_prev": "555.0"
+    },
+    "070": {
+     "page": 1,
+     "cur": 121639,
+     "printed_cur": "121.6",
+     "prev": 106735,
+     "printed_prev": "106.7"
+    },
+    "090": {
+     "page": 1,
+     "cur": 30667,
+     "printed_cur": "30.7",
+     "prev": 28914,
+     "printed_prev": "28.9"
+    },
+    "100": {
+     "page": 1,
+     "cur": 460889,
+     "printed_cur": "460.9",
+     "prev": 334763,
+     "printed_prev": "334.8"
+    },
+    "110": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4.2",
+     "prev": 3273,
+     "printed_prev": "3.3"
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4.2",
+     "prev": 3273,
+     "printed_prev": "3.3"
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "180": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465.1",
+     "prev": 338036,
+     "printed_prev": "338.0"
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465.1",
+     "prev": 338036,
+     "printed_prev": "338.0"
+    },
+    "250": {
+     "page": 1,
+     "cur": 69771,
+     "printed_cur": "69.8",
+     "prev": 50705,
+     "printed_prev": "50.7"
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "270": {
+     "page": 1,
+     "cur": 395365,
+     "printed_cur": "395.4",
+     "prev": 287331,
+     "printed_prev": "287.3"
+    }
+   },
+   "blank_cells": [
+    "120.cur",
+    "120.prev",
+    "140.cur",
+    "140.prev",
+    "150.cur",
+    "150.prev",
+    "160.cur",
+    "160.prev",
+    "180.cur",
+    "180.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "210.cur",
+    "210.prev",
+    "230.cur",
+    "230.prev",
+    "260.cur",
+    "260.prev"
+   ],
+   "extra_rows": [],
+   "layout": "mof_grid",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "mUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "pages": 1
+  }
+ ]
+}

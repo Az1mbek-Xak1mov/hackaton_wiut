@@ -77,9 +77,11 @@ Narrative markdown cites facts as `[f_xxxxxx]` **after** the number it states ("
 | GET | `/owner/files` | `{business:{uuid, name, industry, region}, items: DocumentOut[]}` |
 | POST | `/owner/files` multipart | `{uuid, job}` |
 | POST | `/cfo/messages` `{question}` | `{answer:{direct_answer, table:[{label, fact_key}], cant_see, next_steps:[string]}, citations:[key], tool_trace:[{tool, args, result_key}], mode:"llm"\|"facts_only", facts: Record<string, Fact>}` |
-| GET | `/cfo/messages` | thread history |
+| GET | `/cfo/messages` | `{business:{name}, messages:[{role:"user", content, created_at} \| {role:"assistant", uuid, answer, citations, tool_trace, mode, created_at, facts}]}` |
 
-Until T-031 lands, both `/cfo/messages` endpoints answer `501 {code:"not_implemented"}`.
+CFO answers: `mode:"llm"` = tool loop (search_facts, sum_transactions, cash_balance_series, upcoming_obligations, compute, missing_data; ≤ 6 tool calls / 20 s) and the final JSON passed the citation verifier; `mode:"facts_only"` = LLM off, or two answers rejected (then `direct_answer` says it cannot answer with verified numbers and the table lists the matching records). `tool_trace[].result` holds a short tool output; a `{tool:"verifier"}` entry records a rejected answer. Numbers in `direct_answer`/`next_steps` carry `[f_…]` cites like the narrative.
+
+`/analyse/{uuid}.description` is `{text, mode:"llm", verified:true}` only when a ≤ 3-sentence description of an unrecognised document passed the verifier (its numbers are registered as facts with `method:"readable"`); otherwise `{text:"", mode:"none"}`. Facts with `method:"llm_fallback"` (confidence 0.75) are statutory lines the dictionary could not map and the LLM mapped among 5 candidates under the sum checks.
 
 ## Backend service entry points (for `app.seed_demo` and scripts; no HTTP needed)
 

@@ -1,0 +1,207 @@
+{
+ "id": "H06",
+ "case": "prior-year column blank",
+ "expected": "prev missing with note 'cell blank'; no invented prior values",
+ "documents": [
+  {
+   "file": "form2_noprev.pdf",
+   "doc_type": "form2",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 5782972,
+     "printed_cur": "5 782 972",
+     "prev": null
+    },
+    "020": {
+     "page": 1,
+     "cur": 4136398,
+     "printed_cur": "4 136 398",
+     "prev": null
+    },
+    "030": {
+     "page": 1,
+     "cur": 1646574,
+     "printed_cur": "1 646 574",
+     "prev": null
+    },
+    "040": {
+     "page": 1,
+     "cur": 1216352,
+     "printed_cur": "1 216 352",
+     "prev": null
+    },
+    "050": {
+     "page": 1,
+     "cur": 462212,
+     "printed_cur": "462 212",
+     "prev": null
+    },
+    "060": {
+     "page": 1,
+     "cur": 632501,
+     "printed_cur": "632 501",
+     "prev": null
+    },
+    "070": {
+     "page": 1,
+     "cur": 121639,
+     "printed_cur": "121 639",
+     "prev": null
+    },
+    "090": {
+     "page": 1,
+     "cur": 30667,
+     "printed_cur": "30 667",
+     "prev": null
+    },
+    "100": {
+     "page": 1,
+     "cur": 460889,
+     "printed_cur": "460 889",
+     "prev": null
+    },
+    "110": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": null
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": null
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": null
+    },
+    "180": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": null
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": null
+    },
+    "250": {
+     "page": 1,
+     "cur": 69771,
+     "printed_cur": "69 771",
+     "prev": null
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "270": {
+     "page": 1,
+     "cur": 395365,
+     "printed_cur": "395 365",
+     "prev": null
+    }
+   },
+   "blank_cells": [
+    "010.prev",
+    "020.prev",
+    "030.prev",
+    "040.prev",
+    "050.prev",
+    "060.prev",
+    "070.prev",
+    "090.prev",
+    "100.prev",
+    "110.prev",
+    "120.cur",
+    "120.prev",
+    "130.prev",
+    "140.cur",
+    "140.prev",
+    "150.cur",
+    "150.prev",
+    "160.cur",
+    "160.prev",
+    "170.prev",
+    "180.cur",
+    "180.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "210.cur",
+    "210.prev",
+    "220.prev",
+    "230.cur",
+    "230.prev",
+    "240.prev",
+    "250.prev",
+    "260.cur",
+    "260.prev",
+    "270.prev"
+   ],
+   "extra_rows": [],
+   "layout": "mof_grid",
+   "language": "uz_latn",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "pages": 1
+  }
+ ]
+}

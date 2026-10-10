@@ -13,8 +13,15 @@ watch(() => props.factKey, (k) => ev.ensure([k]))
 
 const label = computed(() => {
   if (props.text) return props.text
-  if (props.compact) return 'source'
   const f = fact.value
+  if (props.compact) {
+    // the number is already in the sentence: the chip only points at its source
+    if (!f) return '↗'
+    if (f.page_n && f.line_code) return `p.${f.page_n} · ${f.line_code}`
+    if (f.page_n) return `p.${f.page_n}`
+    if (f.line_code) return f.line_code
+    return '↗'
+  }
   if (!f) return missing.value ? 'source unavailable' : '…'
   if (props.long) return `${f.label} · ${f.display}${f.display_unit ? ' ' + f.display_unit : ''}`
   return f.display
@@ -26,7 +33,7 @@ const title = computed(() => (fact.value ? `${factTitle(fact.value)} — click t
   <button
     type="button"
     class="ev num"
-    :class="{ on: ev.selectedKey === factKey, loading: !fact, compact }"
+    :class="{ on: ev.selectedKey === factKey, loading: !fact, compact, long }"
     :title="title"
     :aria-label="title"
     @click.stop="ev.select(factKey)"
@@ -35,4 +42,6 @@ const title = computed(() => (fact.value ? `${factTitle(fact.value)} — click t
 
 <style scoped>
 .ev.compact { font-size: 11px; padding: 0 4px; line-height: 1.4; vertical-align: 1px; }
+/* long labels wrap like text instead of becoming a centred block */
+.ev.long { display: inline; text-align: left; -webkit-box-decoration-break: clone; box-decoration-break: clone; line-height: 1.6; }
 </style>

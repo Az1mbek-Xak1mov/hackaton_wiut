@@ -31,12 +31,16 @@ CALIBRATION_NOTE = "Illustrative thresholds; calibration against bank history is
 TERMINAL_DOC = {"analyzed", "clarification", "failed"}
 
 
-def start_run(db: Session, actor, as_of: date | None = None):
+def start_run(db: Session, actor, as_of: date | None = None, borrower_ids: list[int] | None = None):
+    """Queues a monitoring run. `borrower_ids` restricts it (e.g. the seed's earlier-quarter run for borrowers
+    that have earlier statements); None = the whole portfolio."""
     run = MonitoringRun(status="queued", as_of=as_of or utcnow().date(), thresholds={})
     db.add(run)
     db.flush()
-    job = JobService(db).enqueue("monitoring_run", {"run_uuid": str(run.uuid), "as_of": run.as_of.isoformat()},
-                                 ref=f"monitoring_run:{run.uuid}")
+    payload = {"run_uuid": str(run.uuid), "as_of": run.as_of.isoformat()}
+    if borrower_ids:
+        payload["borrower_ids"] = sorted(int(b) for b in borrower_ids)
+    job = JobService(db).enqueue("monitoring_run", payload, ref=f"monitoring_run:{run.uuid}")
     from app.modules.audit import service as audit
     audit.record(db, actor, "create", "monitoring_run", run.uuid, after={"as_of": run.as_of.isoformat()})
     db.commit()
@@ -91,6 +95,9 @@ def run_monitoring(db: Session, job, st) -> None:
     st.start("monitor", 2)
 
     borrower_ids = list(db.scalars(select(Loan.borrower_id).distinct()).all())
+    if job.payload.get("borrower_ids"):
+        wanted = set(job.payload["borrower_ids"])
+        borrower_ids = [b for b in borrower_ids if b in wanted]
     borrowers = db.scalars(select(Borrower).where(Borrower.id.in_(borrower_ids)).order_by(Borrower.id)).all() \
         if borrower_ids else []
     n = max(1, len(borrowers))
@@ -99,15 +106,19 @@ def run_monitoring(db: Session, job, st) -> None:
             with db.begin_nested():   # one borrower failing never loses the others
                 loans = db.scalars(select(Loan).where(Loan.borrower_id == b.id).order_by(Loan.disbursed_on.desc())).all()
                 loan = loans[0]
-                reps = db.scalars(select(Repayment).where(Repayment.loan_id == loan.id).order_by(Repayment.n)).all()
+                # only what was known at `as_of`: installments due by then, documents covering periods up to then
+                reps = db.scalars(select(Repayment).where(Repayment.loan_id == loan.id, Repayment.due_on <= as_of)
+                                  .order_by(Repayment.n)).all()
                 docs = db.scalars(select(Document).where(Document.borrower_id == b.id, Document.owner_kind != "public",
                                                          Document.status.in_(TERMINAL_DOC))
                                   .order_by(Document.id)).all()
+                docs = [d for d in docs if d.period_end is None or d.period_end <= as_of]
                 doc_ids = [d.id for d in docs] or [-1]
                 facts = db.scalars(select(Fact).where(Fact.document_id.in_(doc_ids)).order_by(Fact.id)).all()
                 txns = db.scalars(select(Transaction).where(Transaction.document_id.in_(doc_ids))
                                   .order_by(Transaction.booked_on)).all()
-                repayments = [{"n": r.n, "due_on": r.due_on, "paid_on": r.paid_on,
+                repayments = [{"n": r.n, "due_on": r.due_on,
+                               "paid_on": r.paid_on if r.paid_on and r.paid_on <= as_of else None,
                                "amount": float(r.amount) if r.amount is not None else None} for r in reps]
                 ctx = make(MonitoringContext,
                            borrower={"id": b.id, "uuid": str(b.uuid), "name": b.name, "stir": b.stir,
@@ -141,6 +152,11 @@ def run_monitoring(db: Session, job, st) -> None:
         if i % 10 == 0:
             st.start("monitor", 2 + int(95 * (i + 1) / n))
     run.status, run.finished_at = "done", utcnow()
+    # the AI explanation for every borrower under Watch/Attention, one job each (LLM, or the verified template)
+    from app.modules.llm.borrower import borrowers_to_explain
+    jobs = JobService(db)
+    for bid in borrowers_to_explain(db, run):
+        jobs.enqueue("borrower_narrative", {"borrower_id": bid, "run_id": run.id}, ref=f"borrower:{bid}")
     db.commit()
 
 

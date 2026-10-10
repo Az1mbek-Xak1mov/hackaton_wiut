@@ -167,11 +167,11 @@ def build_borrower(args) -> dict:
     out.mkdir(parents=True)
     if b.get("hero"):
         src = ROOT / "data" / "seed" / "hero_zilola"
-        for f in ("forma1_Q3-2026.pdf", "forma2_Q3-2026.pdf", "vypiska_2026-07_09.xlsx"):
+        for f in ("forma1_Q2-2026.pdf", "forma2_Q2-2026.pdf", "forma1_Q3-2026.pdf", "forma2_Q3-2026.pdf", "vypiska_2026-07_09.xlsx"):
             shutil.copy(src / f, out / f)
         (out / "truth.json").write_text(json.dumps({"loan_id": b["loan_id"], "hero": "hero_zilola", "scenario": b["scenario"],
                                                     "indicators": b["indicators"]}, indent=1))
-        return {"loan_id": b["loan_id"], "docs": 3}
+        return {"loan_id": b["loan_id"], "docs": 5}
     company = make_company(rng, b["industry_key"], name=b["name"], stir=b["stir"], region=b["region"], industry=b["industry"])
     inst_k = b["installment"] * 1000                     # kUZS
     annual = max(inst_k * 12 * rng.uniform(5, 14), 1.5e6)
@@ -199,44 +199,40 @@ def build_borrower(args) -> dict:
         diff = t["400"] - t["780"]
         if diff > 0:
             leaf["760"] += diff
-        else:
-            big = "180" if leaf.get("180", 0) >= leaf.get("150", 0) else "150"
-            leaf[big] += -diff
+        else:  # the loan financed equipment: the asset side grows in fixed assets
+            leaf["010"] += -diff
         t = f1_totals(leaf)
         assert t["400"] == t["780"]
         return t
 
     lt_q3 = int(round(b["outstanding"] * 1000))
-    lt_q2 = int(round(lt_q3 + 3 * inst_k * 0.7))
-    recv_q2 = f1q2["220"]
-    pay_q2 = f1q2["610"]
-    v_q2 = fix(f1q2, cash_q2, recv_q2, pay_q2, lt_q2)
-    v_q3 = fix(f1q3, cash_q3, int(round(recv_q2 * (1 + b["recv_growth"]))), int(round(pay_q2 * (1 + b["pay_growth"]))), lt_q3)
-    # retained earnings must roll by net profit: re-plug Q3 RE from Q2
-    v_q3_leaf = {c: v_q3[c] for c in v_q3}
-    v_q3_leaf["450"] = v_q2["450"] + q3["270"]
-    v_q3 = fix(v_q3_leaf, cash_q3, v_q3["220"], v_q3["610"], lt_q3)
+    princ = inst_k * 0.7
+    lt = {"2026-09-30": lt_q3, "2026-06-30": int(round(lt_q3 + 3 * princ)), "2026-03-31": int(round(lt_q3 + 6 * princ)),
+          "2025-12-31": int(round(lt_q3 + 9 * princ))}
+    recv_q2, pay_q2 = f1q2["220"], f1q2["610"]
+    # retained earnings come from the model, which rolls them quarter by quarter by net profit
+    bal = {
+        "2025-12-31": fix(dict(fin.f1["2025-12-31"]), fin.f1["2025-12-31"]["340"], None, None, lt["2025-12-31"]),
+        "2026-03-31": fix(dict(fin.f1["2026-03-31"]), int(round(cash_q2 * rng.uniform(1.0, 1.25), -2)), None, None, lt["2026-03-31"]),
+        "2026-06-30": fix(f1q2, cash_q2, recv_q2, pay_q2, lt["2026-06-30"]),
+        "2026-09-30": fix(f1q3, cash_q3, int(round(recv_q2 * (1 + b["recv_growth"]))), int(round(pay_q2 * (1 + b["pay_growth"]))), lt_q3),
+    }
+    v_q2, v_q3 = bal["2026-06-30"], bal["2026-09-30"]
     docs = []
     lang = "ru" if rng.random() < 0.6 else "uz_latn"
     layout = str(rng.choice(["mof_grid", "software_export", "typed"]))
-    if late_stmt:
-        # latest documents are for Q2 / statement through August only
-        f1q1 = fix(dict(fin.f1["2026-03-31"]), int(round(cash_q2 * 1.1, -2)), None, None, int(round(lt_q2 + 3 * inst_k * 0.7)))
-        v_q2_leaf = dict(v_q2); v_q2_leaf["450"] = f1q1["450"] + q2["270"]
-        v_q2 = fix(v_q2_leaf, cash_q2, v_q2["220"], v_q2["610"], lt_q2)
-        render_form(out / "forma1_Q2-2026.pdf", "form1", lang, layout, company, title_when=date_phrase(lang, date(2026, 6, 30)),
-                    cur=v_q2, prev=f1q1, submitted=date(2026, 7, 8))
-        render_form(out / "forma2_Q2-2026.pdf", "form2", lang, layout, company, title_when=period_phrase(lang, "Q2-2026"),
-                    cur=q2, prev=fin.f2["Q1-2026"], quarterly=True, submitted=date(2026, 7, 8))
-        docs += ["forma1_Q2-2026.pdf", "forma2_Q2-2026.pdf"]
-        months = [7, 8]
-    else:
-        render_form(out / "forma1_Q3-2026.pdf", "form1", lang, layout, company, title_when=date_phrase(lang, date(2026, 9, 30)),
-                    cur=v_q3, prev=v_q2, submitted=date(2026, 10, 5))
-        render_form(out / "forma2_Q3-2026.pdf", "form2", lang, layout, company, title_when=period_phrase(lang, "Q3-2026"),
-                    cur=q3, prev=q2, quarterly=True, submitted=date(2026, 10, 5))
-        docs += ["forma1_Q3-2026.pdf", "forma2_Q3-2026.pdf"]
-        months = [7, 8, 9]
+    # statutory convention: Form 1 prev column = 31.12.2025; Form 2 prev column = the same quarter of 2025.
+    # Quarter-over-quarter monitoring compares the two latest quarters' documents.
+    quarters = [("Q1", "2026-03-31", date(2026, 4, 7)), ("Q2", "2026-06-30", date(2026, 7, 8))] if late_stmt else \
+               [("Q2", "2026-06-30", date(2026, 7, 8)), ("Q3", "2026-09-30", date(2026, 10, 5))]
+    for q, dkey, signed in quarters:
+        f1n, f2n = f"forma1_{q}-2026.pdf", f"forma2_{q}-2026.pdf"
+        render_form(out / f1n, "form1", lang, layout, company, title_when=date_phrase(lang, date.fromisoformat(dkey)),
+                    cur=bal[dkey], prev=bal["2025-12-31"], submitted=signed)
+        render_form(out / f2n, "form2", lang, layout, company, title_when=period_phrase(lang, f"{q}-2026"),
+                    cur=fin.f2[f"{q}-2026"], prev=fin.f2[f"{q}-2025"], submitted=signed)
+        docs += [f1n, f2n]
+    months = [7, 8] if late_stmt else [7, 8, 9]
     # statement Jul-Sep (or Jul-Aug)
     ctx = make_ctx(rng, company, lang="ru" if lang == "ru" else "uz", n_customers=int(rng.integers(5, 18)), n_suppliers=int(rng.integers(4, 12)))
     loan_acct = Party(f"Kreditni qaytarish hisobvarag'i ({b['loan_id']})", None, "16307000" + b["stir"][:9] + "417", company.mfo)
@@ -267,10 +263,13 @@ def build_borrower(args) -> dict:
                                              "region": company.region},
         "scenario": b["scenario"], "expected_status_under_disclosed_rules": _status_of(b["scenario"]),
         "expected_indicators": b["indicators"],
-        "params": {"trend_pct": round((q3["010"] / q2["010"] - 1) * 100, 1), "coverage": round(target / 1000 / inst_k, 2),
+        "params": {"trend_pct": round(((q2["010"] / fin.f2["Q1-2026"]["010"]) if late_stmt else (q3["010"] / q2["010"])) * 100 - 100, 1),
+                   "trend_basis": "Q2 vs Q1 documents" if late_stmt else "Q3 vs Q2 documents",
+                   "coverage": round(target / 1000 / inst_k, 2),
                    "receivables_growth": round(v_q3["220"] / v_q2["220"] - 1, 3) if not late_stmt else None,
                    "payables_growth": round(v_q3["610"] / v_q2["610"] - 1, 3) if not late_stmt else None,
                    "late": b["late"], "late_statement": bool(late_stmt), "installment_mln": b["installment"]},
+        "column_convention": "Form 1 prev = 31.12.2025; Form 2 prev = same quarter of 2025; QoQ = latest vs previous quarter documents",
         "documents": docs, "statement": {k: st[k] for k in ("opening_balance", "closing_balance", "month_end_balances")},
         "statement_rows": len(st["rows"]), "language": lang, "layout": layout,
     }

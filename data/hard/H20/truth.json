@@ -1,0 +1,12 @@
+{
+ "id": "H20",
+ "case": "a Word letter saved as PDF (no figures)",
+ "expected": "unknown + 'what I could read'; no numbers invented",
+ "documents": [
+  {
+   "file": "letter.pdf",
+   "doc_type": "unknown",
+   "numbers_present": false
+  }
+ ]
+}

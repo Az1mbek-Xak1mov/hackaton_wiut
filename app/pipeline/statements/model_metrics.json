@@ -1,0 +1,38 @@
+{
+  "trained_at": "2026-10-10T13:00:29+00:00",
+  "train": {
+    "rows": 48861,
+    "bundles": 120,
+    "labels": {
+      "sales_receipt": 22208,
+      "supplier_payment": 16381,
+      "salary": 960,
+      "rent_utilities": 3840,
+      "payroll_tax": 1920,
+      "loan_repayment": 640,
+      "tax": 1316,
+      "cash_withdrawal": 271,
+      "bank_fee": 960,
+      "other": 365
+    }
+  },
+  "dev": {
+    "bundles": 40,
+    "rules_only": {
+      "accuracy": 0.9871,
+      "macro_f1": 0.949,
+      "n": 16616
+    },
+    "model_only": {
+      "accuracy": 0.9915,
+      "macro_f1": 0.9623,
+      "n": 16616
+    },
+    "combined": {
+      "accuracy": 0.9909,
+      "macro_f1": 0.9604,
+      "n": 16616
+    },
+    "rule_coverage": 0.9841
+  }
+}

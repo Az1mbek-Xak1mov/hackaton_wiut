@@ -1,0 +1,21 @@
+{
+ "id": "H19",
+ "case": "640x480 blurred phone photo",
+ "expected": "failed with cause (resolution, blur score) + whatever text was read",
+ "documents": [
+  {
+   "file": "photo_640x480.jpg",
+   "doc_type": "invoice",
+   "variant": {
+    "photo": true,
+    "width": 640,
+    "height": 480,
+    "blur": 2.4,
+    "jpeg_q": 38,
+    "expected_status": "failed",
+    "expected_cause": "Image is 640×480 px and blurred; amounts are unreadable.",
+    "invoice_total_uzs": 321798400
+   }
+  }
+ ]
+}

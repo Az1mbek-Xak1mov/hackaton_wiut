@@ -84,6 +84,14 @@ def attach_loan_meta(rng, ln: Loan) -> Loan:
     return ln
 
 
+def fix_doc_refs(plant_info: list[dict], docs: list[dict]) -> None:
+    """Photo variants turn x.pdf into x.jpg: keep planted[].doc pointing at the file that exists."""
+    by_stem = {Path(d["file"]).stem: d["file"] for d in docs}
+    for p in plant_info:
+        if p.get("doc"):
+            p["doc"] = by_stem.get(Path(p["doc"]).stem, p["doc"])
+
+
 def make_bundle(seed: int, out_root: Path, split: str, *, out_dir: Path | None = None, company_over: dict | None = None,
                 industry_key: str | None = None, requested_kuzs: int | None = None, term: int | None = None,
                 planted_override: list[str] | None = None, drop: set[str] | None = None, noise: bool = True,
@@ -137,6 +145,8 @@ def make_bundle(seed: int, out_root: Path, split: str, *, out_dir: Path | None =
     if "R09" in planted:
         stir_bad_doc = str(rng.choice(["application.pdf", "form2_FY2025.pdf", "form1_H1-2026.pdf"]))
     wrong_stir = new_stir(rng)
+    if stir_bad_doc:
+        plant_info.append({"rule": "R09", "doc": stir_bad_doc, "printed_stir": wrong_stir, "true_stir": company.stir})
 
     def comp_for(fname):
         if fname == stir_bad_doc:
@@ -250,6 +260,9 @@ def make_bundle(seed: int, out_root: Path, split: str, *, out_dir: Path | None =
                                      blur=float(rng.uniform(0.3, 0.9)))
             p.unlink()
             d["file"] = jpg.name
+    fix_doc_refs(plant_info, docs)
+    if stir_bad_doc:
+        stir_bad_doc = next((d["file"] for d in docs if Path(d["file"]).stem == Path(stir_bad_doc).stem), stir_bad_doc)
     truth = {
         "bundle_id": bid, "seed": seed, "split": split,
         "company": {"name": company.name, "stir": company.stir, "industry": company.industry, "region": company.region},

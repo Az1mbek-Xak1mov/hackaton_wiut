@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, errMessage } from '@/api/client'
 import type { ApplicationReview } from '@/api/types'
 import { confPill, docStatusPill, fileBadge, fmtDate, fmtDateTime, fmtTime, hasUnit, withUnit } from '@/api/format'
 import { useEvidence } from '@/stores/evidence'
+import { useApp } from '@/stores/app'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import FindingRow from '@/components/evidence/FindingRow.vue'
@@ -14,6 +15,7 @@ import Modal from '@/components/ui/Modal.vue'
 
 const route = useRoute()
 const ev = useEvidence()
+const app = useApp()
 const number = computed(() => String(route.params.number))
 
 const data = ref<ApplicationReview | null>(null)
@@ -47,6 +49,29 @@ onMounted(() => {
   ev.clear()
   load()
 })
+
+// The LLM switch in the top bar: regenerate the summary so the change is visible here at once.
+const regenerating = ref(false)
+const regenErr = ref('')
+async function regenerate() {
+  regenerating.value = true
+  regenErr.value = ''
+  try {
+    let job = await api.regenerateNarrative(number.value)
+    const started = Date.now()
+    while ((job.status === 'queued' || job.status === 'running') && Date.now() - started < 60_000) {
+      await new Promise((r) => setTimeout(r, 1000))
+      job = await api.job(job.uuid)
+    }
+    if (job.status === 'failed') regenErr.value = job.error || 'Regeneration failed.'
+    await load(true)
+  } catch (e) {
+    regenErr.value = errMessage(e)
+  } finally {
+    regenerating.value = false
+  }
+}
+watch(() => app.llmChanges, () => regenerate())
 onBeforeUnmount(() => timer && clearTimeout(timer))
 
 const statusPill = computed(() => {
@@ -172,6 +197,7 @@ async function submitDecision() {
           </p>
         </div>
         <div class="actions">
+          <button type="button" class="btn" :disabled="regenerating" @click="regenerate">{{ regenerating ? 'Regenerating…' : 'Regenerate summary' }}</button>
           <button type="button" class="btn btn-primary" @click="showDecision = true">Record officer decision</button>
         </div>
       </div>
@@ -254,7 +280,7 @@ async function submitDecision() {
             </div>
             <div v-if="data.ratios.length" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px">
               <div v-for="r in data.ratios" :key="r.label" class="ratio" :class="{ flag: !!r.flag }">
-                <span class="eyebrow">{{ r.label }}</span>
+                <span class="eyebrow">{{ r.label }}<template v-if="r.period"> · {{ r.period }}</template></span>
                 <span class="v num">
                   <template v-if="r.fact_keys && r.fact_keys.length === 2"><EvidenceChip :fact-key="r.fact_keys[0]" /> <span class="muted" style="font-size: 13px; font-weight: 400">→</span> <EvidenceChip :fact-key="r.fact_keys[1]" /></template>
                   <EvidenceChip v-else-if="r.fact_key" :fact-key="r.fact_key" :text="r.value_display" />
@@ -291,6 +317,8 @@ async function submitDecision() {
               </div>
             </div>
             <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+              <div v-if="regenerating" class="note">Regenerating the summary with the language model {{ app.llm?.enabled ? 'on' : 'off' }}… Issues, figures and ratios above do not change.</div>
+              <div v-if="regenErr" class="error-box">{{ regenErr }}</div>
               <template v-if="data.narrative && data.narrative.markdown && data.narrative.verified !== false">
                 <div class="eyebrow">{{ narrativeLabel }}</div>
                 <NarrativeText :markdown="data.narrative.markdown" />

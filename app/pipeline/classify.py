@@ -123,7 +123,7 @@ def detect_language(text: str) -> str:
     if cyr and lat and min(cyr, lat) / len(letters) > 0.3:
         return "mixed"
     if cyr >= lat:
-        return "uz_cyrl" if uz_cyr_letters >= max(3, 0.004 * cyr) else "ru"
+        return "uz_cyrl" if uz_cyr_letters >= 2 else "ru"   # ў қ ғ ҳ never occur in Russian
     return "en" if en_markers > uz_lat_markers else "uz_latn"
 
 
@@ -187,7 +187,14 @@ def _end_of_month(y: int, m: int) -> date:
     return date(y, m, calendar.monthrange(y, m)[1])
 
 
-_GEN_RE = re.compile(r"(сформирован\w*|shakllantiril\w*|шакллантирил\w*|generated|printed|дата печати|created|создан\w*)\W{0,4}$")
+# dates that are NOT the reporting period: generation, signing, submission, receipt stamps
+_NOT_PERIOD_RE = re.compile(
+    r"(сформирован\w*|shakllantiril\w*|шакллантирил\w*|generated|printed|дата печати|created|создан\w*|"
+    r"подпис\w*|imzola\w*|имзола\w*|signed|signature|"
+    r"дата (?:представления|сдачи|получения|подачи)|taqdim\w*|тақдим\w*|submi\w*|"
+    r"qabul qilin\w*|қабул қилин\w*|received|принят\w*|дата поступления)[^\d]{0,22}$")
+_BALANCE_ANCHOR_BEFORE = re.compile(r"(?:\bна|as at|as of|состоянию на|по состоянию на)\s*$")
+_BALANCE_ANCHOR_AFTER = re.compile(r"^\W*(?:\w+\W+){0,2}?(holatiga|ҳолатига|холатига|holatida|ҳолатида)")
 
 
 def _year_near(t: str, a: int, b: int) -> int | None:
@@ -195,21 +202,52 @@ def _year_near(t: str, a: int, b: int) -> int | None:
     return int(m.group(1)) if m else None
 
 
+def _flow_period(y: int, end_month: int) -> tuple[date, date]:
+    """Cumulative period from 1 January to the end of `end_month` (Form 2 is cumulative year-to-date)."""
+    return date(y, 1, 1), _end_of_month(y, end_month)
+
+
+def period_dates(text: str) -> list[tuple[int, date]]:
+    """Dates in the text that can be the reporting period (signing / generation / receipt dates removed)."""
+    t = light_norm(text)
+    return [(p, d) for p, d in find_dates(t) if not _NOT_PERIOD_RE.search(t[max(0, p - 45):p])]
+
+
 def detect_period(text: str, doc_type: str = "unknown") -> tuple[date | None, date | None]:
-    """(period_start, period_end) from the document header text."""
+    """(period_start, period_end) from the document header text.
+
+    Balance sheets (form1) are a point in time: start None, end = the 'на … / … holatiga / as at' date.
+    Flow documents (form2, statements, declarations): FY / H1 / 9M / quarter / explicit range.
+    """
     t = light_norm(text)[:4000]
-    dates = [(p, d) for p, d in find_dates(t) if not _GEN_RE.search(t[max(0, p - 30):p])]
-    # tokens like FY2025 / H1-2026 / Q3 2026 (exports, English statements)
+    dates = period_dates(t)
+    if doc_type == "form1" and dates:
+        def anchored(pd: tuple[int, date]) -> bool:
+            p, _ = pd
+            return bool(_BALANCE_ANCHOR_BEFORE.search(t[max(0, p - 22):p])) or \
+                bool(_BALANCE_ANCHOR_AFTER.match(t[p:p + 45]))
+        pick = next((pd for pd in dates if anchored(pd)), None)
+        if pick is None:  # no anchor: prefer a quarter/half/year end, else the first date
+            pick = next((pd for pd in dates if (pd[1].month, pd[1].day) in ((3, 31), (6, 30), (9, 30), (12, 31), (1, 1))),
+                        dates[0])
+        d = pick[1]
+        if (d.month, d.day) == (1, 1):  # "на 1 января 2026" = the 2025 year-end balance
+            d = d - timedelta(days=1)
+        return None, d
+
+    # tokens: FY2025, H1-2026, Q3 2026, 9M-2026
     m = re.search(r"\bfy ?-?(20\d{2})\b", t)
     if m:
-        y = int(m.group(1))
-        return date(y, 1, 1), date(y, 12, 31)
+        return _flow_period(int(m.group(1)), 12)
     m = re.search(r"\bh([12]) ?-?(20\d{2})\b", t) or re.search(r"\b(20\d{2}) ?-?h([12])\b", t)
     if m:
         a, b = m.groups()
         h, y = (int(a), int(b)) if len(a) == 1 else (int(b), int(a))
-        return (date(y, 1, 1), date(y, 6, 30)) if h == 1 else (date(y, 7, 1), date(y, 12, 31))
-    # UZ range without years on both ends: "2026 yil 1 yanvardan 30 iyungacha"
+        return _flow_period(y, 6) if h == 1 else (date(y, 7, 1), date(y, 12, 31))
+    m = re.search(r"\b9m ?-?(20\d{2})\b", t)
+    if m:
+        return _flow_period(int(m.group(1)), 9)
+    # UZ range: "2026 yil 1 yanvardan 30 iyungacha"
     m = re.search(rf"(\d{{1,2}})[ -]?({_MONTH_RE})\w*?(?:dan|дан)\s+(\d{{1,2}})[ -]?({_MONTH_RE})\w*?(?:gacha|гача)", t)
     if m:
         y = _year_near(t, m.start(), m.end())
@@ -237,45 +275,49 @@ def detect_period(text: str, doc_type: str = "unknown") -> tuple[date | None, da
         between = t[p1:p2]
         if d1 < d2 and len(between) < 40 and re.search(r"по|-|–|—|to|dan|дан|gacha|гача|до", between):
             return d1, d2
-    # half year / 9 months / quarter
-    m = re.search(r"(?:\b1|перв\w*|birinchi|биринчи)[- ]?(?:е )?(?:полугоди\w*|yarim yil\w*|ярим йил\w*)", t)
+    # half year / 6 months / 9 months / quarters
+    m = re.search(r"(?:\b1|перв\w*|birinchi|биринчи)[- ]?(?:е |chi |-?inchi )?(?:полугоди\w*|yarim ?yil\w*|ярим ?йил\w*|half)", t) \
+        or re.search(r"\b(?:6|шест\w*|olti|олти|six)[- ]?(?:месяц\w*|oy\w*|ой\w*|months)", t)
     if m:
         y = _year_near(t, m.start(), m.end())
         if y:
-            return date(y, 1, 1), date(y, 6, 30)
-    m = re.search(r"\b9[- ]?(?:месяц\w*|oy\w*|ой\w*|months)", t)
+            return _flow_period(y, 6)
+    m = re.search(r"\b(?:9|девят\w*|to'qqiz|тўққиз|nine)[- ]?(?:месяц\w*|oy\w*|ой\w*|months)", t)
     if m:
         y = _year_near(t, m.start(), m.end())
         if y:
-            return date(y, 1, 1), date(y, 9, 30)
-    m = re.search(r"\b(?:(i{1,3}|iv|[1-4])[- ]?(?:квартал\w*|chorak\w*|чорак\w*)|q([1-4]))\b", t)
+            return _flow_period(y, 9)
+    m = re.search(r"\b(?:(i{1,3}|iv|[1-4])[- ]?(?:-?й |-?chi |-?чи )?(?:квартал\w*|chorak\w*|чорак\w*)|q([1-4]))\b", t)
     if m:
         q_raw = m.group(1) or m.group(2)
         q = {"i": 1, "ii": 2, "iii": 3, "iv": 4}.get(q_raw) or int(q_raw)
         y = _year_near(t, m.start(), m.end())
         if y:
             return date(y, 3 * q - 2, 1), _end_of_month(y, 3 * q)
-    if doc_type == "form1" and dates:
-        # balance date: prefer "на 31.12.2025" / "… holatiga" / "as at …"; "1 января 2026" = previous year end
-        def anchored(pd):
-            p, _ = pd
-            return bool(re.search(r"(на|as at|as of|состоянию на)\s*$", t[max(0, p - 18):p])) or \
-                bool(re.match(r"\W*\w*\W*(holatiga|ҳолатига|холатига)", t[p:p + 40]))
-        pick = next((pd for pd in dates if anchored(pd)), dates[0])
-        d = pick[1]
-        if (d.month, d.day) == (1, 1):
-            d = d - timedelta(days=1)
-        return None, d
+    # garbled phrase (OCR): a period-end date or month word still says how far the year runs
+    head = t[:900]
+    m = re.search(rf"\b(30|31)[ .-]?(0[369]|1[2]|{_MONTH_RE})\w*[ .-]?(20\d{{2}})?", head)
+    months = [_month_of(x.group(0)) for x in re.finditer(_MONTH_RE, head)]
+    months = [x for x in months if x]
+    end_m = None
+    if m:
+        mm = m.group(2)
+        end_m = int(mm) if mm.isdigit() else _month_of(mm)
+    elif len(set(months)) >= 2 and months[0] == 1:
+        end_m = max(months)
+    if end_m in (3, 6, 9, 12):
+        y = (int(m.group(3)) if m and m.group(3) else None) or _year_near(head, 0, len(head))
+        if y:
+            return _flow_period(y, end_m)
     m = re.search(r"(?:за|for the year|for)\s*(20\d{2})|(20\d{2})\s*(?:год|yil uchun|йил учун|yil|йил)", t)
     if m:
         yy = int(m.group(1) or m.group(2))
-        return date(yy, 1, 1), date(yy, 12, 31)
+        return _flow_period(yy, 12)
     if dates:
         return None, dates[0][1]
     m = re.search(r"\b(20\d{2})\b", t)
     if m and doc_type == "form2":
-        yy = int(m.group(1))
-        return date(yy, 1, 1), date(yy, 12, 31)
+        return _flow_period(int(m.group(1)), 12)
     return None, None
 
 

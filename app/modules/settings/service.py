@@ -21,14 +21,8 @@ def llm_enabled(db: Session) -> bool:
 
 
 def llm_configured() -> bool:
-    p = settings.LLM_PROVIDER
-    if p == "openai":
-        return bool(settings.OPENAI_API_KEY)
-    if p == "anthropic":
-        return bool(settings.ANTHROPIC_API_KEY)
-    if p == "ollama":
-        return bool(settings.LLM_BASE_URL)
-    return False
+    from app.modules.llm.provider import configured
+    return configured()
 
 
 class SettingsService:
@@ -49,5 +43,14 @@ class SettingsService:
             row.value = {"enabled": enabled}
         self.db.flush()
         audit.record(self.db, actor, "update", "setting", row.uuid, before=before, after={"enabled": enabled})
+        if bool(before.get("enabled", True)) != enabled:
+            self._regenerate_narratives()
         self.db.commit()
         return self.llm_status()
+
+    def _regenerate_narratives(self) -> None:
+        """The switch shows its effect: every analysed application gets a new narrative (LLM or template)."""
+        from app.modules.applications.models import Application
+        from app.modules.applications.service import enqueue_analysis
+        for app in self.db.scalars(select(Application).where(Application.analysed_at.is_not(None))).all():
+            enqueue_analysis(self.db, app, kind="narrative")

@@ -1,0 +1,13 @@
+{
+ "id": "H16",
+ "case": "password-protected PDF",
+ "expected": "failed: 'PDF is encrypted' (and nothing invented)",
+ "documents": [
+  {
+   "file": "form2_encrypted.pdf",
+   "user_password": "s3cret",
+   "expected_status": "failed",
+   "expected_cause": "PDF is encrypted"
+  }
+ ]
+}

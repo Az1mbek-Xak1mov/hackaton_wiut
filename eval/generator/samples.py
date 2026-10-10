@@ -86,7 +86,8 @@ def build_samples(seed_root: Path, out: Path) -> None:
                                                     "Forma2_2025.pdf", "Forma2_1H2026.pdf", "vypiska_2026.xlsx"]),
         "navroz_owner_docs.zip": ("hero_navroz", ["bank_vypiska_2026-01_09.xlsx", "Forma2_1yarim_2026.pdf",
                                                   "Balans_2025_skan.pdf", "schet-faktura_0917.jpg"]),
-        "zilola_monitoring.zip": ("hero_zilola", ["forma1_Q3-2026.pdf", "forma2_Q3-2026.pdf", "vypiska_2026-07_09.xlsx"]),
+        "zilola_monitoring.zip": ("hero_zilola", ["forma1_Q2-2026.pdf", "forma2_Q2-2026.pdf", "forma1_Q3-2026.pdf",
+                                                  "forma2_Q3-2026.pdf", "vypiska_2026-07_09.xlsx"]),
     }
     manifest = {"note": "Synthetic demonstration documents (declared). Ground truth lives in data/seed/*/truth.json.",
                 "files": {}}

@@ -89,13 +89,35 @@ def _detect_code_column(rows_by_page: list[tuple[float, list[Row], bool]], form:
     return statistics.mean(best) if len(best) >= 3 else None
 
 
+_PREV_WORDS = ("начало", "начала", "boshiga", "бошига", "прошлого", "предыдущий", "o'tgan", "ўтган", "oldingi",
+               "previous", "prior", "beginning", "opening")
+_CUR_WORDS = ("конец", "конца", "oxiriga", "охирига", "current", "closing")
+
+
+def _fuzzy_period(t: str) -> str | None:
+    """OCR-garbled header ('На комец ...'): fuzzy match single words against period keywords."""
+    best, role = 0.0, None
+    for w in re.findall(r"[\w']{4,}", t):
+        for kw in _PREV_WORDS:
+            s = fuzz.ratio(w, kw)
+            if s > best:
+                best, role = s, "prev"
+        for kw in _CUR_WORDS:
+            s = fuzz.ratio(w, kw)
+            if s > best:
+                best, role = s, "cur"
+    return role if best >= 78 else None
+
+
 def _header_role(text: str) -> tuple[str | None, str | None, int | None]:
     t = light_norm(text)
     period = None
-    if re.search(r"начал|boshi|бошига|бош[иа]|прошл|o'tgan|ўтган|prior|previous|beginning|opening", t):
+    if re.search(r"начал|boshi|бошига|бош[иа]|прошл|o'tgan|ўтган|oldingi|prior|previous|beginning|opening", t):
         period = "prev"
     elif re.search(r"конец|конц|oxir|охир|отчетн\w* период|за отчетный|hisobot davrida|ҳисобот даврида|current|closing|end of", t):
         period = "cur"
+    else:
+        period = _fuzzy_period(t)
     kind = None
     if re.search(r"доход|прибыл|daromad|foyda|даромад|фойда|income|profit", t):
         kind = "inc"
@@ -196,7 +218,7 @@ def _attach_headers(cols: list[_Col], rows_by_page, first_code_y: dict[int, floa
             continue
         heights = sorted(w.y1 - w.y0 for r in rows for w in r.words) or [10.0]
         lh = heights[len(heights) // 2]
-        band = [r for r in rows if y_lim - 7.5 * lh <= r.y < y_lim]
+        band = [r for r in rows if y_lim - 12 * lh <= r.y < y_lim]
         left_limit = (code_x + 0.02) if code_x is not None else (min(c.x0min for c in cols) - 0.15)
         texts: dict[int, list[str]] = {id(c): [] for c in cols}
         for r in band:
@@ -224,13 +246,16 @@ def _nearest(nums: list[Word], col: _Col, pw: float, tol: float = 0.045) -> Word
     return best
 
 
-def _score(label: str, entry: dic.Entry) -> float:
+def _score(label: str, entry: dic.Entry, strict: bool = False) -> float:
+    """Label similarity. strict (label-only matching): whole-string comparison, so a short fragment such
+    as 'for the year' does not match 'Profit for the year'."""
     nl = norm_text(label)
     if not nl:
         return 0.0
+    scorer = fuzz.token_sort_ratio if strict else fuzz.token_set_ratio
     best = 0.0
     for lab in entry.all_labels():
-        s = fuzz.token_set_ratio(nl, norm_text(lab))
+        s = scorer(nl, norm_text(lab))
         if s > best:
             best = s
     return best
@@ -250,7 +275,7 @@ def _detect_form_by_labels(rows_by_page) -> str | None:
                 if not any(is_number_word(w) for w in r.words):
                     continue
                 lab = " ".join(w.text for w in r.words if not is_number_word(w))
-                if lab and max((_score(lab, e) for e in ents), default=0) >= LABEL_ONLY_OK:
+                if lab and max((_score(lab, e, strict=True) for e in ents), default=0) >= LABEL_ONLY_OK:
                     hits[form] += 1
     form, n = max(hits.items(), key=lambda kv: kv[1])
     return form if n >= 3 else None
@@ -366,7 +391,7 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
             side_r = side_by_row.get(id(c.row), "asset")
             pool = [e for e in dic.entries(form) if (e.form, e.code) not in taken
                     and (form != "form1" or (e.side == "asset") == (side_r == "asset"))]
-            scored = sorted(((_score(label, e), e) for e in pool), key=lambda x: x[0], reverse=True)
+            scored = sorted(((_score(label, e, strict=True), e) for e in pool), key=lambda x: x[0], reverse=True)
             if not scored or scored[0][0] < LABEL_ONLY_OK:
                 ys = [k.row.y for k in code_cands if k.row.page_n == c.row.page_n]
                 if ys and min(ys) <= c.row.y <= max(ys):  # inside the statutory table: worth showing
@@ -377,7 +402,6 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
             note = "non-statutory layout: matched by label, no line code"
         if (form, entry.code) in taken:
             continue
-        taken.add((form, entry.code))
         if c.ocr:
             method = "ocr+dictionary" if method == "dictionary" else method
 
@@ -385,6 +409,7 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
         if not values:
             unmapped.append(_unmapped(c, label, "no value in the amount columns"))
             continue
+        taken.add((form, entry.code))
         rows = page_rows.get(c.row.page_n, [c.row])
         idx = next((i for i, r in enumerate(rows) if r is c.row), 0)
         passage = _passage(rows, idx)

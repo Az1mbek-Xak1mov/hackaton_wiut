@@ -199,31 +199,23 @@ class OcrPage:
     blur: float
     script: str | None
     seconds: float
+    lang: str = ""
 
 
-def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6) -> OcrPage:
-    t0 = time.perf_counter()
-    gray = to_gray(img)
-    # small images (phone photos, low-dpi scans): upscale so text is ~30 px high for Tesseract
-    h, w = gray.shape[:2]
-    short = min(h, w)
-    if short < 1600:
-        f = min(2.5, 2400.0 / max(1, short))
-        gray = cv2.resize(gray, (int(w * f), int(h * f)), interpolation=cv2.INTER_CUBIC)
-    gray, _impulse = denoise(gray)
-    blur = blur_score(gray)
-    rotation, script = detect_osd(gray)
-    if rotation:
-        # OSD "Rotate: N" = rotate the image N degrees clockwise to make it upright
-        k = {90: cv2.ROTATE_90_CLOCKWISE, 180: cv2.ROTATE_180, 270: cv2.ROTATE_90_COUNTERCLOCKWISE}.get(rotation)
-        if k is not None:
-            gray = cv2.rotate(gray, k)
-    skew = estimate_skew(gray)
-    if abs(skew) >= 0.15:
-        gray = _rotate(gray, skew)
-    proc = normalise_illumination(gray)
-    proc, _ = remove_table_lines(proc)
-    lang = lang or langs_for(script)
+def _profile_cv(b: np.ndarray) -> float:
+    prof = b.sum(axis=1, dtype=np.float64)
+    return float(np.var(prof) / (np.mean(prof) ** 2 + 1e-9))
+
+
+def needs_quarter_turn(gray: np.ndarray) -> bool:
+    """Text lines run vertically (page scanned / photographed sideways): the row-sum profile of the image
+    turned by 90° is far more structured than the upright one."""
+    b = _binarise_small(gray)
+    cv0, cv90 = _profile_cv(b), _profile_cv(np.ascontiguousarray(np.rot90(b)))
+    return cv90 > 1.0 and cv90 > 2.5 * cv0
+
+
+def _tesseract(proc: np.ndarray, lang: str, psm: int) -> tuple[list[Word], float | None]:
     data = pytesseract.image_to_data(Image.fromarray(proc), lang=lang, config=_cfg(f"--psm {psm} --oem 1"),
                                      output_type=pytesseract.Output.DICT)
     words: list[Word] = []
@@ -242,9 +234,69 @@ def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6) -> Ocr
         x, y, ww, hh = data["left"][i], data["top"][i], data["width"][i], data["height"][i]
         words.append(Word(text=text, x0=float(x), y0=float(y), x1=float(x + ww), y1=float(y + hh), conf=conf / 100.0))
         confs.append(conf)
+    return words, (sum(confs) / len(confs)) if confs else None
+
+
+def _prepare(gray: np.ndarray) -> tuple[np.ndarray, np.ndarray, float]:
+    skew = estimate_skew(gray)
+    if abs(skew) >= 0.15:
+        gray = _rotate(gray, skew)
+    proc, _ = remove_table_lines(normalise_illumination(gray))
+    return gray, proc, skew
+
+
+def _other_langs(lang: str) -> str | None:
+    have = [l for l in available_langs() if l != "osd"]
+    if "rus" in lang or "uzb_cyrl" in lang:
+        alt = [l for l in ("uzb", "eng") if l in have]
+    else:
+        alt = [l for l in ("rus", "uzb_cyrl") if l in have]
+    return "+".join(alt) if alt else None
+
+
+def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6, retry_below: float = 85.0) -> OcrPage:
+    """OCR one page. Retries once with the other script's languages, and once upside down after a quarter
+    turn, when recognition confidence is poor — OSD script / orientation guesses are unreliable on noisy scans."""
+    t0 = time.perf_counter()
+    gray = to_gray(img)
+    # small images (phone photos, low-dpi scans): upscale so text is ~30 px high for Tesseract
+    h, w = gray.shape[:2]
+    short = min(h, w)
+    if short < 1600:
+        f = min(2.5, 2400.0 / max(1, short))
+        gray = cv2.resize(gray, (int(w * f), int(h * f)), interpolation=cv2.INTER_CUBIC)
+    gray, _impulse = denoise(gray)
+    blur = blur_score(gray)
+    rotation = 0
+    turned = False
+    if needs_quarter_turn(gray):
+        gray = cv2.rotate(gray, cv2.ROTATE_90_CLOCKWISE)
+        rotation, turned = 90, True
+    osd_rot, script = detect_osd(gray)
+    if osd_rot == 180 or (osd_rot in (90, 270) and not turned):
+        k = {90: cv2.ROTATE_90_CLOCKWISE, 180: cv2.ROTATE_180, 270: cv2.ROTATE_90_COUNTERCLOCKWISE}[osd_rot]
+        gray = cv2.rotate(gray, k)
+        rotation = (rotation + osd_rot) % 360
+    gray, proc, skew = _prepare(gray)
+    lang = lang or langs_for(script)
+    words, conf = _tesseract(proc, lang, psm)
+    if conf is None or conf < retry_below:
+        alt = _other_langs(lang)
+        if alt:
+            w2, c2 = _tesseract(proc, alt, psm)
+            if c2 is not None and (conf is None or c2 > conf + 2):
+                words, conf, lang = w2, c2, alt
+    if turned and (conf is None or conf < 70):  # quarter turn went the wrong way: try upside down
+        g2 = cv2.rotate(gray, cv2.ROTATE_180)
+        g2, p2, s2 = _prepare(g2)
+        w2, c2 = _tesseract(p2, lang, psm)
+        if c2 is not None and (conf is None or c2 > conf + 5):
+            gray, proc, skew, words, conf = g2, p2, s2, w2, c2
+            rotation = (rotation + 180) % 360
     hh, ww = proc.shape[:2]
-    return OcrPage(words=words, width=ww, height=hh, image=Image.fromarray(gray), mean_conf=(sum(confs) / len(confs)) if confs else None,
-                   skew_deg=skew, rotation=rotation, blur=blur, script=script, seconds=time.perf_counter() - t0)
+    return OcrPage(words=words, width=ww, height=hh, image=Image.fromarray(gray), mean_conf=conf,
+                   skew_deg=skew, rotation=rotation, blur=blur, script=script, seconds=time.perf_counter() - t0,
+                   lang=lang)
 
 
 def reocr_digits(page_img: Image.Image, bbox: list[float], pad: float = 6.0) -> tuple[str, float] | None:

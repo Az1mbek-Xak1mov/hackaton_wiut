@@ -11,6 +11,7 @@
  "expected_indicators": [],
  "params": {
   "trend_pct": 9.9,
+  "trend_basis": "Q3 vs Q2 documents",
   "coverage": 3.37,
   "receivables_growth": 0.096,
   "payables_growth": -0.086,
@@ -18,7 +19,10 @@
   "late_statement": false,
   "installment_mln": 140.1
  },
+ "column_convention": "Form 1 prev = 31.12.2025; Form 2 prev = same quarter of 2025; QoQ = latest vs previous quarter documents",
  "documents": [
+  "forma1_Q2-2026.pdf",
+  "forma2_Q2-2026.pdf",
   "forma1_Q3-2026.pdf",
   "forma2_Q3-2026.pdf",
   "vypiska_2026-07_09.xlsx"
@@ -27,12 +31,12 @@
   "opening_balance": 495000000,
   "closing_balance": 471500000,
   "month_end_balances": {
-   "2026-07": 495454000,
-   "2026-08": 488505000,
+   "2026-07": 465715000,
+   "2026-08": 528784000,
    "2026-09": 471500000
   }
  },
- "statement_rows": 119,
- "language": "ru",
+ "statement_rows": 147,
+ "language": "uz_latn",
  "layout": "typed"
 }

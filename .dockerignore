@@ -8,6 +8,7 @@ web
 design
 docs
 data
+!data/seed
 eval
 tests
 deploy

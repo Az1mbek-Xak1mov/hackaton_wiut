@@ -23,18 +23,18 @@ _ROLE_PATTERNS: list[tuple[str, re.Pattern]] = [
     ("mfo", re.compile(r"(^|[^\w])(мфо|mfo)([^\w]|$)")),
     ("debit", re.compile(r"(дебет|debet|debit|расход|chiqim|списан|outflow|withdraw)")),
     ("credit", re.compile(r"(кредит|kredit|credit|приход|kirim|поступлен|зачислен|inflow|deposit)")),
-    ("balance", re.compile(r"(остаток|qoldiq|balance|сальдо)")),
+    ("balance", re.compile(r"(остаток|qoldiq|қолдиқ|balance|сальдо)")),
     ("date", re.compile(r"(дата|sana|сана|date)")),
-    ("purpose", re.compile(r"(назначени|maqsad|mazmun|purpose|description|details|детали|основани|содержани)")),
+    ("purpose", re.compile(r"(назначени|maqsad|mazmun|мақсад|мазмун|purpose|description|details|детали|основани|содержани)")),
     ("counterparty", re.compile(r"(контрагент|корреспондент|наименовани|получател|плательщик|kontragent|"
-                                r"korrespondent|to.lovchi|oluvchi|nomi|counterparty|payee|payer|beneficiar|name)")),
-    ("account", re.compile(r"(сч[её]т|р/с|hisob\s*raqam|hisobvaraq|account)")),
+                                r"korrespondent|to.lovchi|oluvchi|nomi|номи|тўловчи|олувчи|counterparty|payee|payer|beneficiar|name)")),
+    ("account", re.compile(r"(сч[её]т|р/с|hisob\s*raqam|hisobvaraq|ҳисоб\s*рақам|ҳисобварақ|account)")),
     ("currency", re.compile(r"(валют|valyuta|currency)")),
-    ("doc_no", re.compile(r"(№|номер|hujjat|doc)")),
+    ("doc_no", re.compile(r"(№|номер|hujjat|ҳужжат|doc)")),
     ("amount", re.compile(r"(сумма|summa|amount)")),
 ]
 _ROLE_RX = dict(_ROLE_PATTERNS)
-_NAME_HINT = re.compile(r"(наимен|nomi|name)")
+_NAME_HINT = re.compile(r"(наимен|nomi|номи|name)")
 
 _OPENING = re.compile(r"(входящ\w*\s+остат|остат\w*\s+на\s+начал|сальдо\s+на\s+начал|начальн\w*\s+остат|"
                       r"kirish\s+qoldi|davr\s+boshi\w*\s+qoldi|boshlang.ich\s+qoldi|opening\s+balance|balance\s+at\s+start)")
@@ -345,11 +345,13 @@ def build_aggregates(txns: list[TxnDraft], meta: dict, recurring: list[dict]) ->
                            span, rows, sheet)
             facts.extend([fm, fc, ft])
             g["fact_keys"] = {"monthly": fm.key, "count": fc.key, "total": ft.key}
+            g["evidence"] = [fm.key, fc.key, ft.key]
         else:
             fm = _agg_fact(f"statement.recurring.monthly.{g['group']}", f"{g['label']}, monthly (day {g['day_of_month']})",
                            g["amount_uzs"], span, rows, sheet)
             facts.append(fm)
             g["fact_keys"] = {"monthly": fm.key}
+            g["evidence"] = [fm.key]
     return facts
 
 

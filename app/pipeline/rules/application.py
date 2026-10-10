@@ -99,21 +99,29 @@ def loan_groups(ctx: AppContext) -> list[dict]:
 
 
 def _group_facts(ctx: AppContext, g: dict) -> dict[str, FactDraft]:
-    keys = g.get("fact_keys") or {}
+    keys = dict(g.get("fact_keys") or {})
+    for k in g.get("evidence") or []:  # keys remapped by the runner on persistence
+        f = ctx.index.by_key.get(k)
+        if f is not None:
+            kind = f.field.split(".")[2] if f.field.startswith("statement.loan_repayment.") else None
+            if kind in ("monthly", "count", "total"):
+                keys[kind] = k
     out = {k: ctx.index.by_key[v] for k, v in keys.items() if v in ctx.index.by_key}
-    if "monthly" not in out:
-        gid = g["group"]
-        f = ctx.index.field(f"statement.loan_repayment.monthly.{gid}")
-        if f is None:
-            f = ctx.derive(constant_fact(f"statement.loan_repayment.monthly.{gid}",
-                                         f"Loan repayments, contract {g.get('contract_no') or gid}, monthly "
-                                         f"(day {g.get('day_of_month')})", g["amount"], "kUZS", method="aggregate",
-                                         kind="aggregate", note=f"rows: {', '.join(map(str, g.get('row_ns', [])[:20]))}"))
-        out["monthly"] = f
-        c = ctx.index.field(f"statement.loan_repayment.count.{gid}")
-        out["count"] = c or ctx.derive(constant_fact(f"statement.loan_repayment.count.{gid}",
-                                                     f"Loan repayments, contract {g.get('contract_no') or gid}: payments",
-                                                     g["count"], "count", method="aggregate", kind="aggregate"))
+    gid = g["group"]
+    for kind in ("monthly", "count", "total"):
+        if kind not in out:
+            f = ctx.index.field(f"statement.loan_repayment.{kind}.{gid}")
+            if f is not None:
+                out[kind] = f
+    if "monthly" not in out:  # group known only from transactions: state its figures as aggregate facts
+        out["monthly"] = ctx.derive(constant_fact(
+            f"statement.loan_repayment.monthly.{gid}", f"Loan repayments, contract {g.get('contract_no') or gid}, "
+            f"monthly (day {g.get('day_of_month')})", g["amount"], "kUZS", method="aggregate", kind="aggregate",
+            note=f"rows: {', '.join(map(str, g.get('row_ns', [])[:20]))}"))
+    if "count" not in out:
+        out["count"] = ctx.derive(constant_fact(
+            f"statement.loan_repayment.count.{gid}", f"Loan repayments, contract {g.get('contract_no') or gid}: payments",
+            g["count"], "count", method="aggregate", kind="aggregate"))
     return out
 
 
@@ -121,12 +129,36 @@ def _norm_contract(s: object) -> str:
     return re.sub(r"[^0-9a-z]", "", str(s or "").lower())
 
 
+_CONTRACT_TOKEN = re.compile(r"(?<![\w/-])((?:[A-Za-zА-Яа-я]{1,3}-)?\d{2,4}[-/]\d{2,6}(?:[-/]\d{1,6})?)(?![\w/-])")
+
+
+def declared_contracts(ctx: AppContext) -> tuple[set[str], bool]:
+    """Contract numbers of debts declared in the application, and whether the declaration is known at all.
+    Sources: application["declared_debts"] and the text of the application.declared_debts_total fact."""
+    app = ctx.application
+    contracts = {_norm_contract(d.get("contract_no") or d.get("contract")) for d in app.get("declared_debts") or []
+                 if d.get("contract_no") or d.get("contract")}
+    f = ctx.index.field("application.declared_debts_total")
+    if f is not None:
+        blob = " ".join(x for x in (f.printed, f.passage, f.note) if x)
+        for m in _CONTRACT_TOKEN.finditer(blob):
+            tok = m.group(1)
+            if not re.fullmatch(r"\d{2}[./-]\d{2}[./-]\d{2,4}", tok):
+                contracts.add(_norm_contract(tok))
+    known = bool(contracts) or "declared_debts" in app or "declared_debts_total" in app or f is not None
+    return contracts, known
+
+
 def undeclared_loan_groups(ctx: AppContext) -> list[dict]:
-    """Recurring loan repayments (≥ 3 months) that do not match a debt declared in the application."""
+    """Recurring loan repayments (≥ 3 months) that do not match a debt declared in the application.
+    When the application declares debts but no contract numbers can be read, no group is called undeclared
+    (it may be one of the declared debts)."""
     app = ctx.application
     declared = app.get("declared_debts") or []
-    contracts = {_norm_contract(d.get("contract_no")) for d in declared if d.get("contract_no")}
+    contracts, _known = declared_contracts(ctx)
     declared_monthly = sum(float(d.get("monthly") or 0) for d in declared)
+    total, _ = ctx.app_value("declared_debts_total")
+    unknown_declared = (total or 0) > TOL_KUZS and not contracts and not declared_monthly
     out = []
     for g in loan_groups(ctx):
         if g.get("count", 0) < 3:
@@ -134,6 +166,8 @@ def undeclared_loan_groups(ctx: AppContext) -> list[dict]:
         if g.get("contract_no") and _norm_contract(g["contract_no"]) in contracts:
             continue
         if not g.get("contract_no") and declared_monthly and declared_monthly >= 0.9 * g["amount"]:
+            continue
+        if unknown_declared:
             continue
         out.append(g)
     return out
@@ -439,7 +473,8 @@ def r08_periods(ctx: AppContext) -> list[FindingDraft]:
         n = len([m for m in window if m in months])
         if n < 6:
             cf = ctx.derive(constant_fact("check.r08.statement_months", "Months of the last 8 covered by bank "
-                                          "statements", n, "count", note=f"window {window[0]} to {window[-1]}"))
+                                          "statements (6 required)", n, "count",
+                                          note=f"window {window[0]} to {window[-1]}"))
             out.append(_finding("R08", "neutral", "Period gap", "Bank statements do not cover the last 6 months",
                                 f"The statements cover {money(cf)} of the 8 months before the application "
                                 f"({_human(window[0])}–{_human(window[-1])}).", [cf], months=n))
@@ -482,10 +517,18 @@ def r09_stir(ctx: AppContext) -> list[FindingDraft]:
                      stir_facts, expected=expected, documents=[d.get("filename") for d, _ in bad])]
 
 
+def _provided_fact(ctx: AppContext, doc_type: str, period: str | None, have: int) -> FactDraft:
+    what = f"{DOC_NAMES[doc_type]} for {period}" if period else DOC_NAMES[doc_type]
+    return ctx.derive(constant_fact(f"check.r10.provided.{doc_type}.{(period or 'any').replace(' ', '-')}",
+                                    f"{what}: documents provided", float(have), "count",
+                                    note="documents attached to the application", method="rule"))
+
+
 def r10_missing_documents(ctx: AppContext) -> list[FindingDraft]:
     out = []
     received = ctx.received_on
     expected = _expected_periods(received) if received else {"form1": [], "form2": []}
+    detail = "The review needs this document; request it from the applicant."
     for doc_type, need in REQUIRED_DOCS.items():
         have = len(ctx.docs_of(doc_type))
         if have >= need:
@@ -494,20 +537,21 @@ def r10_missing_documents(ctx: AppContext) -> list[FindingDraft]:
             present = _doc_periods(ctx, doc_type)
             missing = [e for e in expected[doc_type] if parse_period(e).key not in present] or [None]
             for e in missing[: need - have]:
-                title = f"{DOC_NAMES[doc_type]} for {_human(e)} not provided" if e else f"{DOC_NAMES[doc_type]} not provided"
-                out.append(_finding("R10", "neutral", "Missing document", title,
-                                    "Requested from the applicant before the review can be completed.", [],
+                when = _human(e) if e else None
+                title = f"{DOC_NAMES[doc_type]} for {when} not provided" if when else f"{DOC_NAMES[doc_type]} not provided"
+                pf = _provided_fact(ctx, doc_type, when, 0 if when else have)
+                out.append(_finding("R10", "neutral", "Missing document", title, detail, [pf],
                                     doc_type=doc_type, expected=e))
         elif doc_type == "tax_declaration":
             q = _expected_tax_quarter(received) if received else None
             title = f"Tax declaration for {q} not provided" if q else "Tax declaration not provided"
-            out.append(_finding("R10", "neutral", "Missing document", title,
-                                "Requested from the applicant before the review can be completed.", [],
-                                doc_type=doc_type, expected=q))
+            pf = _provided_fact(ctx, doc_type, q, have)
+            out.append(_finding("R10", "neutral", "Missing document", title, detail, [pf], doc_type=doc_type,
+                                expected=q))
         else:
-            out.append(_finding("R10", "neutral", "Missing document", f"{DOC_NAMES[doc_type]} not provided",
-                                "Requested from the applicant before the review can be completed.", [],
-                                doc_type=doc_type))
+            pf = _provided_fact(ctx, doc_type, None, have)
+            out.append(_finding("R10", "neutral", "Missing document", f"{DOC_NAMES[doc_type]} not provided", detail,
+                                [pf], doc_type=doc_type))
     return out
 
 
@@ -557,7 +601,7 @@ def r12_duplicates(ctx: AppContext) -> list[FindingDraft]:
         for f in ctx.index.facts:
             sp = stat_parts(f.field)
             if sp and f.key in ctx.fact_document:
-                groups.setdefault((sp[0], sp[1], ctx.index.period(f.period_label).key), []).append(f)
+                groups.setdefault((sp[0], sp[1], ctx.index._stat_period(sp[0], f.period_label).key), []).append(f)
         n = 0
         for (form, code, pk), fs in sorted(groups.items()):
             docs = {ctx.fact_document[f.key] for f in fs}

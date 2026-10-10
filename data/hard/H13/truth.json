@@ -1,0 +1,1964 @@
+{
+ "id": "H13",
+ "case": "loan repaid to a microfinance org under an abbreviation",
+ "expected": "R06 still fires (undeclared recurring loan)",
+ "application_declares_debts": [],
+ "planted": [
+  {
+   "rule": "R06",
+   "contract": "MK-311",
+   "lender_printed_as": "MMT \"O.Qadam\""
+  }
+ ],
+ "documents": [
+  {
+   "file": "statement.xlsx",
+   "doc_type": "bank_statement"
+  }
+ ],
+ "transactions": {
+  "file": "statement.xlsx",
+  "layout": "A",
+  "language": "ru",
+  "header_rows": [
+   7
+  ],
+  "first_data_row": 8,
+  "opening_balance": 120000000,
+  "closing_balance": 821010320,
+  "period": {
+   "start": "2026-01-01",
+   "end": "2026-06-30"
+  },
+  "month_end_balances": {
+   "2026-01": 216692760,
+   "2026-02": 339255280,
+   "2026-03": 451504200,
+   "2026-04": 571740360,
+   "2026-05": 693791180,
+   "2026-06": 821010320
+  },
+  "rows": [
+   {
+    "row": 8,
+    "date": "2026-01-01",
+    "amount": -23538000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 9,
+    "date": "2026-01-02",
+    "amount": 54024000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "202115683"
+   },
+   {
+    "row": 10,
+    "date": "2026-01-02",
+    "amount": -64529000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 11,
+    "date": "2026-01-05",
+    "amount": 94727360,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 12,
+    "date": "2026-01-05",
+    "amount": 12115000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 13,
+    "date": "2026-01-05",
+    "amount": 8912000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 14,
+    "date": "2026-01-05",
+    "amount": -34706000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 15,
+    "date": "2026-01-05",
+    "amount": -43141000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 16,
+    "date": "2026-01-06",
+    "amount": 8892000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 17,
+    "date": "2026-01-06",
+    "amount": -33229000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 18,
+    "date": "2026-01-07",
+    "amount": 13699000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "215728790"
+   },
+   {
+    "row": 19,
+    "date": "2026-01-07",
+    "amount": -11626000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 20,
+    "date": "2026-01-08",
+    "amount": 17584000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 21,
+    "date": "2026-01-09",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 22,
+    "date": "2026-01-12",
+    "amount": 9202000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 23,
+    "date": "2026-01-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 24,
+    "date": "2026-01-12",
+    "amount": -30146000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 25,
+    "date": "2026-01-13",
+    "amount": 25657000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 26,
+    "date": "2026-01-13",
+    "amount": 12947000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "295964846"
+   },
+   {
+    "row": 27,
+    "date": "2026-01-14",
+    "amount": -4733000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 28,
+    "date": "2026-01-14",
+    "amount": -4733000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 29,
+    "date": "2026-01-16",
+    "amount": 24821000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "269789502"
+   },
+   {
+    "row": 30,
+    "date": "2026-01-19",
+    "amount": 13197000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 31,
+    "date": "2026-01-19",
+    "amount": -32761000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 32,
+    "date": "2026-01-21",
+    "amount": 26343000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 33,
+    "date": "2026-01-21",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 34,
+    "date": "2026-01-21",
+    "amount": -13798000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 35,
+    "date": "2026-01-21",
+    "amount": -23028000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 36,
+    "date": "2026-01-23",
+    "amount": 28875000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 37,
+    "date": "2026-01-23",
+    "amount": -71252600,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 38,
+    "date": "2026-01-26",
+    "amount": 41240000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "356584381"
+   },
+   {
+    "row": 39,
+    "date": "2026-01-26",
+    "amount": 19391000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 40,
+    "date": "2026-01-26",
+    "amount": -26142000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 41,
+    "date": "2026-01-27",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 42,
+    "date": "2026-01-29",
+    "amount": 38382000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 43,
+    "date": "2026-01-29",
+    "amount": 19277000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 44,
+    "date": "2026-01-29",
+    "amount": 18276000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 45,
+    "date": "2026-01-30",
+    "amount": 64574000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 46,
+    "date": "2026-01-30",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   },
+   {
+    "row": 47,
+    "date": "2026-01-30",
+    "amount": -18680000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 48,
+    "date": "2026-02-02",
+    "amount": -37078000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 49,
+    "date": "2026-02-02",
+    "amount": -58431000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 50,
+    "date": "2026-02-03",
+    "amount": 50369000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 51,
+    "date": "2026-02-03",
+    "amount": 8210000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 52,
+    "date": "2026-02-04",
+    "amount": 11420000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 53,
+    "date": "2026-02-04",
+    "amount": 5335000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 54,
+    "date": "2026-02-05",
+    "amount": 53761000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "215728790"
+   },
+   {
+    "row": 55,
+    "date": "2026-02-05",
+    "amount": 52004000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 56,
+    "date": "2026-02-05",
+    "amount": 5208000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 57,
+    "date": "2026-02-05",
+    "amount": -39551000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 58,
+    "date": "2026-02-06",
+    "amount": 13091000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 59,
+    "date": "2026-02-06",
+    "amount": -22838000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 60,
+    "date": "2026-02-06",
+    "amount": -41555000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 61,
+    "date": "2026-02-09",
+    "amount": 7701000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 62,
+    "date": "2026-02-09",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 63,
+    "date": "2026-02-09",
+    "amount": -10223000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 64,
+    "date": "2026-02-09",
+    "amount": -17684000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 65,
+    "date": "2026-02-09",
+    "amount": -160105800,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 66,
+    "date": "2026-02-11",
+    "amount": 20397000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 67,
+    "date": "2026-02-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 68,
+    "date": "2026-02-12",
+    "amount": -32865000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 69,
+    "date": "2026-02-13",
+    "amount": 15608000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 70,
+    "date": "2026-02-13",
+    "amount": -13703000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 71,
+    "date": "2026-02-16",
+    "amount": 180163320,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 72,
+    "date": "2026-02-16",
+    "amount": 9419000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "215728790"
+   },
+   {
+    "row": 73,
+    "date": "2026-02-16",
+    "amount": -5393000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 74,
+    "date": "2026-02-16",
+    "amount": -5393000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 75,
+    "date": "2026-02-16",
+    "amount": -16843000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 76,
+    "date": "2026-02-17",
+    "amount": 3793000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 77,
+    "date": "2026-02-18",
+    "amount": 18253000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 78,
+    "date": "2026-02-18",
+    "amount": -15049000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 79,
+    "date": "2026-02-20",
+    "amount": 60902000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 80,
+    "date": "2026-02-23",
+    "amount": 6333000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 81,
+    "date": "2026-02-23",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 82,
+    "date": "2026-02-23",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 83,
+    "date": "2026-02-24",
+    "amount": 15481000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 84,
+    "date": "2026-02-25",
+    "amount": 79458000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 85,
+    "date": "2026-02-26",
+    "amount": 12322000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 86,
+    "date": "2026-02-27",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   },
+   {
+    "row": 87,
+    "date": "2026-02-27",
+    "amount": -10554000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 88,
+    "date": "2026-03-02",
+    "amount": 38163000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "317685634"
+   },
+   {
+    "row": 89,
+    "date": "2026-03-03",
+    "amount": 8708000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 90,
+    "date": "2026-03-03",
+    "amount": 8358000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 91,
+    "date": "2026-03-04",
+    "amount": 37754000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 92,
+    "date": "2026-03-04",
+    "amount": 20394000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 93,
+    "date": "2026-03-04",
+    "amount": -39391000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 94,
+    "date": "2026-03-06",
+    "amount": 12106000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 95,
+    "date": "2026-03-09",
+    "amount": 15557000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 96,
+    "date": "2026-03-09",
+    "amount": 11058000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "333919063"
+   },
+   {
+    "row": 97,
+    "date": "2026-03-09",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 98,
+    "date": "2026-03-09",
+    "amount": -16240000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 99,
+    "date": "2026-03-10",
+    "amount": 55007000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 100,
+    "date": "2026-03-10",
+    "amount": -23119000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 101,
+    "date": "2026-03-11",
+    "amount": -38192000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 102,
+    "date": "2026-03-12",
+    "amount": 9472000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 103,
+    "date": "2026-03-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 104,
+    "date": "2026-03-16",
+    "amount": 72115000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 105,
+    "date": "2026-03-16",
+    "amount": 10176000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 106,
+    "date": "2026-03-16",
+    "amount": -5371000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 107,
+    "date": "2026-03-16",
+    "amount": -5371000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 108,
+    "date": "2026-03-16",
+    "amount": -19479000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 109,
+    "date": "2026-03-16",
+    "amount": -43878000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 110,
+    "date": "2026-03-17",
+    "amount": 38543000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 111,
+    "date": "2026-03-18",
+    "amount": 171389720,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 112,
+    "date": "2026-03-18",
+    "amount": -18536000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 113,
+    "date": "2026-03-20",
+    "amount": 8002000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 114,
+    "date": "2026-03-20",
+    "amount": -50522000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 115,
+    "date": "2026-03-23",
+    "amount": 62941000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "295964846"
+   },
+   {
+    "row": 116,
+    "date": "2026-03-23",
+    "amount": 9520000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 117,
+    "date": "2026-03-23",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 118,
+    "date": "2026-03-23",
+    "amount": -13353000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 119,
+    "date": "2026-03-24",
+    "amount": 15613000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 120,
+    "date": "2026-03-25",
+    "amount": -58004000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 121,
+    "date": "2026-03-26",
+    "amount": -134136800,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 122,
+    "date": "2026-03-27",
+    "amount": 8831000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 123,
+    "date": "2026-03-27",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 124,
+    "date": "2026-03-30",
+    "amount": 12967000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 125,
+    "date": "2026-03-30",
+    "amount": -13579000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 126,
+    "date": "2026-03-31",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   },
+   {
+    "row": 127,
+    "date": "2026-03-31",
+    "amount": -15854000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 128,
+    "date": "2026-04-02",
+    "amount": -9363000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 129,
+    "date": "2026-04-03",
+    "amount": 18541000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 130,
+    "date": "2026-04-03",
+    "amount": 10948000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 131,
+    "date": "2026-04-06",
+    "amount": 15419000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 132,
+    "date": "2026-04-06",
+    "amount": 10449000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "258533847"
+   },
+   {
+    "row": 133,
+    "date": "2026-04-06",
+    "amount": -8542000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 134,
+    "date": "2026-04-06",
+    "amount": -10222000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 135,
+    "date": "2026-04-06",
+    "amount": -39495000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 136,
+    "date": "2026-04-07",
+    "amount": -29029000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 137,
+    "date": "2026-04-08",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 138,
+    "date": "2026-04-09",
+    "amount": 10021000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 139,
+    "date": "2026-04-09",
+    "amount": -14210000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 140,
+    "date": "2026-04-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 141,
+    "date": "2026-04-13",
+    "amount": 80970560,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "258533847"
+   },
+   {
+    "row": 142,
+    "date": "2026-04-13",
+    "amount": 53467000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "237109004"
+   },
+   {
+    "row": 143,
+    "date": "2026-04-13",
+    "amount": -10733000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 144,
+    "date": "2026-04-13",
+    "amount": -15258000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 145,
+    "date": "2026-04-14",
+    "amount": 73511000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 146,
+    "date": "2026-04-14",
+    "amount": -5386000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 147,
+    "date": "2026-04-14",
+    "amount": -5386000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 148,
+    "date": "2026-04-15",
+    "amount": -8345000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 149,
+    "date": "2026-04-17",
+    "amount": 67797000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 150,
+    "date": "2026-04-17",
+    "amount": 8516000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 151,
+    "date": "2026-04-17",
+    "amount": -13101000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 152,
+    "date": "2026-04-20",
+    "amount": 77223000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 153,
+    "date": "2026-04-20",
+    "amount": 13137000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 154,
+    "date": "2026-04-21",
+    "amount": 42473000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 155,
+    "date": "2026-04-23",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 156,
+    "date": "2026-04-23",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 157,
+    "date": "2026-04-24",
+    "amount": -44362000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 158,
+    "date": "2026-04-27",
+    "amount": 35121000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 159,
+    "date": "2026-04-27",
+    "amount": 17191000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "215728790"
+   },
+   {
+    "row": 160,
+    "date": "2026-04-27",
+    "amount": 12354000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "269789502"
+   },
+   {
+    "row": 161,
+    "date": "2026-04-27",
+    "amount": 11693000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "215728790"
+   },
+   {
+    "row": 162,
+    "date": "2026-04-28",
+    "amount": 18175000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 163,
+    "date": "2026-04-29",
+    "amount": 36695000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 164,
+    "date": "2026-04-29",
+    "amount": 14633000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 165,
+    "date": "2026-04-29",
+    "amount": -16810000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 166,
+    "date": "2026-04-30",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   },
+   {
+    "row": 167,
+    "date": "2026-04-30",
+    "amount": -258456400,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 168,
+    "date": "2026-05-04",
+    "amount": -11140000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 169,
+    "date": "2026-05-04",
+    "amount": -42334000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 170,
+    "date": "2026-05-06",
+    "amount": 40707000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 171,
+    "date": "2026-05-06",
+    "amount": 14051000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "200732210"
+   },
+   {
+    "row": 172,
+    "date": "2026-05-06",
+    "amount": 10285000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 173,
+    "date": "2026-05-07",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 174,
+    "date": "2026-05-07",
+    "amount": -64520000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 175,
+    "date": "2026-05-08",
+    "amount": 12719000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 176,
+    "date": "2026-05-11",
+    "amount": 16544000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 177,
+    "date": "2026-05-11",
+    "amount": 13614000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "237109004"
+   },
+   {
+    "row": 178,
+    "date": "2026-05-12",
+    "amount": 131980920,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 179,
+    "date": "2026-05-12",
+    "amount": 76930000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 180,
+    "date": "2026-05-12",
+    "amount": 12140000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 181,
+    "date": "2026-05-12",
+    "amount": -6915000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 182,
+    "date": "2026-05-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 183,
+    "date": "2026-05-14",
+    "amount": 28095000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 184,
+    "date": "2026-05-14",
+    "amount": 10651000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 185,
+    "date": "2026-05-14",
+    "amount": -5773000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 186,
+    "date": "2026-05-14",
+    "amount": -5773000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 187,
+    "date": "2026-05-18",
+    "amount": 35911000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 188,
+    "date": "2026-05-18",
+    "amount": -11598000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 189,
+    "date": "2026-05-19",
+    "amount": 65877000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 190,
+    "date": "2026-05-19",
+    "amount": 32346000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "358496509"
+   },
+   {
+    "row": 191,
+    "date": "2026-05-20",
+    "amount": 9084000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 192,
+    "date": "2026-05-21",
+    "amount": 23705000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 193,
+    "date": "2026-05-21",
+    "amount": 12404000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "303622010"
+   },
+   {
+    "row": 194,
+    "date": "2026-05-21",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 195,
+    "date": "2026-05-22",
+    "amount": -10507000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 196,
+    "date": "2026-05-22",
+    "amount": -159160100,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 197,
+    "date": "2026-05-25",
+    "amount": 58550000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 198,
+    "date": "2026-05-25",
+    "amount": 34792000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 199,
+    "date": "2026-05-25",
+    "amount": 33116000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "237109004"
+   },
+   {
+    "row": 200,
+    "date": "2026-05-25",
+    "amount": -88783000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 201,
+    "date": "2026-05-26",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 202,
+    "date": "2026-05-26",
+    "amount": -16073000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 203,
+    "date": "2026-05-26",
+    "amount": -39730000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 204,
+    "date": "2026-05-27",
+    "amount": -24947000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 205,
+    "date": "2026-05-28",
+    "amount": -13624000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 206,
+    "date": "2026-05-29",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   },
+   {
+    "row": 207,
+    "date": "2026-05-29",
+    "amount": -31174000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 208,
+    "date": "2026-06-02",
+    "amount": 15001000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 209,
+    "date": "2026-06-04",
+    "amount": -42280000,
+    "category": "salary",
+    "recurring_group": "salary",
+    "counterparty_stir": null
+   },
+   {
+    "row": 210,
+    "date": "2026-06-04",
+    "amount": -61333000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 211,
+    "date": "2026-06-05",
+    "amount": 94623000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 212,
+    "date": "2026-06-08",
+    "amount": 42576000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 213,
+    "date": "2026-06-08",
+    "amount": -4500000,
+    "category": "rent_utilities",
+    "recurring_group": "rent",
+    "counterparty_stir": "228247825"
+   },
+   {
+    "row": 214,
+    "date": "2026-06-08",
+    "amount": -11356000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 215,
+    "date": "2026-06-08",
+    "amount": -15704000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 216,
+    "date": "2026-06-09",
+    "amount": 38044000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 217,
+    "date": "2026-06-09",
+    "amount": 33980000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "295964846"
+   },
+   {
+    "row": 218,
+    "date": "2026-06-09",
+    "amount": 9008000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 219,
+    "date": "2026-06-09",
+    "amount": 7843000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 220,
+    "date": "2026-06-09",
+    "amount": -80594000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 221,
+    "date": "2026-06-12",
+    "amount": -9400000,
+    "category": "loan_repayment",
+    "recurring_group": "loan:MK-311",
+    "counterparty_stir": "309114582"
+   },
+   {
+    "row": 222,
+    "date": "2026-06-12",
+    "amount": -11233000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 223,
+    "date": "2026-06-12",
+    "amount": -12047000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 224,
+    "date": "2026-06-12",
+    "amount": -17060000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 225,
+    "date": "2026-06-15",
+    "amount": 10449000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 226,
+    "date": "2026-06-15",
+    "amount": -109912300,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 227,
+    "date": "2026-06-16",
+    "amount": 48029000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 228,
+    "date": "2026-06-16",
+    "amount": 30272000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "285570341"
+   },
+   {
+    "row": 229,
+    "date": "2026-06-16",
+    "amount": 29018000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "295964846"
+   },
+   {
+    "row": 230,
+    "date": "2026-06-16",
+    "amount": 10126000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 231,
+    "date": "2026-06-16",
+    "amount": -5765000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:social",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 232,
+    "date": "2026-06-16",
+    "amount": -5765000,
+    "category": "payroll_tax",
+    "recurring_group": "payroll:pit",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 233,
+    "date": "2026-06-17",
+    "amount": 40333000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "249342554"
+   },
+   {
+    "row": 234,
+    "date": "2026-06-19",
+    "amount": 12299000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 235,
+    "date": "2026-06-19",
+    "amount": -14782000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "297561556"
+   },
+   {
+    "row": 236,
+    "date": "2026-06-22",
+    "amount": 63634000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 237,
+    "date": "2026-06-22",
+    "amount": -3000000,
+    "category": "tax",
+    "recurring_group": "tax:vat",
+    "counterparty_stir": "201122905"
+   },
+   {
+    "row": 238,
+    "date": "2026-06-22",
+    "amount": -56699000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 239,
+    "date": "2026-06-23",
+    "amount": -35824000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272264383"
+   },
+   {
+    "row": 240,
+    "date": "2026-06-25",
+    "amount": 10640000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 241,
+    "date": "2026-06-26",
+    "amount": -2100000,
+    "category": "rent_utilities",
+    "recurring_group": "util:electricity",
+    "counterparty_stir": "200933985"
+   },
+   {
+    "row": 242,
+    "date": "2026-06-29",
+    "amount": 140024440,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 243,
+    "date": "2026-06-29",
+    "amount": 8883000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "323816260"
+   },
+   {
+    "row": 244,
+    "date": "2026-06-29",
+    "amount": 8182000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 245,
+    "date": "2026-06-29",
+    "amount": -45656000,
+    "category": "supplier_payment",
+    "recurring_group": null,
+    "counterparty_stir": "272274849"
+   },
+   {
+    "row": 246,
+    "date": "2026-06-30",
+    "amount": 19665000,
+    "category": "sales_receipt",
+    "recurring_group": null,
+    "counterparty_stir": "292524570"
+   },
+   {
+    "row": 247,
+    "date": "2026-06-30",
+    "amount": -400000,
+    "category": "bank_fee",
+    "recurring_group": null,
+    "counterparty_stir": null
+   }
+  ]
+ }
+}

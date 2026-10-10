@@ -13,6 +13,7 @@
  ],
  "params": {
   "trend_pct": -0.8,
+  "trend_basis": "Q3 vs Q2 documents",
   "coverage": 2.2,
   "receivables_growth": 0.36,
   "payables_growth": 0.113,
@@ -20,7 +21,10 @@
   "late_statement": false,
   "installment_mln": 42.0
  },
+ "column_convention": "Form 1 prev = 31.12.2025; Form 2 prev = same quarter of 2025; QoQ = latest vs previous quarter documents",
  "documents": [
+  "forma1_Q2-2026.pdf",
+  "forma2_Q2-2026.pdf",
   "forma1_Q3-2026.pdf",
   "forma2_Q3-2026.pdf",
   "vypiska_2026-07_09.xlsx"
@@ -29,13 +33,13 @@
   "opening_balance": 141800000,
   "closing_balance": 92400000,
   "month_end_balances": {
-   "2026-07": 122566000,
-   "2026-08": 129350000,
+   "2026-07": 84288000,
+   "2026-08": 96943000,
    "2026-09": 92400000
   }
  },
- "statement_rows": 167,
- "language": "uz_latn",
+ "statement_rows": 161,
+ "language": "ru",
  "layout": "software_export",
  "deviation_from_design": "design trend +4.1%; set to -0.8% so M02 (receivables +25% while revenue <= 0%) is the single indicator"
 }

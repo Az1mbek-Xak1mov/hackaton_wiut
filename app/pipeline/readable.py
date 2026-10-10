@@ -5,6 +5,8 @@ dates, STIRs, a text excerpt, the language and the OCR confidence.
 """
 from __future__ import annotations
 
+import re
+
 from app.pipeline.classify import find_dates, find_stirs
 from app.pipeline.numbers import parse_number
 from app.pipeline.rows import cluster_rows, is_number_word, row_text
@@ -25,7 +27,10 @@ def readable_summary(doc: ParsedDoc) -> dict:
             for w in nums:
                 v = parse_number(w.text, ocr=p.ocr_used)
                 # skip line codes, page numbers and other tiny integers without a label
-                if v is None or (abs(v) < 1000 and not label) or len(w.text.replace(" ", "")) < 3:
+                raw = w.text.replace(" ", "")
+                if v is None or (abs(v) < 1000 and not label) or len(raw) < 3:
+                    continue
+                if re.fullmatch(r"(19|20)\d{2}", raw):  # a year, not an amount
                     continue
                 if len(numbers) < MAX_NUMBERS:
                     numbers.append({"text": w.text, "value": v, "label": label[:160], "page_n": p.n,

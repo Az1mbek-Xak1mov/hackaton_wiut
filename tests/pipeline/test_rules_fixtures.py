@@ -13,7 +13,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from app.pipeline.compute import new_fact_key  # noqa: E402
+from app.pipeline.compute import new_fact_key  # noqa: E402,F401
 from app.pipeline.rules.context import AppContext  # noqa: E402
 from app.pipeline.statements.normalise import normalise_statement  # noqa: E402
 from app.pipeline.types import FactDraft, ParsedDoc, XlsxSheet  # noqa: E402

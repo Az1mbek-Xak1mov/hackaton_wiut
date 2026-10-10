@@ -66,18 +66,29 @@ def fmt(v: int | float | None, sep: str = "space", neg: str = "paren", dash: boo
     return s
 
 
+UZ_FROM = {1: "yanvardan", 2: "fevraldan", 3: "martdan", 4: "apreldan", 5: "maydan", 6: "iyundan", 7: "iyuldan",
+           8: "avgustdan", 9: "sentyabrdan", 10: "oktyabrdan", 11: "noyabrdan", 12: "dekabrdan"}
+UZ_TO = {1: "yanvargacha", 2: "fevralgacha", 3: "martgacha", 4: "aprelgacha", 5: "maygacha", 6: "iyungacha",
+         7: "iyulgacha", 8: "avgustgacha", 9: "sentyabrgacha", 10: "oktyabrgacha", 11: "noyabrgacha", 12: "dekabrgacha"}
+MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+             "November", "December"]
+
+
 def period_phrase(lang: str, period: str) -> str:
+    """Unambiguous reporting-period header: FY / H1 (cumulative from 1 January) / a standalone quarter."""
     kind, _, year = period.partition("-")
     if period.startswith("FY"):
         y = period[2:]
-        return tr(lang, f"за {y} год", f"{y} yil uchun", f"for the year {y}")
+        return tr(lang, f"за {y} год", f"{y} yil uchun (1 yanvardan 31 dekabrgacha)", f"for the year {y}")
     if kind == "H1":
         return tr(lang, f"за 1-е полугодие {year} года", f"{year} yil 1 yanvardan 30 iyungacha",
-                  f"for January-June {year}")
+                  f"for 1 January - 30 June {year}")
     if kind.startswith("Q"):
         q = int(kind[1])
-        return tr(lang, f"за {ROMAN[q]} квартал {year} г.", f"{year} yil {ROMAN[q]} chorak uchun",
-                  f"for Q{q} {year}")
+        m0, m1 = 3 * q - 2, 3 * q
+        last = {3: 31, 6: 30, 9: 30, 12: 31}[m1]
+        return tr(lang, f"за {q} квартал {year} г.", f"{year} yil 1 {UZ_FROM[m0]} {last} {UZ_TO[m1]}",
+                  f"for Q{q} {year} (1 {MONTHS_EN[m0 - 1]} - {last} {MONTHS_EN[m1 - 1]})")
     raise ValueError(period)
 
 
@@ -86,16 +97,17 @@ def date_phrase(lang: str, d: date) -> str:
               f"{d.year} yil {d.day} {MONTHS_UZ[d.month - 1]} holatiga", f"as at {d.isoformat()}")
 
 
-def column_headers(lang: str, form: str, quarterly: bool) -> tuple[str, str]:
-    """(prev header, cur header)."""
+def column_headers(lang: str, form: str, quarterly: bool = False) -> tuple[str, str]:
+    """(prev header, cur header) — statutory convention for annual and interim reports alike.
+
+    Form 1: beginning of the reporting period (31.12 of the prior year) | end of the reporting period.
+    Form 2: same period of the prior year | reporting period.  (`quarterly` is accepted for compatibility.)
+    """
     if form == "form1":
-        return (tr(lang, "На начало отчетного периода", "Hisobot davri boshiga", "Beginning of period"),
-                tr(lang, "На конец отчетного периода", "Hisobot davri oxiriga", "End of period"))
-    if quarterly:
-        return (tr(lang, "За предыдущий квартал", "Oldingi chorakda", "Previous quarter"),
-                tr(lang, "За отчетный квартал (отчетный период)", "Hisobot choragida (hisobot davri)", "Reporting quarter"))
-    return (tr(lang, "За соответствующий период прошлого года", "O'tgan yilning shu davrida", "Same period last year"),
-            tr(lang, "За отчетный период", "Hisobot davrida", "Reporting period"))
+        return (tr(lang, "На начало отчетного периода", "Hisobot davri boshiga", "Beginning of reporting period"),
+                tr(lang, "На конец отчетного периода", "Hisobot davri oxiriga", "End of reporting period"))
+    return (tr(lang, "Соответствующий период прошлого года", "O'tgan yilning shu davri", "Same period of the prior year"),
+            tr(lang, "Отчетный период", "Hisobot davri", "Reporting period"))
 
 
 def _wrap(text: str, font: str, size: float, width: float) -> list[str]:
@@ -202,9 +214,7 @@ class FormRenderer:
                 self.text(40, top, f"{nm}  ({tr(self.lang, 'ИНН', 'STIR', 'TIN')} {c.stir})", 9, bold=True)
                 self.text(40, top - 14, f"{self._title().capitalize()} {self.title_when}", 11, bold=True)
                 self.text(40, top - 28, self._unit_text(), 8)
-                gen = self.submitted or date(2026, 1, 25)
-                self.text(555, top, tr(self.lang, f"Сформировано: {gen:%d.%m.%Y} 10:42", f"Shakllantirildi: {gen:%d.%m.%Y} 10:42", ""), 7, right=True)
-                self.text(555, top - 10, self._form_no(), 7, right=True)
+                self.text(555, top, self._form_no(), 7, right=True)
                 self.y = top - 48
             else:  # typed
                 self.text(40, top, self._form_no(), 9)
@@ -306,7 +316,7 @@ class FormRenderer:
         sub = self.submitted or date(2026, 1, 25)
         self.text(40, y, f"{tr(self.lang, 'Руководитель', 'Rahbar', 'Director')} ____________  {c.director}", 8.5)
         self.text(300, y, f"{tr(self.lang, 'Главный бухгалтер', 'Bosh hisobchi', 'Chief accountant')} ____________  {c.accountant}", 8.5)
-        self.text(40, y - 16, f"{tr(self.lang, 'Дата представления', 'Taqdim etilgan sana', 'Submitted')}: {sub:%d.%m.%Y}", 8.5)
+        self.text(40, y - 16, f"{tr(self.lang, 'Дата подписания', 'Imzolangan sana', 'Signed on')}: {sub:%d.%m.%Y}", 8.5)
         self.footer_pageno()
 
     def save(self):
@@ -317,10 +327,14 @@ def render_form(path: Path, form: str, lang: str, layout: str, company: Company,
                 cur: dict[str, int | None], prev: dict[str, int | None], quarterly: bool = False,
                 unit: str = "kUZS", submitted: date | None = None, label_override: dict[str, str] | None = None,
                 drop_codes: set[str] | None = None, row_order: list[str] | None = None,
-                blank_prev: set[str] | None = None) -> dict:
+                blank_prev: set[str] | None = None, sep: str | None = None, neg_minus_codes: set[str] | None = None,
+                extra_lines: dict[str, list[tuple[str, str, int | None, int | None]]] | None = None,
+                blank_cur: set[str] | None = None) -> dict:
     """Write the PDF and return the truth dict for this document."""
     r = FormRenderer(path, form, lang, layout, company, title_when=title_when, quarterly=quarterly,
                      unit=unit, submitted=submitted)
+    if sep:
+        r.num_style = sep
     r.header(first=True)
     divisor = 1000.0 if unit == "mUZS" else 1.0
     decimals = 1 if unit == "mUZS" else 0
@@ -339,13 +353,14 @@ def render_form(path: Path, form: str, lang: str, layout: str, company: Company,
             r.section(tr(lang, ru, uz, en))
         dash = zero_as_dash(ln)
         pv = None if (blank_prev and ln.code in blank_prev) else prev.get(ln.code)
-        cv = cur.get(ln.code)
+        cv = None if (blank_cur and ln.code in blank_cur) else cur.get(ln.code)
+        neg = "minus" if (neg_minus_codes and ln.code in neg_minus_codes) else r.neg_style
 
         def show(v):
             if v is None:
                 return ""
             x = v / divisor if divisor != 1 else v
-            return fmt(x, r.num_style, r.neg_style, dash=dash, decimals=decimals)
+            return fmt(x, r.num_style, neg, dash=dash, decimals=decimals)
 
         ps, cs = show(pv), show(cv)
         label = (label_override or {}).get(ln.code) or ln.label(lang)
@@ -362,6 +377,10 @@ def render_form(path: Path, form: str, lang: str, layout: str, company: Company,
             fields[ln.code] = rec
         else:
             extra.append({"code": ln.code, **rec})
+        for code_txt, lab, ecur, eprev in (extra_lines or {}).get(ln.code, []):
+            fake = Line(form, code_txt, lab, lab, lab, indent=1)
+            pg = r.row(fake, lab, fmt(eprev, r.num_style, r.neg_style), fmt(ecur, r.num_style, r.neg_style))
+            extra.append({"code": code_txt or None, "label": lab, "cur": ecur, "prev": eprev, "page": pg, "unofficial": True})
     r.footer()
     r.save()
     order = r.cols()["order"]

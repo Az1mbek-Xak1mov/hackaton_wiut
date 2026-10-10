@@ -396,39 +396,55 @@ ZILOLA = Company(
     director="Qodirov B.", accountant="Sobirova N.", employees=37, since=2016,
     address="Samarqand sh., Spitamen shoh ko'chasi, 41-uy")
 ZIL_F2 = {
+    # standalone quarters (bank monitoring format); prior-year quarters are the statutory comparison column
+    "Q2-2025": {"010": 1_612_400, "020": 921_000, "050": 108_200, "060": 198_700, "070": 27_100, "250": 53_610},
+    "Q3-2025": {"010": 1_701_300, "020": 968_900, "050": 110_500, "060": 203_100, "070": 28_400, "250": 58_560},
     "Q1-2026": {"010": 1_736_118, "020": 993_500, "050": 121_000, "060": 216_400, "070": 32_400, "180": 24_700, "250": 52_218},
     "Q2-2026": {"010": 1_790_212, "020": 1_020_310, "050": 118_600, "060": 211_500, "070": 29_800, "180": 25_000, "250": 57_750},
     "Q3-2026": {"010": 1_289_046, "020": 1_006_410, "050": 120_412, "060": 214_806, "070": 30_404, "090": 6_190, "180": 25_204, "250": 0},
 }
 _ZIL_COMMON = {"020": 12_000, "410": 300_000, "430": 30_000, "330": 0, "690": 3_200, "700": 6_900, "720": 22_400}
 ZIL_F1_LEAVES = {
-    "2026-03-31": {**_ZIL_COMMON, "010": 2_840_000, "011": 640_300, "021": 4_400, "150": 318_400, "160": 64_200, "170": 141_300,
+    "2025-12-31": {**_ZIL_COMMON, "010": 2_812_000, "011": 520_100, "021": 3_800, "150": 305_200, "160": 61_000, "170": 128_400,
+                   "190": 8_600, "220": 262_040, "260": 44_100, "270": 5_800, "310": 3_000, "340": 198_000, "570": 1_086_000,
+                   "610": 205_900, "670": 19_400, "680": 36_900, "760": 9_100},
+    "2026-03-31": {**_ZIL_COMMON, "010": 2_840_000, "011": 557_600, "021": 4_400, "150": 318_400, "160": 64_200, "170": 141_300,
                    "190": 8_200, "220": 274_120, "260": 41_300, "270": 6_100, "310": 3_200, "340": 176_000, "570": 970_800,
                    "610": 212_400, "670": 18_200, "680": 38_400, "760": 9_700},
-    "2026-06-30": {**_ZIL_COMMON, "010": 2_846_500, "011": 703_100, "021": 5_000, "150": 326_100, "160": 66_900, "170": 152_600,
+    "2026-06-30": {**_ZIL_COMMON, "010": 2_846_500, "011": 595_100, "021": 5_000, "150": 326_100, "160": 66_900, "170": 152_600,
                    "190": 7_900, "220": 286_040, "260": 39_800, "270": 6_400, "310": 3_100, "340": 150_100, "570": 855_600,
-                   "610": 220_300, "670": 16_900, "680": 41_200},
-    "2026-09-30": {**_ZIL_COMMON, "010": 2_851_200, "011": 765_800, "021": 5_600, "150": 372_800, "160": 71_300, "170": 170_000,
+                   "610": 220_300, "670": 16_900, "680": 41_200, "760": 10_200},
+    "2026-09-30": {**_ZIL_COMMON, "010": 2_851_200, "011": 632_600, "021": 5_600, "150": 372_800, "160": 71_300, "170": 170_000,
                    "190": 7_600, "220": 403_260, "260": 22_400, "270": 6_900, "310": 3_500, "340": 65_500, "570": 740_400,
-                   "610": 231_900, "670": 9_800, "680": 12_600},
+                   "610": 231_900, "670": 9_800, "680": 12_600, "760": 12_400},
 }
 ZIL_CASH = {"open_q3": 150.1, "ends_q3": [118.4, 108.0, 65.5], "in_q3": [452.0, 430.0, 378.0],
             "open_q2": 176.0, "ends_q2": [168.2, 157.6, 150.1], "in_q2": [612.0, 598.4, 604.6]}
 CHAIN = ("Samarqand Uy Jihozlari MChJ", "303770915")
 
 
-def zilola_f1() -> dict:
-    """Q1 balance closes via retained earnings; Q2/Q3 roll RE by net profit and close via 100 (capital investments in progress)."""
+def _close(leaf: dict) -> dict:
+    """Close the balance: a shortfall of assets becomes capital investments in progress (100), a surplus other payables (760)."""
+    leaf = dict(leaf, **{"100": 0})
+    v = f1_totals(leaf)
+    gap = v["780"] - v["400"]
+    if gap >= 0:
+        leaf["100"] = gap
+    else:
+        leaf["760"] = leaf.get("760", 0) - gap
+    v = f1_totals(leaf)
+    assert v["400"] == v["780"]
+    return v
+
+
+def zilola_f1() -> tuple[dict, dict]:
+    """31.12.2025 closes via retained earnings; each quarter then rolls RE by that quarter's net profit."""
     f2 = {k: f2_totals(v) for k, v in ZIL_F2.items()}
-    out = {"2026-03-31": _plug_re(ZIL_F1_LEAVES["2026-03-31"])}
-    re = out["2026-03-31"]["450"]
-    for d, q in (("2026-06-30", "Q2-2026"), ("2026-09-30", "Q3-2026")):
+    out = {"2025-12-31": _plug_re(ZIL_F1_LEAVES["2025-12-31"])}
+    re = out["2025-12-31"]["450"]
+    for d, q in (("2026-03-31", "Q1-2026"), ("2026-06-30", "Q2-2026"), ("2026-09-30", "Q3-2026")):
         re += f2[q]["270"]
-        leaf = dict(ZIL_F1_LEAVES[d], **{"450": re, "760": {"2026-06-30": 10_200, "2026-09-30": 12_400}[d], "100": 0})
-        v = f1_totals(leaf)
-        leaf["100"] = v["780"] - v["400"]          # capital investments in progress (CNC line) close the balance
-        assert leaf["100"] >= 0, (d, leaf["100"])
-        out[d] = f1_totals(leaf)
+        out[d] = _close(dict(ZIL_F1_LEAVES[d], **{"450": re}))
     return out, f2
 
 
@@ -445,21 +461,23 @@ def build_zilola(root: Path) -> dict:
     assert q3["270"] == -102_000, q3["270"]
     assert round((q3["010"] / q2["010"] - 1) * 100, 1) == -28.0
     assert round(f1["2026-09-30"]["220"] / f1["2026-06-30"]["220"] - 1, 2) == 0.41
+    assert f1["2026-09-30"]["210"] / f1["2026-06-30"]["210"] - 1 >= 0.25
     docs = []
-    for fname, form, cur, prev, when, quarterly, sub, sub_dir in [
-        ("forma1_Q3-2026.pdf", "form1", f1["2026-09-30"], f1["2026-06-30"], date_phrase("ru", date(2026, 9, 30)), False, date(2026, 10, 1), ""),
-        ("forma2_Q3-2026.pdf", "form2", q3, q2, period_phrase("ru", "Q3-2026"), True, date(2026, 10, 1), ""),
-        ("forma1_Q2-2026.pdf", "form1", f1["2026-06-30"], f1["2026-03-31"], date_phrase("ru", date(2026, 6, 30)), False, date(2026, 7, 6), "history"),
-        ("forma2_Q2-2026.pdf", "form2", q2, f2["Q1-2026"], period_phrase("ru", "Q2-2026"), True, date(2026, 7, 6), "history"),
+    # statutory convention: Form 1 prev = 31.12 of the prior year; Form 2 prev = same quarter of the prior year
+    for fname, form, cur, prev, when, sub in [
+        ("forma1_Q2-2026.pdf", "form1", f1["2026-06-30"], f1["2025-12-31"], date_phrase("ru", date(2026, 6, 30)), date(2026, 7, 6)),
+        ("forma2_Q2-2026.pdf", "form2", q2, f2["Q2-2025"], period_phrase("ru", "Q2-2026"), date(2026, 7, 6)),
+        ("forma1_Q3-2026.pdf", "form1", f1["2026-09-30"], f1["2025-12-31"], date_phrase("ru", date(2026, 9, 30)), date(2026, 10, 1)),
+        ("forma2_Q3-2026.pdf", "form2", q3, f2["Q3-2025"], period_phrase("ru", "Q3-2026"), date(2026, 10, 1)),
     ]:
-        dst = out / sub_dir / fname
-        t = render_form(dst, form, "ru", "software_export" if form == "form2" else "mof_grid", c, title_when=when,
-                        cur=cur, prev=prev, quarterly=quarterly, submitted=sub)
-        ps = {"forma1_Q3-2026.pdf": ("2026-07-01", "2026-09-30"), "forma2_Q3-2026.pdf": ("2026-07-01", "2026-09-30"),
-              "forma1_Q2-2026.pdf": ("2026-04-01", "2026-06-30"), "forma2_Q2-2026.pdf": ("2026-04-01", "2026-06-30")}[fname]
-        docs.append({"file": f"{sub_dir}/{fname}".lstrip("/"), "doc_type": form, "period": {"start": ps[0], "end": ps[1]},
-                     "quarterly_bank_format": form == "form2", **t, "variant": {"scan": False}})
-    # statements
+        t = render_form(out / fname, form, "ru", "software_export" if form == "form2" else "mof_grid", c, title_when=when,
+                        cur=cur, prev=prev, submitted=sub)
+        q = "Q2" if "Q2" in fname else "Q3"
+        ps = {"Q2": ("2026-04-01", "2026-06-30"), "Q3": ("2026-07-01", "2026-09-30")}[q]
+        prev_period = ("2025-12-31" if form == "form1" else f"{q}-2025")
+        docs.append({"file": fname, "doc_type": form, "period": {"start": ps[0], "end": ps[1]},
+                     "standalone_quarter": form == "form2", "prev_column": prev_period, **t, "variant": {"scan": False}})
+
     def quarter_statement(months, opening, ends, inflows, chain_receipts, fname, late_sep: bool):
         ctx = make_ctx(rng, c, lang="ru", n_customers=22, n_suppliers=9)
         ctx.customers[0] = party_from(rng, *CHAIN)
@@ -504,6 +522,8 @@ def build_zilola(root: Path) -> dict:
     truth = {
         "bundle_id": "hero_zilola", "loan_id": "L-2025-0417",
         "company": {"name": c.name, "stir": c.stir, "industry": c.industry, "region": c.region, "employees": c.employees, "since": c.since},
+        "column_convention": "statutory: Form 1 prev = 31.12.2025 (beginning of the reporting year); Form 2 prev = same quarter of 2025. "
+                             "Quarter-over-quarter comparison (M01, M02) = Q3 documents vs Q2 documents.",
         "documents": [{k: v for k, v in d.items() if k != "pages"} | {"page_count": d.get("pages", 1)} for d in docs],
         "transactions": st3, "transactions_history": st2,
         "loan": {"installment_kuzs": 46_800, "due_day": 15, "late": [{"n": 11, "due": "2026-09-15", "paid": "2026-09-17", "days_late": 2}]},
@@ -512,9 +532,9 @@ def build_zilola(root: Path) -> dict:
             "revenue_change_pct": round((q3["010"] / q2["010"] - 1) * 100, 1),
             "costs_q2_q3_mln": [round((q2["010"] - q2["240"]) / 1000), round((q3["010"] - q3["240"]) / 1000)],
             "q3_loss_mln": q3["270"] / 1000,
-            "receivables_q2_q3_mln": [round(f1["2026-06-30"]["220"] / 1000), round(f1["2026-09-30"]["220"] / 1000)],
+            "receivables_q4_q1_q2_q3_mln": [round(f1[d]["220"] / 1000) for d in ("2025-12-31", "2026-03-31", "2026-06-30", "2026-09-30")],
             "receivables_change_pct": round((f1["2026-09-30"]["220"] / f1["2026-06-30"]["220"] - 1) * 100),
-            "cash_end_q2_q3_mln": [f1["2026-06-30"]["340"] / 1000, cash / 1000],
+            "cash_end_q4_q1_q2_q3_mln": [f1[d]["340"] / 1000 for d in ("2025-12-31", "2026-03-31", "2026-06-30", "2026-09-30")],
             "cash_coverage_q3": round(cash / 46_800, 2), "cash_coverage_q2": round(f1["2026-06-30"]["340"] / 46_800, 2),
             "chain_receipts_q3_mln": 190.0,
         },

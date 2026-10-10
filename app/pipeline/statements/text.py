@@ -42,6 +42,23 @@ def norm(text: object) -> str:
     return _SPACES.sub(" ", s).strip()
 
 
+_UZ_CYR = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "ғ": "g'", "д": "d", "е": "e", "ё": "yo", "ж": "j", "з": "z", "и": "i",
+    "й": "y", "к": "k", "қ": "q", "л": "l", "м": "m", "н": "n", "о": "o", "ў": "o'", "п": "p", "р": "r", "с": "s",
+    "т": "t", "у": "u", "ф": "f", "х": "x", "ҳ": "h", "ц": "ts", "ч": "ch", "ш": "sh", "ъ": "'", "ь": "", "э": "e",
+    "ю": "yu", "я": "ya", "ы": "i", "щ": "sh",
+}
+_UZ_MARKERS = re.compile(r"[ўқғҳ]")
+
+
+def uz_cyr_to_lat(text: str) -> str:
+    """Uzbek Cyrillic → Latin (normalised, lower-case input). Russian text passes through unchanged unless it
+    contains Uzbek-only letters, so Russian rules keep matching the original."""
+    if not _UZ_MARKERS.search(text) and not re.search(r"\b(учун|бўйича|шартнома|тўлов|солиқ)\b", text):
+        return text
+    return "".join(_UZ_CYR.get(ch, ch) for ch in text)
+
+
 def strip_vat_mentions(text: str) -> str:
     s = _VAT_INCLUDED.sub(" ", text)
     s = _VAT_NONE.sub(" ", s)

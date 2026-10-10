@@ -236,6 +236,7 @@ export interface RatioBox {
   flag: boolean | string | null
   fact_key: string | null
   fact_keys?: string[]
+  period?: string | null
 }
 
 export interface RejectedDraft {

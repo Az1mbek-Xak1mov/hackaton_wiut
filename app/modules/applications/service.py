@@ -41,12 +41,16 @@ def linked_documents(db: Session, application: Application) -> list[Document]:
                            .order_by(Document.id)).all())
 
 
+APPLICATION_PRIORITY = 5   # after public uploads (10), before bulk document jobs (0)
+
+
 def enqueue_analysis(db: Session, application: Application, kind: str = "analyse_application") -> Job:
     jobs = JobService(db)
     pending = jobs.pending_for(app_ref(application), kind)
     if pending is not None:
         return pending
-    return jobs.enqueue(kind, {"application_uuid": str(application.uuid)}, ref=app_ref(application))
+    return jobs.enqueue(kind, {"application_uuid": str(application.uuid)}, ref=app_ref(application),
+                        priority=APPLICATION_PRIORITY)
 
 
 def annuity_installment(amount_k: float | None, term_months: int | None, rate_pct: float | None) -> float | None:

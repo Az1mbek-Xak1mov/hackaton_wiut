@@ -1,0 +1,102 @@
+[
+ {
+  "id": "H01",
+  "case": "page rotated 90°",
+  "expected": "OSD fixes rotation; fields extracted"
+ },
+ {
+  "id": "H02",
+  "case": "official stamp over 2 value cells",
+  "expected": "low confidence -> clarification, never a wrong value"
+ },
+ {
+  "id": "H03",
+  "case": "negatives in parentheses and with '-' mixed",
+  "expected": "correct signs on every negative line"
+ },
+ {
+  "id": "H04",
+  "case": "dot thousands separators (9.842.316)",
+  "expected": "parsed as integers"
+ },
+ {
+  "id": "H05",
+  "case": "units in mln UZS instead of thousands",
+  "expected": "unit detected from the header; values x1000 into kUZS"
+ },
+ {
+  "id": "H06",
+  "case": "prior-year column blank",
+  "expected": "prev missing with note 'cell blank'; no invented prior values"
+ },
+ {
+  "id": "H07",
+  "case": "rows out of order + 2 unofficial extra rows",
+  "expected": "codes mapped regardless of order; extra rows unmapped"
+ },
+ {
+  "id": "H08",
+  "case": "label typos and apostrophe variants o‘ oʻ o'",
+  "expected": "fuzzy label match still maps every line"
+ },
+ {
+  "id": "H09",
+  "case": "mixed Cyrillic/Latin homoglyphs in labels",
+  "expected": "homoglyph fold + match"
+ },
+ {
+  "id": "H10",
+  "case": "Form 1 split over 2 pages",
+  "expected": "continuous extraction across pages"
+ },
+ {
+  "id": "H11",
+  "case": "statement with USD rows",
+  "expected": "USD rows excluded from UZS aggregates, counted and shown"
+ },
+ {
+  "id": "H12",
+  "case": "purpose text truncated at 60 chars",
+  "expected": "model categorisation with lower confidence"
+ },
+ {
+  "id": "H13",
+  "case": "loan repaid to a microfinance org under an abbreviation",
+  "expected": "R06 still fires (undeclared recurring loan)"
+ },
+ {
+  "id": "H14",
+  "case": "salaries paid via a card-project bank without the word 'salary'",
+  "expected": "categorised as salary"
+ },
+ {
+  "id": "H15",
+  "case": "English IFRS balance sheet",
+  "expected": "non-statutory layout; matched by English label, lower confidence"
+ },
+ {
+  "id": "H16",
+  "case": "password-protected PDF",
+  "expected": "failed: 'PDF is encrypted' (and nothing invented)"
+ },
+ {
+  "id": "H17",
+  "case": "empty / all-zero Form 2",
+  "expected": "analyzed; only zero/dash cells; nothing invented"
+ },
+ {
+  "id": "H18",
+  "case": "same file uploaded twice",
+  "expected": "R12 duplicate (same sha256)"
+ },
+ {
+  "id": "H19",
+  "case": "640x480 blurred phone photo",
+  "expected": "failed with cause (resolution, blur score) + whatever text was read"
+ },
+ {
+  "id": "H20",
+  "case": "a Word letter saved as PDF (no figures)",
+  "expected": "unknown + 'what I could read'; no numbers invented"
+ }
+]

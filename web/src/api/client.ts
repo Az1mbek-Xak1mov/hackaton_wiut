@@ -1,6 +1,6 @@
 import type {
   AnalyseResult, ApplicationListItem, ApplicationReview, BorrowerList, BorrowerProfile,
-  CfoHistoryItem, CfoResponse, CreatedWithJob, DocumentOut, Fact, Finding, LlmSettings, OwnerBusiness,
+  CfoHistoryItem, CfoResponse, CreatedWithJob, DocumentOut, Fact, Finding, Job, LlmSettings, OwnerBusiness,
   PortfolioSummary, TokenPair, VersionInfo, ApiErrorBody,
 } from './types'
 
@@ -186,6 +186,9 @@ export const api = {
   portfolio: () => request<PortfolioSummary>('/portfolio/summary'),
   applications: () => request<{ items: ApplicationListItem[] }>('/applications'),
   applicationReview: (number: string) => request<ApplicationReview>(`/applications/${encodeURIComponent(number)}/review`),
+  regenerateNarrative: (number: string) =>
+    request<Job>(`/applications/${encodeURIComponent(number)}/narrative/regenerate`, { method: 'POST' }),
+  job: (uuid: string) => request<Job>(`/jobs/${encodeURIComponent(uuid)}`, { auth: false }),
   recordDecision: (number: string, payload: { outcome: string; reasoning: string; evidence_reviewed: string[] }) =>
     request<unknown>(`/applications/${encodeURIComponent(number)}/decision`, { method: 'POST', body: payload }),
   borrowers: (status?: string) =>

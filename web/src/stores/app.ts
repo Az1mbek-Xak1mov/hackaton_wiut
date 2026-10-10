@@ -43,9 +43,11 @@ export const useApp = defineStore('app', () => {
     }
   }
 
+  const llmChanges = ref(0) // pages that show generated text re-generate when this changes
   async function setLlm(enabled: boolean) {
     llm.value = await api.setLlm(enabled)
     if (version.value) version.value.llm_enabled = llm.value.enabled
+    llmChanges.value++
   }
 
   async function loadOfficerCounts() {
@@ -57,5 +59,5 @@ export const useApp = defineStore('app', () => {
     }
   }
 
-  return { version, llm, llmError, counts, monitoringRunAt, ownerBusiness, ownerCoverage, loadVersion, loadLlm, setLlm, loadOfficerCounts, loadOwner }
+  return { version, llm, llmError, llmChanges, counts, monitoringRunAt, ownerBusiness, ownerCoverage, loadVersion, loadLlm, setLlm, loadOfficerCounts, loadOwner }
 })

@@ -1,0 +1,216 @@
+{
+ "id": "H18",
+ "case": "same file uploaded twice",
+ "expected": "R12 duplicate (same sha256)",
+ "documents": [
+  {
+   "file": "form2_FY2025.pdf",
+   "doc_type": "form2",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 5782972,
+     "printed_cur": "5 782 972",
+     "prev": 4853600,
+     "printed_prev": "4 853 600"
+    },
+    "020": {
+     "page": 1,
+     "cur": 4136398,
+     "printed_cur": "4 136 398",
+     "prev": 3480413,
+     "printed_prev": "3 480 413"
+    },
+    "030": {
+     "page": 1,
+     "cur": 1646574,
+     "printed_cur": "1 646 574",
+     "prev": 1373187,
+     "printed_prev": "1 373 187"
+    },
+    "040": {
+     "page": 1,
+     "cur": 1216352,
+     "printed_cur": "1 216 352",
+     "prev": 1067338,
+     "printed_prev": "1 067 338"
+    },
+    "050": {
+     "page": 1,
+     "cur": 462212,
+     "printed_cur": "462 212",
+     "prev": 405587,
+     "printed_prev": "405 587"
+    },
+    "060": {
+     "page": 1,
+     "cur": 632501,
+     "printed_cur": "632 501",
+     "prev": 555016,
+     "printed_prev": "555 016"
+    },
+    "070": {
+     "page": 1,
+     "cur": 121639,
+     "printed_cur": "121 639",
+     "prev": 106735,
+     "printed_prev": "106 735"
+    },
+    "090": {
+     "page": 1,
+     "cur": 30667,
+     "printed_cur": "30 667",
+     "prev": 28914,
+     "printed_prev": "28 914"
+    },
+    "100": {
+     "page": 1,
+     "cur": 460889,
+     "printed_cur": "460 889",
+     "prev": 334763,
+     "printed_prev": "334 763"
+    },
+    "110": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": 3273,
+     "printed_prev": "3 273"
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": 3273,
+     "printed_prev": "3 273"
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "180": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": 338036,
+     "printed_prev": "338 036"
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": 338036,
+     "printed_prev": "338 036"
+    },
+    "250": {
+     "page": 1,
+     "cur": 69771,
+     "printed_cur": "69 771",
+     "prev": 50705,
+     "printed_prev": "50 705"
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "270": {
+     "page": 1,
+     "cur": 395365,
+     "printed_cur": "395 365",
+     "prev": 287331,
+     "printed_prev": "287 331"
+    }
+   },
+   "blank_cells": [
+    "120.cur",
+    "120.prev",
+    "140.cur",
+    "140.prev",
+    "150.cur",
+    "150.prev",
+    "160.cur",
+    "160.prev",
+    "180.cur",
+    "180.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "210.cur",
+    "210.prev",
+    "230.cur",
+    "230.prev",
+    "260.cur",
+    "260.prev"
+   ],
+   "extra_rows": [],
+   "layout": "mof_grid",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "pages": 1
+  },
+  {
+   "file": "form2_FY2025 (1).pdf",
+   "duplicate_of": "form2_FY2025.pdf"
+  }
+ ],
+ "planted": [
+  {
+   "rule": "R12"
+  }
+ ]
+}

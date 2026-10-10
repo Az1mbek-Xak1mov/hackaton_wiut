@@ -1,0 +1,426 @@
+{
+ "id": "H10",
+ "case": "Form 1 split over 2 pages",
+ "expected": "continuous extraction across pages",
+ "documents": [
+  {
+   "file": "form1_2pages.pdf",
+   "doc_type": "form1",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 2128423,
+     "printed_cur": "2 128 423",
+     "prev": 1895119,
+     "printed_prev": "1 895 119"
+    },
+    "011": {
+     "page": 1,
+     "cur": 847292,
+     "printed_cur": "847 292",
+     "prev": 699904,
+     "printed_prev": "699 904"
+    },
+    "012": {
+     "page": 1,
+     "cur": 1281131,
+     "printed_cur": "1 281 131",
+     "prev": 1195215,
+     "printed_prev": "1 195 215"
+    },
+    "020": {
+     "page": 1,
+     "cur": 19990,
+     "printed_cur": "19 990",
+     "prev": 19990,
+     "printed_prev": "19 990"
+    },
+    "021": {
+     "page": 1,
+     "cur": 13593,
+     "printed_cur": "13 593",
+     "prev": 8796,
+     "printed_prev": "8 796"
+    },
+    "022": {
+     "page": 1,
+     "cur": 6397,
+     "printed_cur": "6 397",
+     "prev": 11194,
+     "printed_prev": "11 194"
+    },
+    "030": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "090": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "100": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "110": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": 1287528,
+     "printed_cur": "1 287 528",
+     "prev": 1206409,
+     "printed_prev": "1 206 409"
+    },
+    "140": {
+     "page": 1,
+     "cur": 614755,
+     "printed_cur": "614 755",
+     "prev": 497272,
+     "printed_prev": "497 272"
+    },
+    "150": {
+     "page": 1,
+     "cur": 328845,
+     "printed_cur": "328 845",
+     "prev": 245567,
+     "printed_prev": "245 567"
+    },
+    "160": {
+     "page": 1,
+     "cur": 47067,
+     "printed_cur": "47 067",
+     "prev": 34325,
+     "printed_prev": "34 325"
+    },
+    "170": {
+     "page": 1,
+     "cur": 215357,
+     "printed_cur": "215 357",
+     "prev": 201370,
+     "printed_prev": "201 370"
+    },
+    "180": {
+     "page": 1,
+     "cur": 23486,
+     "printed_cur": "23 486",
+     "prev": 16010,
+     "printed_prev": "16 010"
+    },
+    "190": {
+     "page": 1,
+     "cur": 6054,
+     "printed_cur": "6 054",
+     "prev": 4931,
+     "printed_prev": "4 931"
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": 895289,
+     "printed_cur": "895 289",
+     "prev": 667770,
+     "printed_prev": "667 770"
+    },
+    "220": {
+     "page": 1,
+     "cur": 871690,
+     "printed_cur": "871 690",
+     "prev": 657621,
+     "printed_prev": "657 621"
+    },
+    "320": {
+     "page": 1,
+     "cur": 523735,
+     "printed_cur": "523 735",
+     "prev": 349776,
+     "printed_prev": "349 776"
+    },
+    "370": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "380": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "390": {
+     "page": 1,
+     "cur": 2039833,
+     "printed_cur": "2 039 833",
+     "prev": 1519749,
+     "printed_prev": "1 519 749"
+    },
+    "400": {
+     "page": 1,
+     "cur": 3327361,
+     "printed_cur": "3 327 361",
+     "prev": 2726158,
+     "printed_prev": "2 726 158"
+    },
+    "410": {
+     "page": 1,
+     "cur": 317000,
+     "printed_cur": "317 000",
+     "prev": 317000,
+     "printed_prev": "317 000"
+    },
+    "420": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "430": {
+     "page": 1,
+     "cur": 18989,
+     "printed_cur": "18 989",
+     "prev": 18989,
+     "printed_prev": "18 989"
+    },
+    "440": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "450": {
+     "page": 1,
+     "cur": 2233584,
+     "printed_cur": "2 233 584",
+     "prev": 1838219,
+     "printed_prev": "1 838 219"
+    },
+    "460": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "470": {
+     "page": 1,
+     "cur": 40208,
+     "printed_cur": "40 208",
+     "prev": 40208,
+     "printed_prev": "40 208"
+    },
+    "480": {
+     "page": 1,
+     "cur": 2609781,
+     "printed_cur": "2 609 781",
+     "prev": 2214416,
+     "printed_prev": "2 214 416"
+    },
+    "490": {
+     "page": 2,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "570": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "580": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "600": {
+     "page": 2,
+     "cur": 717580,
+     "printed_cur": "717 580",
+     "prev": 511742,
+     "printed_prev": "511 742"
+    },
+    "610": {
+     "page": 2,
+     "cur": 644981,
+     "printed_cur": "644 981",
+     "prev": 449415,
+     "printed_prev": "449 415"
+    },
+    "670": {
+     "page": 2,
+     "cur": 6494,
+     "printed_cur": "6 494",
+     "prev": 14654,
+     "printed_prev": "14 654"
+    },
+    "680": {
+     "page": 2,
+     "cur": 24362,
+     "printed_cur": "24 362",
+     "prev": 10955,
+     "printed_prev": "10 955"
+    },
+    "720": {
+     "page": 2,
+     "cur": 28842,
+     "printed_cur": "28 842",
+     "prev": 23490,
+     "printed_prev": "23 490"
+    },
+    "730": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "740": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "750": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "760": {
+     "page": 2,
+     "cur": 4970,
+     "printed_cur": "4 970",
+     "prev": 6768,
+     "printed_prev": "6 768"
+    },
+    "770": {
+     "page": 2,
+     "cur": 717580,
+     "printed_cur": "717 580",
+     "prev": 511742,
+     "printed_prev": "511 742"
+    },
+    "780": {
+     "page": 2,
+     "cur": 3327361,
+     "printed_cur": "3 327 361",
+     "prev": 2726158,
+     "printed_prev": "2 726 158"
+    }
+   },
+   "blank_cells": [
+    "030.cur",
+    "030.prev",
+    "090.cur",
+    "090.prev",
+    "100.cur",
+    "100.prev",
+    "110.cur",
+    "110.prev",
+    "120.cur",
+    "120.prev",
+    "200.cur",
+    "200.prev",
+    "350.cur",
+    "350.prev",
+    "370.cur",
+    "370.prev",
+    "380.cur",
+    "380.prev",
+    "420.cur",
+    "420.prev",
+    "440.cur",
+    "440.prev",
+    "460.cur",
+    "460.prev",
+    "570.cur",
+    "570.prev",
+    "580.cur",
+    "580.prev",
+    "730.cur",
+    "730.prev",
+    "740.cur",
+    "740.prev",
+    "750.cur",
+    "750.prev"
+   ],
+   "extra_rows": [
+    {
+     "code": "260",
+     "page": 1,
+     "cur": 16119,
+     "printed_cur": "16 119",
+     "prev": 8567,
+     "printed_prev": "8 567"
+    },
+    {
+     "code": "270",
+     "page": 1,
+     "cur": 3133,
+     "printed_cur": "3 133",
+     "prev": 1401,
+     "printed_prev": "1 401"
+    },
+    {
+     "code": "310",
+     "page": 1,
+     "cur": 4347,
+     "printed_cur": "4 347",
+     "prev": 181,
+     "printed_prev": "181"
+    },
+    {
+     "code": "330",
+     "page": 1,
+     "cur": 8589,
+     "printed_cur": "8 589",
+     "prev": 6996,
+     "printed_prev": "6 996"
+    },
+    {
+     "code": "340",
+     "page": 1,
+     "cur": 515146,
+     "printed_cur": "515 146",
+     "prev": 342780,
+     "printed_prev": "342 780"
+    },
+    {
+     "code": "350",
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    {
+     "code": "690",
+     "page": 2,
+     "cur": 1009,
+     "printed_cur": "1 009",
+     "prev": 822,
+     "printed_prev": "822"
+    },
+    {
+     "code": "700",
+     "page": 2,
+     "cur": 6922,
+     "printed_cur": "6 922",
+     "prev": 5638,
+     "printed_prev": "5 638"
+    }
+   ],
+   "layout": "mof_grid",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "pages": 2
+  }
+ ]
+}

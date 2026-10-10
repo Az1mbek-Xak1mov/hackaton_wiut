@@ -6,6 +6,8 @@ would not verify is dropped), so it always passes.
 """
 from __future__ import annotations
 
+import re
+
 from app.pipeline.compute import fact_display
 from app.pipeline.ratios import latest_ratio
 from app.pipeline.rules import codes as C
@@ -133,6 +135,72 @@ def narrative_fact_set(ctx: AppContext, findings: list[FindingDraft], ratio_fact
     return out
 
 
+NUMBER_FREE_TITLES = {
+    "R01": "The balance sheet does not balance.",
+    "R02": "Balance sheet lines do not add up.",
+    "R03": "Income statement lines do not add up.",
+    "R04": "Net profit does not match the change in retained earnings.",
+    "R05": "Bank receipts do not match the revenue reported.",
+    "R06": "The bank statement shows loan repayments not listed in the application.",
+    "R07": "Revenue differs between the application form and the income statement.",
+    "R08": "The documents do not cover the expected periods.",
+    "R09": "The documents belong to different taxpayers.",
+    "R11": "Half-year revenue is far from half of the previous year's revenue.",
+    "R12": "A document was uploaded twice or its figures conflict with another document.",
+}
+_DOC_NAMES = {"loan_application": "Loan application form", "form1": "Balance sheet (Form 1)",
+              "form2": "Income statement (Form 2)", "bank_statement": "Bank statement", "tax_declaration": "Tax declaration"}
+
+
+def _sentence(text: str) -> str:
+    text = (text or "").strip()
+    return text if not text or text[-1] in ".!?" else text + "."
+
+
+def _with_cites(text: str, cites: str, facts: dict[str, FactDraft], fids: set[str]) -> str:
+    """Append the evidence cites to every sentence of `text` whose numbers need them (the frontend turns
+    the cited values found in the sentence into evidence chips)."""
+    parts = re.split(r"(?<=[.!?])\s+", _sentence(text))
+    out = []
+    for p in parts:
+        if cites and re.search(r"\d", p) and not verify(p, facts, fids)["ok"]:
+            p = p[:-1] + f" {cites}." if p.endswith(".") else f"{p} {cites}"
+        out.append(p)
+    return " ".join(x for x in out if x)
+
+
+def _number_free_title(fd: FindingDraft) -> str:
+    if fd.rule_id == "R10":
+        name = _DOC_NAMES.get(str(fd.params.get("doc_type", "")), "A required document")
+        return f"{name} not provided."
+    if fd.rule_id in NUMBER_FREE_TITLES:
+        return NUMBER_FREE_TITLES[fd.rule_id]
+    return _sentence(re.sub(r"[\d\u2212%×.,]+", "", fd.label or "Issue")).strip() or "Issue found."
+
+
+def _bullet(fd: FindingDraft, facts: dict[str, FactDraft], fids: set[str]) -> str:
+    """Best verifier-clean wording for a finding; never empty. Tried in order: title + detail with cites,
+    title + evidence list, title alone, number-free title + evidence list, number-free title."""
+    ev = [facts[k] for k in fd.evidence if k in facts][:4]
+    cites = " ".join(f"[{f.key}]" for f in ev)
+    head = f"- **{fd.label}.**"
+    title = _with_cites(fd.title or fd.detail or fd.label, cites, facts, fids)
+    detail = _with_cites(fd.detail, cites, facts, fids) if fd.detail and fd.detail != fd.title else ""
+    evidence = ""
+    if ev:
+        parts = [f"{f.label}: {_d(f)} [{f.key}]" for f in ev]
+        parts = [p for p in parts if verify(p, facts, fids)["ok"]]
+        evidence = ("Evidence: " + "; ".join(parts) + ".") if parts else ""
+    plain = _number_free_title(fd)
+    candidates = [f"{head} {title} {detail}", f"{head} {title} {evidence}", f"{head} {title}",
+                  f"{head} {plain} {evidence}", f"{head} {plain}"]
+    for c in candidates:
+        c = re.sub(r"\s+", " ", c).strip()
+        if c != head and verify(c, facts, fids)["ok"]:
+            return c
+    return f"{head} {plain}"
+
+
 def template_narrative(ctx: AppContext, findings: list[FindingDraft], ratio_facts: list[FactDraft]) -> str:
     facts = narrative_fact_set(ctx, findings, ratio_facts, limit=200)
     for f in ratio_facts:
@@ -176,24 +244,8 @@ def template_narrative(ctx: AppContext, findings: list[FindingDraft], ratio_fact
                   f"coverage falls to {_d(dscr2)} [{dscr2.key}].")
     p1 = _safe_join(p1, facts, fids)
 
-    # 2 — issues
-    p2: list[str] = []
-    for fd in findings:
-        if fd.severity == "info" and len(findings) > 4:
-            continue
-        ev = [facts[k] for k in fd.evidence if k in facts][:4]
-        line = f"- **{fd.label}.** {fd.title}."
-        if not verify(line, facts, fids)["ok"]:
-            line = f"- **{fd.label}.**"
-        if ev:
-            parts = [f"{f.label}: {_d(f)} [{f.key}]" for f in ev]
-            evidence = "Evidence: " + "; ".join(parts) + "."
-            if not verify(evidence, facts, fids)["ok"]:
-                parts = [p for p, f in zip(parts, ev) if verify(p, facts, fids)["ok"]]
-                evidence = ("Evidence: " + "; ".join(parts) + ".") if parts else ""
-            line = f"{line} {evidence}".rstrip()
-        p2.append(line)
-    p2 = _safe_join(p2, facts, fids)
+    # 2 — issues: one non-empty, verifier-clean bullet per finding
+    p2 = [_bullet(fd, facts, fids) for fd in findings if not (fd.severity == "info" and len(findings) > 4)]
 
     # 3 — before a decision
     steps: list[str] = []

@@ -51,3 +51,25 @@ def test_narrative_fact_set_contains_evidence_and_ratios():
         assert all(k in fs for k in f.evidence)
     fields = {f.field for f in fs.values()}
     assert {"ratio.dscr_new_loan", "ratio.dscr_incl_undeclared", "ratio.current_ratio"} <= fields
+
+
+def _issue_bullets(md):
+    block = md.split("**Issues found in the documents.**")[1].split("**Before a decision.**")[0]
+    return [line for line in block.splitlines() if line.startswith("- ")]
+
+
+def test_no_empty_issue_bullets_and_still_verifier_clean():
+    from test_rules_fixtures import F2, FAROVON_DOCS
+    # sparse application: only FY2025 income statement, no H1 documents, short statement → R08/R10 findings
+    docs = [d for d in FAROVON_DOCS if d["uuid"] not in ("d3", "d5")]
+    ctx = farovon_ctx(f1={}, f2={"FY2025": F2["FY2025"]}, docs=docs, statement_kw={"months": 3})
+    findings = run_application_rules(ctx)
+    ratios = compute_ratios(ctx)
+    md = template_narrative(ctx, findings, ratios)
+    bullets = _issue_bullets(md)
+    assert len(bullets) == len([f for f in findings if not (f.severity == "info" and len(findings) > 4)])
+    for b in bullets:
+        assert not b.rstrip().endswith("**"), b
+        assert len(b.split("**")[-1].strip()) > 5, b
+    assert verify(md, {**ctx.index.by_key, **{f.key: f for f in ratios}})["ok"]
+    assert any("not provided" in b for b in bullets)

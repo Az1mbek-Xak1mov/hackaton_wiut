@@ -1,0 +1,252 @@
+{
+ "id": "H07",
+ "case": "rows out of order + 2 unofficial extra rows",
+ "expected": "codes mapped regardless of order; extra rows unmapped",
+ "documents": [
+  {
+   "file": "form2_shuffled.pdf",
+   "doc_type": "form2",
+   "row_order": [
+    "020",
+    "140",
+    "220",
+    "190",
+    "090",
+    "050",
+    "200",
+    "010",
+    "110",
+    "130",
+    "270",
+    "030",
+    "180",
+    "240",
+    "160",
+    "120",
+    "230",
+    "070",
+    "250",
+    "100",
+    "060",
+    "260",
+    "210",
+    "150",
+    "170",
+    "040"
+   ],
+   "fields": {
+    "020": {
+     "page": 1,
+     "cur": 4136398,
+     "printed_cur": "4 136 398",
+     "prev": 3480413,
+     "printed_prev": "3 480 413"
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": 338036,
+     "printed_prev": "338 036"
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "090": {
+     "page": 1,
+     "cur": 30667,
+     "printed_cur": "30 667",
+     "prev": 28914,
+     "printed_prev": "28 914"
+    },
+    "050": {
+     "page": 1,
+     "cur": 462212,
+     "printed_cur": "462 212",
+     "prev": 405587,
+     "printed_prev": "405 587"
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "010": {
+     "page": 1,
+     "cur": 5782972,
+     "printed_cur": "5 782 972",
+     "prev": 4853600,
+     "printed_prev": "4 853 600"
+    },
+    "110": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": 3273,
+     "printed_prev": "3 273"
+    },
+    "130": {
+     "page": 1,
+     "cur": 4247,
+     "printed_cur": "4 247",
+     "prev": 3273,
+     "printed_prev": "3 273"
+    },
+    "270": {
+     "page": 1,
+     "cur": 395365,
+     "printed_cur": "395 365",
+     "prev": 287331,
+     "printed_prev": "287 331"
+    },
+    "030": {
+     "page": 1,
+     "cur": 1646574,
+     "printed_cur": "1 646 574",
+     "prev": 1373187,
+     "printed_prev": "1 373 187"
+    },
+    "180": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": 465136,
+     "printed_cur": "465 136",
+     "prev": 338036,
+     "printed_prev": "338 036"
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "070": {
+     "page": 1,
+     "cur": 121639,
+     "printed_cur": "121 639",
+     "prev": 106735,
+     "printed_prev": "106 735"
+    },
+    "250": {
+     "page": 1,
+     "cur": 69771,
+     "printed_cur": "69 771",
+     "prev": 50705,
+     "printed_prev": "50 705"
+    },
+    "100": {
+     "page": 1,
+     "cur": 460889,
+     "printed_cur": "460 889",
+     "prev": 334763,
+     "printed_prev": "334 763"
+    },
+    "060": {
+     "page": 1,
+     "cur": 632501,
+     "printed_cur": "632 501",
+     "prev": 555016,
+     "printed_prev": "555 016"
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "040": {
+     "page": 1,
+     "cur": 1216352,
+     "printed_cur": "1 216 352",
+     "prev": 1067338,
+     "printed_prev": "1 067 338"
+    }
+   },
+   "blank_cells": [
+    "140.cur",
+    "140.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "180.cur",
+    "180.prev",
+    "160.cur",
+    "160.prev",
+    "120.cur",
+    "120.prev",
+    "230.cur",
+    "230.prev",
+    "260.cur",
+    "260.prev",
+    "210.cur",
+    "210.prev",
+    "150.cur",
+    "150.prev"
+   ],
+   "extra_rows": [
+    {
+     "code": null,
+     "label": "в т.ч. экспортная выручка",
+     "cur": 1040934,
+     "prev": 728040,
+     "page": 1,
+     "unofficial": true
+    },
+    {
+     "code": null,
+     "label": "Справочно: среднесписочная численность, чел.",
+     "cur": 61,
+     "prev": 58,
+     "page": 1,
+     "unofficial": true
+    }
+   ],
+   "layout": "software_export",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "cur",
+    "prev"
+   ],
+   "pages": 1
+  }
+ ]
+}

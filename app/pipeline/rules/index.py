@@ -34,13 +34,20 @@ class FactIndex:
             self.by_field[f.field].append(f)
             sp = stat_parts(f.field)
             if sp:
-                p = self.period(f.period_label)
+                p = self._stat_period(sp[0], f.period_label)
                 self._stat[sp][p.key].append(f)
 
     def period(self, label: str) -> Period:
         if label not in self._periods:
             self._periods[label] = parse_period(label)
         return self._periods[label]
+
+    def _stat_period(self, form: str, label: str) -> Period:
+        """Form 1 is a balance at a date: a flow-style label (FY2025, H1-2026) means its end date."""
+        p = self.period(label)
+        if form == "form1" and p.kind == "flow" and p.end:
+            return self.period(p.end.isoformat())
+        return p
 
     # ---- statutory facts
     def stat(self, form: str, code: str, period: str | Period | None = None) -> FactDraft | None:
@@ -50,12 +57,12 @@ class FactIndex:
         if period is None:
             p = self.latest_period(form, code)
             return self.stat(form, code, p) if p else None
-        key = period.key if isinstance(period, Period) else self.period(period).key
+        key = period.key if isinstance(period, Period) else self._stat_period(form, period).key
         cands = by_p.get(key) or []
         return max(cands, key=_rank) if cands else None
 
     def stat_all(self, form: str, code: str, period: str | Period) -> list[FactDraft]:
-        key = period.key if isinstance(period, Period) else self.period(period).key
+        key = period.key if isinstance(period, Period) else self._stat_period(form, period).key
         return list(self._stat.get((form, code), {}).get(key, []))
 
     def periods_for(self, form: str, code: str, kind: str | None = None) -> list[Period]:
@@ -99,5 +106,5 @@ class FactIndex:
         self.by_field[fact.field].append(fact)
         sp = stat_parts(fact.field)
         if sp:
-            self._stat[sp][self.period(fact.period_label).key].append(fact)
+            self._stat[sp][self._stat_period(sp[0], fact.period_label).key].append(fact)
         return fact

@@ -24,6 +24,8 @@
   "zilola_monitoring.zip": {
    "source": "data/seed/hero_zilola",
    "contains": [
+    "forma1_Q2-2026.pdf",
+    "forma2_Q2-2026.pdf",
     "forma1_Q3-2026.pdf",
     "forma2_Q3-2026.pdf",
     "vypiska_2026-07_09.xlsx"

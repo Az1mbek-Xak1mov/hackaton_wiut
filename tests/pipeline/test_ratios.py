@@ -41,10 +41,11 @@ def test_dscr_without_undeclared_loans_has_no_second_figure():
     assert _disp(rs, "ratio.dscr_new_loan") == "1.47"
 
 
-def test_installment_from_application_value():
-    app = dict(FAROVON_APP, installment=50_000.0)
+def test_installment_from_application_value_when_rate_unknown():
+    app = dict(FAROVON_APP, installment=50_000.0, rate_pct=None)
     rs = compute_ratios(farovon_ctx(app=app))
-    assert display_with_unit([f for f in rs if f.field == "loan.installment"][0]) == "50.0 mln UZS"
+    inst = [f for f in rs if f.field == "loan.installment"][0]
+    assert display_with_unit(inst) == "50.0 mln UZS" and inst.formula == "application record"
 
 
 def test_annuity():

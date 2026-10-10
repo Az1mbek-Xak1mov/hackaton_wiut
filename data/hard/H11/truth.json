@@ -1,0 +1,214 @@
+{
+ "id": "H11",
+ "case": "statement with USD rows",
+ "expected": "USD rows excluded from UZS aggregates, counted and shown",
+ "documents": [
+  {
+   "file": "statement_usd.xlsx",
+   "doc_type": "bank_statement",
+   "rows": [
+    {
+     "row": 8,
+     "currency": "UZS",
+     "amount": 11297000.0
+    },
+    {
+     "row": 9,
+     "currency": "UZS",
+     "amount": -8298000.0
+    },
+    {
+     "row": 10,
+     "currency": "UZS",
+     "amount": 6479000.0
+    },
+    {
+     "row": 11,
+     "currency": "USD",
+     "amount": -7976.65
+    },
+    {
+     "row": 12,
+     "currency": "UZS",
+     "amount": 27099000.0
+    },
+    {
+     "row": 13,
+     "currency": "UZS",
+     "amount": 7260000.0
+    },
+    {
+     "row": 14,
+     "currency": "UZS",
+     "amount": 20320000.0
+    },
+    {
+     "row": 15,
+     "currency": "UZS",
+     "amount": -28244000.0
+    },
+    {
+     "row": 16,
+     "currency": "UZS",
+     "amount": -30032000.0
+    },
+    {
+     "row": 17,
+     "currency": "UZS",
+     "amount": 35699000.0
+    },
+    {
+     "row": 18,
+     "currency": "UZS",
+     "amount": -29883000.0
+    },
+    {
+     "row": 19,
+     "currency": "USD",
+     "amount": 8921.47
+    },
+    {
+     "row": 20,
+     "currency": "UZS",
+     "amount": -36386000.0
+    },
+    {
+     "row": 21,
+     "currency": "UZS",
+     "amount": 10042000.0
+    },
+    {
+     "row": 22,
+     "currency": "UZS",
+     "amount": -26175000.0
+    },
+    {
+     "row": 23,
+     "currency": "UZS",
+     "amount": 19069000.0
+    },
+    {
+     "row": 24,
+     "currency": "UZS",
+     "amount": 35761000.0
+    },
+    {
+     "row": 25,
+     "currency": "UZS",
+     "amount": 36072000.0
+    },
+    {
+     "row": 26,
+     "currency": "UZS",
+     "amount": -37790000.0
+    },
+    {
+     "row": 27,
+     "currency": "USD",
+     "amount": -7127.15
+    },
+    {
+     "row": 28,
+     "currency": "UZS",
+     "amount": 27842000.0
+    },
+    {
+     "row": 29,
+     "currency": "UZS",
+     "amount": 30321000.0
+    },
+    {
+     "row": 30,
+     "currency": "UZS",
+     "amount": -14230000.0
+    },
+    {
+     "row": 31,
+     "currency": "UZS",
+     "amount": 36253000.0
+    },
+    {
+     "row": 32,
+     "currency": "UZS",
+     "amount": 25044000.0
+    },
+    {
+     "row": 33,
+     "currency": "UZS",
+     "amount": -28082000.0
+    },
+    {
+     "row": 34,
+     "currency": "UZS",
+     "amount": -35259000.0
+    },
+    {
+     "row": 35,
+     "currency": "USD",
+     "amount": -1079.35
+    },
+    {
+     "row": 36,
+     "currency": "UZS",
+     "amount": 11939000.0
+    },
+    {
+     "row": 37,
+     "currency": "UZS",
+     "amount": -24704000.0
+    },
+    {
+     "row": 38,
+     "currency": "UZS",
+     "amount": -26593000.0
+    },
+    {
+     "row": 39,
+     "currency": "UZS",
+     "amount": -28386000.0
+    },
+    {
+     "row": 40,
+     "currency": "UZS",
+     "amount": 4440000.0
+    },
+    {
+     "row": 41,
+     "currency": "UZS",
+     "amount": -9991000.0
+    },
+    {
+     "row": 42,
+     "currency": "UZS",
+     "amount": -3856000.0
+    },
+    {
+     "row": 43,
+     "currency": "USD",
+     "amount": -5946.16
+    },
+    {
+     "row": 44,
+     "currency": "UZS",
+     "amount": -17178000.0
+    },
+    {
+     "row": 45,
+     "currency": "UZS",
+     "amount": 31047000.0
+    },
+    {
+     "row": 46,
+     "currency": "UZS",
+     "amount": -35340000.0
+    },
+    {
+     "row": 47,
+     "currency": "UZS",
+     "amount": -32197000.0
+    }
+   ],
+   "usd_rows": 5
+  }
+ ]
+}

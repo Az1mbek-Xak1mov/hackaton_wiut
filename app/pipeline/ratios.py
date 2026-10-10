@@ -44,27 +44,31 @@ def _stat(ctx: AppContext, form: str, code: str, p: Period | str | None):
 
 
 def installment_fact(ctx: AppContext, out: _Out | None = None) -> FactDraft | None:
-    """The requested loan's monthly installment: application field, else annuity(amount, rate, term)."""
-    v, f = ctx.app_value("installment")
+    """The requested loan's monthly installment: the application-form fact, else the annuity of the requested
+    amount at the stated rate and term, else an installment supplied with the application record."""
+    f = ctx.index.field("application.installment")
     if f is not None:
         return f
     existing = ctx.index.field("loan.installment")
     if existing is not None:
         return existing
     add = (out.add if out else ctx.derive)
+    amount, af = ctx.app_value("requested_amount")
+    rate, rf = ctx.app_value("rate_pct")
+    term, tf = ctx.app_value("term_months")
+    if amount is not None and rate is not None and term:
+        value = annuity(amount, rate, int(term))
+        inputs = [x.key for x in (af, rf, tf) if x is not None]
+        return add(constant_fact("loan.installment", "Requested loan installment, monthly (annuity)", value, "kUZS",
+                                 formula=f"annuity({amount:.0f} kUZS, {rate:g}% a year, {int(term)} months)",
+                                 inputs=inputs,
+                                 note=f"annuity of the requested amount at {rate:g}% over {int(term)} months"))
+    v, _ = ctx.app_value("installment")
     if v is not None:
         return add(constant_fact("loan.installment", "Requested loan installment, monthly", v, "kUZS",
-                                 formula="application form", note="declared in the loan application", kind="extracted"))
-    amount, af = ctx.app_value("requested_amount")
-    rate, _ = ctx.app_value("rate_pct")
-    term, _ = ctx.app_value("term_months")
-    if amount is None or rate is None or not term:
-        return None
-    value = annuity(amount, rate, int(term))
-    inputs = [af.key] if af is not None else []
-    return add(constant_fact("loan.installment", "Requested loan installment, monthly (annuity)", value, "kUZS",
-                             formula=f"annuity({amount:.0f} kUZS, {rate:g}% a year, {int(term)} months)",
-                             inputs=inputs, note=f"annuity of the requested amount at {rate:g}% over {int(term)} months"))
+                                 formula="application record", note="installment stated with the application",
+                                 kind="extracted"))
+    return None
 
 
 def compute_ratios(ctx: AppContext) -> list[FactDraft]:

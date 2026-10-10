@@ -1,0 +1,213 @@
+{
+ "id": "H03",
+ "case": "negatives in parentheses and with '-' mixed",
+ "expected": "correct signs on every negative line",
+ "documents": [
+  {
+   "file": "form2_loss.pdf",
+   "doc_type": "form2",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 2104330,
+     "printed_cur": "2 104 330",
+     "prev": 2390100,
+     "printed_prev": "2 390 100"
+    },
+    "020": {
+     "page": 1,
+     "cur": 1788610,
+     "printed_cur": "1 788 610",
+     "prev": 1910000,
+     "printed_prev": "1 910 000"
+    },
+    "030": {
+     "page": 1,
+     "cur": 315720,
+     "printed_cur": "315 720",
+     "prev": 480100,
+     "printed_prev": "480 100"
+    },
+    "040": {
+     "page": 1,
+     "cur": 439400,
+     "printed_cur": "439 400",
+     "prev": 410200,
+     "printed_prev": "410 200"
+    },
+    "050": {
+     "page": 1,
+     "cur": 160400,
+     "printed_cur": "160 400",
+     "prev": 151000,
+     "printed_prev": "151 000"
+    },
+    "060": {
+     "page": 1,
+     "cur": 248900,
+     "printed_cur": "248 900",
+     "prev": 231400,
+     "printed_prev": "231 400"
+    },
+    "070": {
+     "page": 1,
+     "cur": 30100,
+     "printed_cur": "30 100",
+     "prev": 27800,
+     "printed_prev": "27 800"
+    },
+    "090": {
+     "page": 1,
+     "cur": 4200,
+     "printed_cur": "4 200",
+     "prev": null
+    },
+    "100": {
+     "page": 1,
+     "cur": -119480,
+     "printed_cur": "(119 480)",
+     "prev": 69900,
+     "printed_prev": "69 900"
+    },
+    "110": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 61700,
+     "printed_cur": "61 700",
+     "prev": 55200,
+     "printed_prev": "55 200"
+    },
+    "180": {
+     "page": 1,
+     "cur": 61700,
+     "printed_cur": "61 700",
+     "prev": 55200,
+     "printed_prev": "55 200"
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": -181180,
+     "printed_cur": "-181 180",
+     "prev": 14700,
+     "printed_prev": "14 700"
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": -181180,
+     "printed_cur": "-181 180",
+     "prev": 14700,
+     "printed_prev": "14 700"
+    },
+    "250": {
+     "page": 1,
+     "cur": null,
+     "prev": 2000,
+     "printed_prev": "2 000"
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "270": {
+     "page": 1,
+     "cur": -181180,
+     "printed_cur": "(181 180)",
+     "prev": 12700,
+     "printed_prev": "12 700"
+    }
+   },
+   "blank_cells": [
+    "090.prev",
+    "120.cur",
+    "120.prev",
+    "130.cur",
+    "130.prev",
+    "140.cur",
+    "140.prev",
+    "150.cur",
+    "150.prev",
+    "160.cur",
+    "160.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "210.cur",
+    "210.prev",
+    "230.cur",
+    "230.prev",
+    "250.cur",
+    "260.cur",
+    "260.prev"
+   ],
+   "extra_rows": [],
+   "layout": "mof_grid",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "pages": 1,
+   "printed_negative_styles": {
+    "100": "paren",
+    "220": "minus",
+    "240": "minus",
+    "270": "paren"
+   }
+  }
+ ]
+}

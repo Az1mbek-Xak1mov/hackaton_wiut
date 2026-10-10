@@ -9,671 +9,38 @@
   "employees": 37,
   "since": 2016
  },
+ "column_convention": "statutory: Form 1 prev = 31.12.2025 (beginning of the reporting year); Form 2 prev = same quarter of 2025. Quarter-over-quarter comparison (M01, M02) = Q3 documents vs Q2 documents.",
  "documents": [
   {
-   "file": "forma1_Q3-2026.pdf",
-   "doc_type": "form1",
-   "period": {
-    "start": "2026-07-01",
-    "end": "2026-09-30"
-   },
-   "quarterly_bank_format": false,
-   "fields": {
-    "010": {
-     "page": 1,
-     "cur": 2851200,
-     "printed_cur": "2 851 200",
-     "prev": 2846500,
-     "printed_prev": "2 846 500"
-    },
-    "011": {
-     "page": 1,
-     "cur": 765800,
-     "printed_cur": "765 800",
-     "prev": 703100,
-     "printed_prev": "703 100"
-    },
-    "012": {
-     "page": 1,
-     "cur": 2085400,
-     "printed_cur": "2 085 400",
-     "prev": 2143400,
-     "printed_prev": "2 143 400"
-    },
-    "020": {
-     "page": 1,
-     "cur": 12000,
-     "printed_cur": "12 000",
-     "prev": 12000,
-     "printed_prev": "12 000"
-    },
-    "021": {
-     "page": 1,
-     "cur": 5600,
-     "printed_cur": "5 600",
-     "prev": 5000,
-     "printed_prev": "5 000"
-    },
-    "022": {
-     "page": 1,
-     "cur": 6400,
-     "printed_cur": "6 400",
-     "prev": 7000,
-     "printed_prev": "7 000"
-    },
-    "030": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "090": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "100": {
-     "page": 1,
-     "cur": 7912,
-     "printed_cur": "7 912",
-     "prev": 272732,
-     "printed_prev": "272 732"
-    },
-    "110": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "120": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "130": {
-     "page": 1,
-     "cur": 2099712,
-     "printed_cur": "2 099 712",
-     "prev": 2423132,
-     "printed_prev": "2 423 132"
-    },
-    "140": {
-     "page": 1,
-     "cur": 614100,
-     "printed_cur": "614 100",
-     "prev": 545600,
-     "printed_prev": "545 600"
-    },
-    "150": {
-     "page": 1,
-     "cur": 372800,
-     "printed_cur": "372 800",
-     "prev": 326100,
-     "printed_prev": "326 100"
-    },
-    "160": {
-     "page": 1,
-     "cur": 71300,
-     "printed_cur": "71 300",
-     "prev": 66900,
-     "printed_prev": "66 900"
-    },
-    "170": {
-     "page": 1,
-     "cur": 170000,
-     "printed_cur": "170 000",
-     "prev": 152600,
-     "printed_prev": "152 600"
-    },
-    "180": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "190": {
-     "page": 1,
-     "cur": 7600,
-     "printed_cur": "7 600",
-     "prev": 7900,
-     "printed_prev": "7 900"
-    },
-    "200": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "210": {
-     "page": 1,
-     "cur": 436060,
-     "printed_cur": "436 060",
-     "prev": 335340,
-     "printed_prev": "335 340"
-    },
-    "220": {
-     "page": 1,
-     "cur": 403260,
-     "printed_cur": "403 260",
-     "prev": 286040,
-     "printed_prev": "286 040"
-    },
-    "320": {
-     "page": 1,
-     "cur": 65500,
-     "printed_cur": "65 500",
-     "prev": 150100,
-     "printed_prev": "150 100"
-    },
-    "370": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "380": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "390": {
-     "page": 1,
-     "cur": 1123260,
-     "printed_cur": "1 123 260",
-     "prev": 1038940,
-     "printed_prev": "1 038 940"
-    },
-    "400": {
-     "page": 1,
-     "cur": 3222972,
-     "printed_cur": "3 222 972",
-     "prev": 3462072,
-     "printed_prev": "3 462 072"
-    },
-    "410": {
-     "page": 1,
-     "cur": 300000,
-     "printed_cur": "300 000",
-     "prev": 300000,
-     "printed_prev": "300 000"
-    },
-    "420": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "430": {
-     "page": 1,
-     "cur": 30000,
-     "printed_cur": "30 000",
-     "prev": 30000,
-     "printed_prev": "30 000"
-    },
-    "440": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "450": {
-     "page": 1,
-     "cur": 1853372,
-     "printed_cur": "1 853 372",
-     "prev": 1955372,
-     "printed_prev": "1 955 372"
-    },
-    "460": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "470": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "480": {
-     "page": 1,
-     "cur": 2183372,
-     "printed_cur": "2 183 372",
-     "prev": 2285372,
-     "printed_prev": "2 285 372"
-    },
-    "490": {
-     "page": 2,
-     "cur": 740400,
-     "printed_cur": "740 400",
-     "prev": 855600,
-     "printed_prev": "855 600"
-    },
-    "570": {
-     "page": 2,
-     "cur": 740400,
-     "printed_cur": "740 400",
-     "prev": 855600,
-     "printed_prev": "855 600"
-    },
-    "580": {
-     "page": 2,
-     "cur": null,
-     "prev": null
-    },
-    "600": {
-     "page": 2,
-     "cur": 299200,
-     "printed_cur": "299 200",
-     "prev": 321100,
-     "printed_prev": "321 100"
-    },
-    "610": {
-     "page": 2,
-     "cur": 231900,
-     "printed_cur": "231 900",
-     "prev": 220300,
-     "printed_prev": "220 300"
-    },
-    "670": {
-     "page": 2,
-     "cur": 9800,
-     "printed_cur": "9 800",
-     "prev": 16900,
-     "printed_prev": "16 900"
-    },
-    "680": {
-     "page": 2,
-     "cur": 12600,
-     "printed_cur": "12 600",
-     "prev": 41200,
-     "printed_prev": "41 200"
-    },
-    "720": {
-     "page": 2,
-     "cur": 22400,
-     "printed_cur": "22 400",
-     "prev": 22400,
-     "printed_prev": "22 400"
-    },
-    "730": {
-     "page": 2,
-     "cur": null,
-     "prev": null
-    },
-    "740": {
-     "page": 2,
-     "cur": null,
-     "prev": null
-    },
-    "750": {
-     "page": 2,
-     "cur": null,
-     "prev": null
-    },
-    "760": {
-     "page": 2,
-     "cur": 12400,
-     "printed_cur": "12 400",
-     "prev": 10200,
-     "printed_prev": "10 200"
-    },
-    "770": {
-     "page": 2,
-     "cur": 1039600,
-     "printed_cur": "1 039 600",
-     "prev": 1176700,
-     "printed_prev": "1 176 700"
-    },
-    "780": {
-     "page": 2,
-     "cur": 3222972,
-     "printed_cur": "3 222 972",
-     "prev": 3462072,
-     "printed_prev": "3 462 072"
-    }
-   },
-   "blank_cells": [
-    "030.cur",
-    "030.prev",
-    "090.cur",
-    "090.prev",
-    "110.cur",
-    "110.prev",
-    "120.cur",
-    "120.prev",
-    "180.cur",
-    "180.prev",
-    "200.cur",
-    "200.prev",
-    "330.cur",
-    "330.prev",
-    "350.cur",
-    "350.prev",
-    "370.cur",
-    "370.prev",
-    "380.cur",
-    "380.prev",
-    "420.cur",
-    "420.prev",
-    "440.cur",
-    "440.prev",
-    "460.cur",
-    "460.prev",
-    "470.cur",
-    "470.prev",
-    "580.cur",
-    "580.prev",
-    "730.cur",
-    "730.prev",
-    "740.cur",
-    "740.prev",
-    "750.cur",
-    "750.prev"
-   ],
-   "extra_rows": [
-    {
-     "code": "260",
-     "page": 1,
-     "cur": 22400,
-     "printed_cur": "22 400",
-     "prev": 39800,
-     "printed_prev": "39 800"
-    },
-    {
-     "code": "270",
-     "page": 1,
-     "cur": 6900,
-     "printed_cur": "6 900",
-     "prev": 6400,
-     "printed_prev": "6 400"
-    },
-    {
-     "code": "310",
-     "page": 1,
-     "cur": 3500,
-     "printed_cur": "3 500",
-     "prev": 3100,
-     "printed_prev": "3 100"
-    },
-    {
-     "code": "330",
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    {
-     "code": "340",
-     "page": 1,
-     "cur": 65500,
-     "printed_cur": "65 500",
-     "prev": 150100,
-     "printed_prev": "150 100"
-    },
-    {
-     "code": "350",
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    {
-     "code": "690",
-     "page": 2,
-     "cur": 3200,
-     "printed_cur": "3 200",
-     "prev": 3200,
-     "printed_prev": "3 200"
-    },
-    {
-     "code": "700",
-     "page": 2,
-     "cur": 6900,
-     "printed_cur": "6 900",
-     "prev": 6900,
-     "printed_prev": "6 900"
-    }
-   ],
-   "layout": "mof_grid",
-   "language": "ru",
-   "unit": "kUZS",
-   "printed_unit": "kUZS",
-   "columns_left_to_right": [
-    "prev",
-    "cur"
-   ],
-   "variant": {
-    "scan": false
-   },
-   "page_count": 2
-  },
-  {
-   "file": "forma2_Q3-2026.pdf",
-   "doc_type": "form2",
-   "period": {
-    "start": "2026-07-01",
-    "end": "2026-09-30"
-   },
-   "quarterly_bank_format": true,
-   "fields": {
-    "010": {
-     "page": 1,
-     "cur": 1289046,
-     "printed_cur": "1 289 046",
-     "prev": 1790212,
-     "printed_prev": "1 790 212"
-    },
-    "020": {
-     "page": 1,
-     "cur": 1006410,
-     "printed_cur": "1 006 410",
-     "prev": 1020310,
-     "printed_prev": "1 020 310"
-    },
-    "030": {
-     "page": 1,
-     "cur": 282636,
-     "printed_cur": "282 636",
-     "prev": 769902,
-     "printed_prev": "769 902"
-    },
-    "040": {
-     "page": 1,
-     "cur": 365622,
-     "printed_cur": "365 622",
-     "prev": 359900,
-     "printed_prev": "359 900"
-    },
-    "050": {
-     "page": 1,
-     "cur": 120412,
-     "printed_cur": "120 412",
-     "prev": 118600,
-     "printed_prev": "118 600"
-    },
-    "060": {
-     "page": 1,
-     "cur": 214806,
-     "printed_cur": "214 806",
-     "prev": 211500,
-     "printed_prev": "211 500"
-    },
-    "070": {
-     "page": 1,
-     "cur": 30404,
-     "printed_cur": "30 404",
-     "prev": 29800,
-     "printed_prev": "29 800"
-    },
-    "090": {
-     "page": 1,
-     "cur": 6190,
-     "printed_cur": "6 190",
-     "prev": null
-    },
-    "100": {
-     "page": 1,
-     "cur": -76796,
-     "printed_cur": "-76 796",
-     "prev": 410002,
-     "printed_prev": "410 002"
-    },
-    "110": {
-     "page": 1,
-     "cur": 0,
-     "printed_cur": "0",
-     "prev": 0,
-     "printed_prev": "0"
-    },
-    "120": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "130": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "140": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "150": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "160": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "170": {
-     "page": 1,
-     "cur": 25204,
-     "printed_cur": "25 204",
-     "prev": 25000,
-     "printed_prev": "25 000"
-    },
-    "180": {
-     "page": 1,
-     "cur": 25204,
-     "printed_cur": "25 204",
-     "prev": 25000,
-     "printed_prev": "25 000"
-    },
-    "190": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "200": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "210": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "220": {
-     "page": 1,
-     "cur": -102000,
-     "printed_cur": "-102 000",
-     "prev": 385002,
-     "printed_prev": "385 002"
-    },
-    "230": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "240": {
-     "page": 1,
-     "cur": -102000,
-     "printed_cur": "-102 000",
-     "prev": 385002,
-     "printed_prev": "385 002"
-    },
-    "250": {
-     "page": 1,
-     "cur": null,
-     "prev": 57750,
-     "printed_prev": "57 750"
-    },
-    "260": {
-     "page": 1,
-     "cur": null,
-     "prev": null
-    },
-    "270": {
-     "page": 1,
-     "cur": -102000,
-     "printed_cur": "-102 000",
-     "prev": 327252,
-     "printed_prev": "327 252"
-    }
-   },
-   "blank_cells": [
-    "090.prev",
-    "120.cur",
-    "120.prev",
-    "130.cur",
-    "130.prev",
-    "140.cur",
-    "140.prev",
-    "150.cur",
-    "150.prev",
-    "160.cur",
-    "160.prev",
-    "190.cur",
-    "190.prev",
-    "200.cur",
-    "200.prev",
-    "210.cur",
-    "210.prev",
-    "230.cur",
-    "230.prev",
-    "250.cur",
-    "260.cur",
-    "260.prev"
-   ],
-   "extra_rows": [],
-   "layout": "software_export",
-   "language": "ru",
-   "unit": "kUZS",
-   "printed_unit": "kUZS",
-   "columns_left_to_right": [
-    "cur",
-    "prev"
-   ],
-   "variant": {
-    "scan": false
-   },
-   "page_count": 1
-  },
-  {
-   "file": "history/forma1_Q2-2026.pdf",
+   "file": "forma1_Q2-2026.pdf",
    "doc_type": "form1",
    "period": {
     "start": "2026-04-01",
     "end": "2026-06-30"
    },
-   "quarterly_bank_format": false,
+   "standalone_quarter": false,
+   "prev_column": "2025-12-31",
    "fields": {
     "010": {
      "page": 1,
      "cur": 2846500,
      "printed_cur": "2 846 500",
-     "prev": 2840000,
-     "printed_prev": "2 840 000"
+     "prev": 2812000,
+     "printed_prev": "2 812 000"
     },
     "011": {
      "page": 1,
-     "cur": 703100,
-     "printed_cur": "703 100",
-     "prev": 640300,
-     "printed_prev": "640 300"
+     "cur": 595100,
+     "printed_cur": "595 100",
+     "prev": 520100,
+     "printed_prev": "520 100"
     },
     "012": {
      "page": 1,
-     "cur": 2143400,
-     "printed_cur": "2 143 400",
-     "prev": 2199700,
-     "printed_prev": "2 199 700"
+     "cur": 2251400,
+     "printed_cur": "2 251 400",
+     "prev": 2291900,
+     "printed_prev": "2 291 900"
     },
     "020": {
      "page": 1,
@@ -686,15 +53,15 @@
      "page": 1,
      "cur": 5000,
      "printed_cur": "5 000",
-     "prev": 4400,
-     "printed_prev": "4 400"
+     "prev": 3800,
+     "printed_prev": "3 800"
     },
     "022": {
      "page": 1,
      "cur": 7000,
      "printed_cur": "7 000",
-     "prev": 7600,
-     "printed_prev": "7 600"
+     "prev": 8200,
+     "printed_prev": "8 200"
     },
     "030": {
      "page": 1,
@@ -708,8 +75,8 @@
     },
     "100": {
      "page": 1,
-     "cur": 272732,
-     "printed_cur": "272 732",
+     "cur": 428952,
+     "printed_cur": "428 952",
      "prev": null
     },
     "110": {
@@ -724,38 +91,38 @@
     },
     "130": {
      "page": 1,
-     "cur": 2423132,
-     "printed_cur": "2 423 132",
-     "prev": 2207300,
-     "printed_prev": "2 207 300"
+     "cur": 2687352,
+     "printed_cur": "2 687 352",
+     "prev": 2300100,
+     "printed_prev": "2 300 100"
     },
     "140": {
      "page": 1,
      "cur": 545600,
      "printed_cur": "545 600",
-     "prev": 523900,
-     "printed_prev": "523 900"
+     "prev": 494600,
+     "printed_prev": "494 600"
     },
     "150": {
      "page": 1,
      "cur": 326100,
      "printed_cur": "326 100",
-     "prev": 318400,
-     "printed_prev": "318 400"
+     "prev": 305200,
+     "printed_prev": "305 200"
     },
     "160": {
      "page": 1,
      "cur": 66900,
      "printed_cur": "66 900",
-     "prev": 64200,
-     "printed_prev": "64 200"
+     "prev": 61000,
+     "printed_prev": "61 000"
     },
     "170": {
      "page": 1,
      "cur": 152600,
      "printed_cur": "152 600",
-     "prev": 141300,
-     "printed_prev": "141 300"
+     "prev": 128400,
+     "printed_prev": "128 400"
     },
     "180": {
      "page": 1,
@@ -766,8 +133,8 @@
      "page": 1,
      "cur": 7900,
      "printed_cur": "7 900",
-     "prev": 8200,
-     "printed_prev": "8 200"
+     "prev": 8600,
+     "printed_prev": "8 600"
     },
     "200": {
      "page": 1,
@@ -778,22 +145,22 @@
      "page": 1,
      "cur": 335340,
      "printed_cur": "335 340",
-     "prev": 324720,
-     "printed_prev": "324 720"
+     "prev": 314940,
+     "printed_prev": "314 940"
     },
     "220": {
      "page": 1,
      "cur": 286040,
      "printed_cur": "286 040",
-     "prev": 274120,
-     "printed_prev": "274 120"
+     "prev": 262040,
+     "printed_prev": "262 040"
     },
     "320": {
      "page": 1,
      "cur": 150100,
      "printed_cur": "150 100",
-     "prev": 176000,
-     "printed_prev": "176 000"
+     "prev": 198000,
+     "printed_prev": "198 000"
     },
     "370": {
      "page": 1,
@@ -809,15 +176,15 @@
      "page": 1,
      "cur": 1038940,
      "printed_cur": "1 038 940",
-     "prev": 1032820,
-     "printed_prev": "1 032 820"
+     "prev": 1016140,
+     "printed_prev": "1 016 140"
     },
     "400": {
      "page": 1,
-     "cur": 3462072,
-     "printed_cur": "3 462 072",
-     "prev": 3240120,
-     "printed_prev": "3 240 120"
+     "cur": 3726292,
+     "printed_cur": "3 726 292",
+     "prev": 3316240,
+     "printed_prev": "3 316 240"
     },
     "410": {
      "page": 1,
@@ -845,10 +212,10 @@
     },
     "450": {
      "page": 1,
-     "cur": 1955372,
-     "printed_cur": "1 955 372",
-     "prev": 1628120,
-     "printed_prev": "1 628 120"
+     "cur": 2219592,
+     "printed_cur": "2 219 592",
+     "prev": 1596440,
+     "printed_prev": "1 596 440"
     },
     "460": {
      "page": 1,
@@ -862,24 +229,24 @@
     },
     "480": {
      "page": 1,
-     "cur": 2285372,
-     "printed_cur": "2 285 372",
-     "prev": 1958120,
-     "printed_prev": "1 958 120"
+     "cur": 2549592,
+     "printed_cur": "2 549 592",
+     "prev": 1926440,
+     "printed_prev": "1 926 440"
     },
     "490": {
      "page": 2,
      "cur": 855600,
      "printed_cur": "855 600",
-     "prev": 970800,
-     "printed_prev": "970 800"
+     "prev": 1086000,
+     "printed_prev": "1 086 000"
     },
     "570": {
      "page": 2,
      "cur": 855600,
      "printed_cur": "855 600",
-     "prev": 970800,
-     "printed_prev": "970 800"
+     "prev": 1086000,
+     "printed_prev": "1 086 000"
     },
     "580": {
      "page": 2,
@@ -890,29 +257,29 @@
      "page": 2,
      "cur": 321100,
      "printed_cur": "321 100",
-     "prev": 311200,
-     "printed_prev": "311 200"
+     "prev": 303800,
+     "printed_prev": "303 800"
     },
     "610": {
      "page": 2,
      "cur": 220300,
      "printed_cur": "220 300",
-     "prev": 212400,
-     "printed_prev": "212 400"
+     "prev": 205900,
+     "printed_prev": "205 900"
     },
     "670": {
      "page": 2,
      "cur": 16900,
      "printed_cur": "16 900",
-     "prev": 18200,
-     "printed_prev": "18 200"
+     "prev": 19400,
+     "printed_prev": "19 400"
     },
     "680": {
      "page": 2,
      "cur": 41200,
      "printed_cur": "41 200",
-     "prev": 38400,
-     "printed_prev": "38 400"
+     "prev": 36900,
+     "printed_prev": "36 900"
     },
     "720": {
      "page": 2,
@@ -940,22 +307,22 @@
      "page": 2,
      "cur": 10200,
      "printed_cur": "10 200",
-     "prev": 9700,
-     "printed_prev": "9 700"
+     "prev": 9100,
+     "printed_prev": "9 100"
     },
     "770": {
      "page": 2,
      "cur": 1176700,
      "printed_cur": "1 176 700",
-     "prev": 1282000,
-     "printed_prev": "1 282 000"
+     "prev": 1389800,
+     "printed_prev": "1 389 800"
     },
     "780": {
      "page": 2,
-     "cur": 3462072,
-     "printed_cur": "3 462 072",
-     "prev": 3240120,
-     "printed_prev": "3 240 120"
+     "cur": 3726292,
+     "printed_cur": "3 726 292",
+     "prev": 3316240,
+     "printed_prev": "3 316 240"
     }
    },
    "blank_cells": [
@@ -1003,24 +370,24 @@
      "page": 1,
      "cur": 39800,
      "printed_cur": "39 800",
-     "prev": 41300,
-     "printed_prev": "41 300"
+     "prev": 44100,
+     "printed_prev": "44 100"
     },
     {
      "code": "270",
      "page": 1,
      "cur": 6400,
      "printed_cur": "6 400",
-     "prev": 6100,
-     "printed_prev": "6 100"
+     "prev": 5800,
+     "printed_prev": "5 800"
     },
     {
      "code": "310",
      "page": 1,
      "cur": 3100,
      "printed_cur": "3 100",
-     "prev": 3200,
-     "printed_prev": "3 200"
+     "prev": 3000,
+     "printed_prev": "3 000"
     },
     {
      "code": "330",
@@ -1033,8 +400,8 @@
      "page": 1,
      "cur": 150100,
      "printed_cur": "150 100",
-     "prev": 176000,
-     "printed_prev": "176 000"
+     "prev": 198000,
+     "printed_prev": "198 000"
     },
     {
      "code": "350",
@@ -1073,62 +440,63 @@
    "page_count": 2
   },
   {
-   "file": "history/forma2_Q2-2026.pdf",
+   "file": "forma2_Q2-2026.pdf",
    "doc_type": "form2",
    "period": {
     "start": "2026-04-01",
     "end": "2026-06-30"
    },
-   "quarterly_bank_format": true,
+   "standalone_quarter": true,
+   "prev_column": "Q2-2025",
    "fields": {
     "010": {
      "page": 1,
      "cur": 1790212,
      "printed_cur": "1 790 212",
-     "prev": 1736118,
-     "printed_prev": "1 736 118"
+     "prev": 1612400,
+     "printed_prev": "1 612 400"
     },
     "020": {
      "page": 1,
      "cur": 1020310,
      "printed_cur": "1 020 310",
-     "prev": 993500,
-     "printed_prev": "993 500"
+     "prev": 921000,
+     "printed_prev": "921 000"
     },
     "030": {
      "page": 1,
      "cur": 769902,
      "printed_cur": "769 902",
-     "prev": 742618,
-     "printed_prev": "742 618"
+     "prev": 691400,
+     "printed_prev": "691 400"
     },
     "040": {
      "page": 1,
      "cur": 359900,
      "printed_cur": "359 900",
-     "prev": 369800,
-     "printed_prev": "369 800"
+     "prev": 334000,
+     "printed_prev": "334 000"
     },
     "050": {
      "page": 1,
      "cur": 118600,
      "printed_cur": "118 600",
-     "prev": 121000,
-     "printed_prev": "121 000"
+     "prev": 108200,
+     "printed_prev": "108 200"
     },
     "060": {
      "page": 1,
      "cur": 211500,
      "printed_cur": "211 500",
-     "prev": 216400,
-     "printed_prev": "216 400"
+     "prev": 198700,
+     "printed_prev": "198 700"
     },
     "070": {
      "page": 1,
      "cur": 29800,
      "printed_cur": "29 800",
-     "prev": 32400,
-     "printed_prev": "32 400"
+     "prev": 27100,
+     "printed_prev": "27 100"
     },
     "090": {
      "page": 1,
@@ -1139,8 +507,8 @@
      "page": 1,
      "cur": 410002,
      "printed_cur": "410 002",
-     "prev": 372818,
-     "printed_prev": "372 818"
+     "prev": 357400,
+     "printed_prev": "357 400"
     },
     "110": {
      "page": 1,
@@ -1178,15 +546,14 @@
      "page": 1,
      "cur": 25000,
      "printed_cur": "25 000",
-     "prev": 24700,
-     "printed_prev": "24 700"
+     "prev": 0,
+     "printed_prev": "0"
     },
     "180": {
      "page": 1,
      "cur": 25000,
      "printed_cur": "25 000",
-     "prev": 24700,
-     "printed_prev": "24 700"
+     "prev": null
     },
     "190": {
      "page": 1,
@@ -1207,8 +574,8 @@
      "page": 1,
      "cur": 385002,
      "printed_cur": "385 002",
-     "prev": 348118,
-     "printed_prev": "348 118"
+     "prev": 357400,
+     "printed_prev": "357 400"
     },
     "230": {
      "page": 1,
@@ -1219,15 +586,15 @@
      "page": 1,
      "cur": 385002,
      "printed_cur": "385 002",
-     "prev": 348118,
-     "printed_prev": "348 118"
+     "prev": 357400,
+     "printed_prev": "357 400"
     },
     "250": {
      "page": 1,
      "cur": 57750,
      "printed_cur": "57 750",
-     "prev": 52218,
-     "printed_prev": "52 218"
+     "prev": 53610,
+     "printed_prev": "53 610"
     },
     "260": {
      "page": 1,
@@ -1238,8 +605,8 @@
      "page": 1,
      "cur": 327252,
      "printed_cur": "327 252",
-     "prev": 295900,
-     "printed_prev": "295 900"
+     "prev": 303790,
+     "printed_prev": "303 790"
     }
    },
    "blank_cells": [
@@ -1255,6 +622,7 @@
     "150.prev",
     "160.cur",
     "160.prev",
+    "180.prev",
     "190.cur",
     "190.prev",
     "200.cur",
@@ -1263,6 +631,643 @@
     "210.prev",
     "230.cur",
     "230.prev",
+    "260.cur",
+    "260.prev"
+   ],
+   "extra_rows": [],
+   "layout": "software_export",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "cur",
+    "prev"
+   ],
+   "variant": {
+    "scan": false
+   },
+   "page_count": 1
+  },
+  {
+   "file": "forma1_Q3-2026.pdf",
+   "doc_type": "form1",
+   "period": {
+    "start": "2026-07-01",
+    "end": "2026-09-30"
+   },
+   "standalone_quarter": false,
+   "prev_column": "2025-12-31",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 2851200,
+     "printed_cur": "2 851 200",
+     "prev": 2812000,
+     "printed_prev": "2 812 000"
+    },
+    "011": {
+     "page": 1,
+     "cur": 632600,
+     "printed_cur": "632 600",
+     "prev": 520100,
+     "printed_prev": "520 100"
+    },
+    "012": {
+     "page": 1,
+     "cur": 2218600,
+     "printed_cur": "2 218 600",
+     "prev": 2291900,
+     "printed_prev": "2 291 900"
+    },
+    "020": {
+     "page": 1,
+     "cur": 12000,
+     "printed_cur": "12 000",
+     "prev": 12000,
+     "printed_prev": "12 000"
+    },
+    "021": {
+     "page": 1,
+     "cur": 5600,
+     "printed_cur": "5 600",
+     "prev": 3800,
+     "printed_prev": "3 800"
+    },
+    "022": {
+     "page": 1,
+     "cur": 6400,
+     "printed_cur": "6 400",
+     "prev": 8200,
+     "printed_prev": "8 200"
+    },
+    "030": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "090": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "100": {
+     "page": 1,
+     "cur": 138932,
+     "printed_cur": "138 932",
+     "prev": null
+    },
+    "110": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": 2363932,
+     "printed_cur": "2 363 932",
+     "prev": 2300100,
+     "printed_prev": "2 300 100"
+    },
+    "140": {
+     "page": 1,
+     "cur": 614100,
+     "printed_cur": "614 100",
+     "prev": 494600,
+     "printed_prev": "494 600"
+    },
+    "150": {
+     "page": 1,
+     "cur": 372800,
+     "printed_cur": "372 800",
+     "prev": 305200,
+     "printed_prev": "305 200"
+    },
+    "160": {
+     "page": 1,
+     "cur": 71300,
+     "printed_cur": "71 300",
+     "prev": 61000,
+     "printed_prev": "61 000"
+    },
+    "170": {
+     "page": 1,
+     "cur": 170000,
+     "printed_cur": "170 000",
+     "prev": 128400,
+     "printed_prev": "128 400"
+    },
+    "180": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "190": {
+     "page": 1,
+     "cur": 7600,
+     "printed_cur": "7 600",
+     "prev": 8600,
+     "printed_prev": "8 600"
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": 436060,
+     "printed_cur": "436 060",
+     "prev": 314940,
+     "printed_prev": "314 940"
+    },
+    "220": {
+     "page": 1,
+     "cur": 403260,
+     "printed_cur": "403 260",
+     "prev": 262040,
+     "printed_prev": "262 040"
+    },
+    "320": {
+     "page": 1,
+     "cur": 65500,
+     "printed_cur": "65 500",
+     "prev": 198000,
+     "printed_prev": "198 000"
+    },
+    "370": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "380": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "390": {
+     "page": 1,
+     "cur": 1123260,
+     "printed_cur": "1 123 260",
+     "prev": 1016140,
+     "printed_prev": "1 016 140"
+    },
+    "400": {
+     "page": 1,
+     "cur": 3487192,
+     "printed_cur": "3 487 192",
+     "prev": 3316240,
+     "printed_prev": "3 316 240"
+    },
+    "410": {
+     "page": 1,
+     "cur": 300000,
+     "printed_cur": "300 000",
+     "prev": 300000,
+     "printed_prev": "300 000"
+    },
+    "420": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "430": {
+     "page": 1,
+     "cur": 30000,
+     "printed_cur": "30 000",
+     "prev": 30000,
+     "printed_prev": "30 000"
+    },
+    "440": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "450": {
+     "page": 1,
+     "cur": 2117592,
+     "printed_cur": "2 117 592",
+     "prev": 1596440,
+     "printed_prev": "1 596 440"
+    },
+    "460": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "470": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "480": {
+     "page": 1,
+     "cur": 2447592,
+     "printed_cur": "2 447 592",
+     "prev": 1926440,
+     "printed_prev": "1 926 440"
+    },
+    "490": {
+     "page": 2,
+     "cur": 740400,
+     "printed_cur": "740 400",
+     "prev": 1086000,
+     "printed_prev": "1 086 000"
+    },
+    "570": {
+     "page": 2,
+     "cur": 740400,
+     "printed_cur": "740 400",
+     "prev": 1086000,
+     "printed_prev": "1 086 000"
+    },
+    "580": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "600": {
+     "page": 2,
+     "cur": 299200,
+     "printed_cur": "299 200",
+     "prev": 303800,
+     "printed_prev": "303 800"
+    },
+    "610": {
+     "page": 2,
+     "cur": 231900,
+     "printed_cur": "231 900",
+     "prev": 205900,
+     "printed_prev": "205 900"
+    },
+    "670": {
+     "page": 2,
+     "cur": 9800,
+     "printed_cur": "9 800",
+     "prev": 19400,
+     "printed_prev": "19 400"
+    },
+    "680": {
+     "page": 2,
+     "cur": 12600,
+     "printed_cur": "12 600",
+     "prev": 36900,
+     "printed_prev": "36 900"
+    },
+    "720": {
+     "page": 2,
+     "cur": 22400,
+     "printed_cur": "22 400",
+     "prev": 22400,
+     "printed_prev": "22 400"
+    },
+    "730": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "740": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "750": {
+     "page": 2,
+     "cur": null,
+     "prev": null
+    },
+    "760": {
+     "page": 2,
+     "cur": 12400,
+     "printed_cur": "12 400",
+     "prev": 9100,
+     "printed_prev": "9 100"
+    },
+    "770": {
+     "page": 2,
+     "cur": 1039600,
+     "printed_cur": "1 039 600",
+     "prev": 1389800,
+     "printed_prev": "1 389 800"
+    },
+    "780": {
+     "page": 2,
+     "cur": 3487192,
+     "printed_cur": "3 487 192",
+     "prev": 3316240,
+     "printed_prev": "3 316 240"
+    }
+   },
+   "blank_cells": [
+    "030.cur",
+    "030.prev",
+    "090.cur",
+    "090.prev",
+    "100.prev",
+    "110.cur",
+    "110.prev",
+    "120.cur",
+    "120.prev",
+    "180.cur",
+    "180.prev",
+    "200.cur",
+    "200.prev",
+    "330.cur",
+    "330.prev",
+    "350.cur",
+    "350.prev",
+    "370.cur",
+    "370.prev",
+    "380.cur",
+    "380.prev",
+    "420.cur",
+    "420.prev",
+    "440.cur",
+    "440.prev",
+    "460.cur",
+    "460.prev",
+    "470.cur",
+    "470.prev",
+    "580.cur",
+    "580.prev",
+    "730.cur",
+    "730.prev",
+    "740.cur",
+    "740.prev",
+    "750.cur",
+    "750.prev"
+   ],
+   "extra_rows": [
+    {
+     "code": "260",
+     "page": 1,
+     "cur": 22400,
+     "printed_cur": "22 400",
+     "prev": 44100,
+     "printed_prev": "44 100"
+    },
+    {
+     "code": "270",
+     "page": 1,
+     "cur": 6900,
+     "printed_cur": "6 900",
+     "prev": 5800,
+     "printed_prev": "5 800"
+    },
+    {
+     "code": "310",
+     "page": 1,
+     "cur": 3500,
+     "printed_cur": "3 500",
+     "prev": 3000,
+     "printed_prev": "3 000"
+    },
+    {
+     "code": "330",
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    {
+     "code": "340",
+     "page": 1,
+     "cur": 65500,
+     "printed_cur": "65 500",
+     "prev": 198000,
+     "printed_prev": "198 000"
+    },
+    {
+     "code": "350",
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    {
+     "code": "690",
+     "page": 2,
+     "cur": 3200,
+     "printed_cur": "3 200",
+     "prev": 3200,
+     "printed_prev": "3 200"
+    },
+    {
+     "code": "700",
+     "page": 2,
+     "cur": 6900,
+     "printed_cur": "6 900",
+     "prev": 6900,
+     "printed_prev": "6 900"
+    }
+   ],
+   "layout": "mof_grid",
+   "language": "ru",
+   "unit": "kUZS",
+   "printed_unit": "kUZS",
+   "columns_left_to_right": [
+    "prev",
+    "cur"
+   ],
+   "variant": {
+    "scan": false
+   },
+   "page_count": 2
+  },
+  {
+   "file": "forma2_Q3-2026.pdf",
+   "doc_type": "form2",
+   "period": {
+    "start": "2026-07-01",
+    "end": "2026-09-30"
+   },
+   "standalone_quarter": true,
+   "prev_column": "Q3-2025",
+   "fields": {
+    "010": {
+     "page": 1,
+     "cur": 1289046,
+     "printed_cur": "1 289 046",
+     "prev": 1701300,
+     "printed_prev": "1 701 300"
+    },
+    "020": {
+     "page": 1,
+     "cur": 1006410,
+     "printed_cur": "1 006 410",
+     "prev": 968900,
+     "printed_prev": "968 900"
+    },
+    "030": {
+     "page": 1,
+     "cur": 282636,
+     "printed_cur": "282 636",
+     "prev": 732400,
+     "printed_prev": "732 400"
+    },
+    "040": {
+     "page": 1,
+     "cur": 365622,
+     "printed_cur": "365 622",
+     "prev": 342000,
+     "printed_prev": "342 000"
+    },
+    "050": {
+     "page": 1,
+     "cur": 120412,
+     "printed_cur": "120 412",
+     "prev": 110500,
+     "printed_prev": "110 500"
+    },
+    "060": {
+     "page": 1,
+     "cur": 214806,
+     "printed_cur": "214 806",
+     "prev": 203100,
+     "printed_prev": "203 100"
+    },
+    "070": {
+     "page": 1,
+     "cur": 30404,
+     "printed_cur": "30 404",
+     "prev": 28400,
+     "printed_prev": "28 400"
+    },
+    "090": {
+     "page": 1,
+     "cur": 6190,
+     "printed_cur": "6 190",
+     "prev": null
+    },
+    "100": {
+     "page": 1,
+     "cur": -76796,
+     "printed_cur": "-76 796",
+     "prev": 390400,
+     "printed_prev": "390 400"
+    },
+    "110": {
+     "page": 1,
+     "cur": 0,
+     "printed_cur": "0",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "120": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "130": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "140": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "150": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "160": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "170": {
+     "page": 1,
+     "cur": 25204,
+     "printed_cur": "25 204",
+     "prev": 0,
+     "printed_prev": "0"
+    },
+    "180": {
+     "page": 1,
+     "cur": 25204,
+     "printed_cur": "25 204",
+     "prev": null
+    },
+    "190": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "200": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "210": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "220": {
+     "page": 1,
+     "cur": -102000,
+     "printed_cur": "-102 000",
+     "prev": 390400,
+     "printed_prev": "390 400"
+    },
+    "230": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "240": {
+     "page": 1,
+     "cur": -102000,
+     "printed_cur": "-102 000",
+     "prev": 390400,
+     "printed_prev": "390 400"
+    },
+    "250": {
+     "page": 1,
+     "cur": null,
+     "prev": 58560,
+     "printed_prev": "58 560"
+    },
+    "260": {
+     "page": 1,
+     "cur": null,
+     "prev": null
+    },
+    "270": {
+     "page": 1,
+     "cur": -102000,
+     "printed_cur": "-102 000",
+     "prev": 331840,
+     "printed_prev": "331 840"
+    }
+   },
+   "blank_cells": [
+    "090.prev",
+    "120.cur",
+    "120.prev",
+    "130.cur",
+    "130.prev",
+    "140.cur",
+    "140.prev",
+    "150.cur",
+    "150.prev",
+    "160.cur",
+    "160.prev",
+    "180.prev",
+    "190.cur",
+    "190.prev",
+    "200.cur",
+    "200.prev",
+    "210.cur",
+    "210.prev",
+    "230.cur",
+    "230.prev",
+    "250.cur",
     "260.cur",
     "260.prev"
    ],
@@ -5276,12 +5281,16 @@
    1391
   ],
   "q3_loss_mln": -102.0,
-  "receivables_q2_q3_mln": [
+  "receivables_q4_q1_q2_q3_mln": [
+   262,
+   274,
    286,
    403
   ],
   "receivables_change_pct": 41,
-  "cash_end_q2_q3_mln": [
+  "cash_end_q4_q1_q2_q3_mln": [
+   198.0,
+   176.0,
    150.1,
    65.5
   ],

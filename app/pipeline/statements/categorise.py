@@ -12,7 +12,7 @@ from pathlib import Path
 
 import yaml
 
-from app.pipeline.statements.text import norm, strip_vat_mentions
+from app.pipeline.statements.text import norm, strip_vat_mentions, uz_cyr_to_lat
 
 HERE = Path(__file__).resolve().parent
 RULES_PATH = HERE / "rules.yaml"
@@ -78,11 +78,13 @@ def direction_of(amount: float) -> str:
 
 
 def model_text(purpose: str, counterparty: str, amount: float) -> str:
-    return f"__{direction_of(amount)}__ {strip_vat_mentions(norm(purpose))} | {norm(counterparty)}"
+    return f"__{direction_of(amount)}__ {strip_vat_mentions(uz_cyr_to_lat(norm(purpose)))} | {norm(counterparty)}"
 
 
 def rule_category(purpose: str, counterparty: str, amount: float) -> str | None:
-    text = strip_vat_mentions(norm(purpose))
+    base = norm(purpose)
+    lat = uz_cyr_to_lat(base)
+    text = strip_vat_mentions(base if lat == base else f"{base} || {lat}")
     cp = norm(counterparty)
     d = direction_of(amount)
     for rule in load_rules():
@@ -121,7 +123,7 @@ class Categoriser:
         ranked = sorted(zip(classes, proba), key=lambda t: -t[1])
         for cat, p in ranked:
             if cat in allowed:
-                return cat, float(p)
+                return str(cat), float(p)
         return "other", 0.0
 
     def categorise(self, purpose: str, counterparty: str, amount: float,

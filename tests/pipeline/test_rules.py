@@ -169,3 +169,19 @@ def test_findings_sorted_by_severity():
     fs = run_application_rules(farovon_ctx(docs=docs))
     order = {"attn": 0, "watch": 1, "neutral": 2, "info": 3}
     assert [order[f.severity] for f in fs] == sorted(order[f.severity] for f in fs)
+
+
+def test_r06_reads_declared_contracts_from_application_fact():
+    from test_rules_fixtures import FactDraft, new_fact_key
+    app = {k: v for k, v in FAROVON_APP.items() if not k.startswith("declared_debts")}
+    declared = FactDraft(field="application.declared_debts_total", label="Existing loans and debts", value=120_000,
+                         unit="kUZS", printed="120 000 000 сум",
+                         passage="Действующие кредиты: 120 000 000 сум\n— Hamkorbank, договор № 2024-1177: остаток …",
+                         key=new_fact_key())
+    fs = run_application_rules(farovon_ctx(app=app, extra_facts=[declared]))
+    assert not [f for f in fs if f.rule_id == "R06"]
+    # debts declared but no contract number readable: the loan may be one of them, so R06 stays silent
+    declared_nocontract = FactDraft(field="application.declared_debts_total", label="Existing loans and debts",
+                                    value=120_000, unit="kUZS", printed="120 000 000 сум", key=new_fact_key())
+    fs = run_application_rules(farovon_ctx(app=app, extra_facts=[declared_nocontract]))
+    assert not [f for f in fs if f.rule_id == "R06"]

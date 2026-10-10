@@ -91,9 +91,13 @@ def _page_text(pages: list[ParsedPage], max_pages: int = 3) -> str:
     return "\n".join(parts)
 
 
-def _ocr_page(img: Image.Image, n: int, out_dir: Path, *, source_dpi: float | None) -> ParsedPage:
+def _ocr_page(img: Image.Image, n: int, out_dir: Path, *, source_dpi: float | None, lang: str | None = None,
+              lang_out: list | None = None) -> ParsedPage:
     from app.pipeline.ocr import ocr_image
-    res = ocr_image(img)
+    # page 1 decides the languages (with a retry on poor confidence); later pages reuse them
+    res = ocr_image(img, lang=lang, retry_below=85.0 if lang is None else 0.0)
+    if lang_out is not None:
+        lang_out.append(res.lang)
     # page PNG: processed (upright, deskewed) image at ~150 dpi equivalent
     proc = res.image
     target_w = proc.width * (PAGE_DPI / 300.0) if source_dpi else min(1700, proc.width)
@@ -203,26 +207,48 @@ def _parse_document(path: str, mime: str = "", out_dir: str | Path = ".", *, max
     except Exception as exc:
         doc.failure_cause = f"The PDF could not be opened ({exc.__class__.__name__})."
         return doc
+    from concurrent.futures import ThreadPoolExecutor
+
     from app.pipeline.ocr import render_pdf_page
     ocr_done = 0
-    pages: list[ParsedPage] = []
+    pages: dict[int, ParsedPage] = {}
+    to_ocr: list[int] = []
     for i, (pw, ph, words, n_chars) in enumerate(layers):
         n = i + 1
         if n_chars >= MIN_CHARS_TEXT_PAGE:
             png = out / "pages" / f"{n}.png"
             render_page_png(path, i, png)
-            pages.append(ParsedPage(n=n, width=pw, height=ph, words=words, image_path=str(png),
-                                    image_scale=PAGE_DPI / 72.0, ocr_used=False))
-            continue
-        if ocr_done >= max_ocr_pages or (dl is not None and time.time() > dl):
+            pages[n] = ParsedPage(n=n, width=pw, height=ph, words=words, image_path=str(png),
+                                  image_scale=PAGE_DPI / 72.0, ocr_used=False)
+        elif ocr_done < max_ocr_pages:
+            to_ocr.append(i)
+            ocr_done += 1
+        else:
             png = out / "pages" / f"{n}.png"
             render_page_png(path, i, png)
-            pages.append(ParsedPage(n=n, width=pw, height=ph, words=[], image_path=str(png), image_scale=PAGE_DPI / 72.0))
+            pages[n] = ParsedPage(n=n, width=pw, height=ph, words=[], image_path=str(png), image_scale=PAGE_DPI / 72.0)
             doc.partial = True
-            continue
-        img = render_pdf_page(path, i, 300)
-        pages.append(_ocr_page(img, n, out, source_dpi=300))
-        ocr_done += 1
+    if to_ocr:
+        langs: list[str] = []
+        first = to_ocr[0]
+        pages[first + 1] = _ocr_page(render_pdf_page(path, first, 300), first + 1, out, source_dpi=300, lang_out=langs)
+
+        def work(i: int) -> ParsedPage | None:
+            if dl is not None and time.time() > dl:
+                return None
+            return _ocr_page(render_pdf_page(path, i, 300), i + 1, out, source_dpi=300, lang=langs[0] or None)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            for i, res in zip(to_ocr[1:], pool.map(work, to_ocr[1:])):
+                if res is None:  # deadline: keep the page image, no words
+                    png = out / "pages" / f"{i + 1}.png"
+                    render_page_png(path, i, png)
+                    pw, ph = layers[i][0], layers[i][1]
+                    pages[i + 1] = ParsedPage(n=i + 1, width=pw, height=ph, words=[], image_path=str(png),
+                                              image_scale=PAGE_DPI / 72.0)
+                    doc.partial = True
+                else:
+                    pages[i + 1] = res
+    pages = [pages[k] for k in sorted(pages)]
     doc.pages = pages
     ocr_pages = [p for p in pages if p.ocr_used]
     doc.text_layer = not ocr_pages

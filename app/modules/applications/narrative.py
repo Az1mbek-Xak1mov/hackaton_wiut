@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.modules.extraction.models import Fact
 from app.modules.extraction.service import fact_to_draft
 from app.modules.llm.models import NarrativeRun
-from app.modules.settings.service import llm_configured, llm_enabled
+from app.modules.llm.provider import available
 
 logger = logging.getLogger(__name__)
 
@@ -34,19 +34,17 @@ def generate_application_narrative(db: Session, application, ctx, findings, rati
     facts = application_fact_drafts(db, application, ctx)
     generation = next_generation(db, application_id=application.id)
 
-    if llm_enabled(db) and llm_configured():
+    if available(db):
+        from app.modules.llm.narrative import generate as llm_generate
         try:
-            from app.modules.llm.narrative import generate as llm_generate   # wave 2 (T-023)
-        except ImportError:
-            llm_generate = None
-        if llm_generate is not None:
-            try:
-                accepted = llm_generate(db, application=application, ctx=ctx, findings=findings,
-                                        ratio_facts=ratio_drafts, facts=facts, generation=generation)
-                if accepted is not None:
-                    return accepted
-            except Exception:
-                logger.exception("LLM narrative failed for %s; falling back to the template", application.number)
+            accepted = llm_generate(db, application=application, ctx=ctx, findings=findings,
+                                    ratio_facts=ratio_drafts, facts=facts, generation=generation)
+            if accepted is not None:
+                return accepted
+        except Exception:
+            logger.exception("LLM narrative failed for %s; falling back to the template", application.number)
+    llm_attempts = db.scalar(select(func.count(NarrativeRun.id)).where(
+        NarrativeRun.application_id == application.id, NarrativeRun.generation == generation)) or 0
 
     try:
         from app.pipeline.narrative import template_narrative
@@ -57,7 +55,7 @@ def generate_application_narrative(db: Session, application, ctx, findings, rati
     text = template_narrative(ctx, findings, ratio_drafts)
     report = verify(text, facts)
     report = report if isinstance(report, dict) else {"ok": bool(report)}
-    run = NarrativeRun(application_id=application.id, generation=generation, attempt=1, mode="template",
+    run = NarrativeRun(application_id=application.id, generation=generation, attempt=llm_attempts + 1, mode="template",
                        fact_set=_fact_set(facts), output=text, verifier_report=_safe(report),
                        accepted=bool(report.get("ok")))
     db.add(run)
