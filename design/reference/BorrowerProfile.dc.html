@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Borrower profile — Zilola Mebel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:1px 7px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn-sm{height:28px;padding:0 10px;font-size:12px}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:8px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 5px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.ev:hover{background:#E8F1EF}
+.nav a{display:flex;align-items:center;gap:10px;height:36px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav a .cnt{margin-left:auto;font-size:11px;font-weight:600;color:#66615A;background:#EFECE5;border-radius:9px;padding:0 6px;line-height:18px}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px 16px}
+.alert{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:10px 14px;border-top:1px solid #EEEBE4;align-items:start}
+.passage{padding:10px 12px;font-size:12px;line-height:1.55;background:#FBFAF7;border:1px solid #E3DFD6;border-radius:4px;white-space:pre-wrap}
+.hit{background:#FFF1B8;border-bottom:2px solid #D9A441;padding:0 2px}
+.tl{display:grid;grid-template-columns:84px 14px 1fr;gap:0 12px}
+.tl .d{font-size:12px;color:#66615A;padding-top:1px}
+.tl .m{position:relative}
+.tl .m span{display:block;width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #D8D3C8;margin:3px 2px}
+.tl .m::after{content:"";position:absolute;left:6px;top:16px;bottom:-4px;width:2px;background:#EEEBE4}
+.tl .last .m::after{display:none}
+.tl .t{padding-bottom:14px}
+.doc{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0;border-top:1px solid #EEEBE4;font-size:12.5px;align-items:center}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}.alert{grid-template-columns:1fr}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. Click any dashed figure to inspect the records behind it. Statuses are illustrative monitoring indicators, not a credit score.</span>
+  </div>
+
+  <header class="top">
+    <a href="Portfolio.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #1B1A17; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+      <span class="muted" style="font-size: 13px">for lenders</span>
+    </a>
+    <span class="pill pill-neutral">Bank officer</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button">UZ</button><button type="button" class="on">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Main.dc.html" class="muted" style="font-size: 13px">Open business owner view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">GA</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">SME lending</div>
+        <div class="muted" style="font-size: 12px">Credit analyst · Tashkent regional office</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Portfolio.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Portfolio overview</a>
+        <a href="LoanReview.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>Applications<span class="cnt">12</span></a>
+        <a href="Borrowers.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>Borrowers<span class="cnt">148</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20z M12 10v5M12 18h.01"></path></svg>Alerts<span class="cnt">9</span></a>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 14px">
+
+      <div class="muted" style="font-size: 12px"><a href="Borrowers.dc.html" class="muted" style="text-decoration: none">Borrowers</a> / Zilola Mebel MChJ</div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; justify-content: space-between">
+        <div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+            <h1 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em">Zilola Mebel MChJ</h1>
+            <span class="pill pill-attn">Attention · since 02 Oct 2026</span>
+            <span class="muted">previously Watch (18 Aug) · Stable before</span>
+          </div>
+          <p class="muted" style="margin-top: 2px">Furniture manufacturing (kitchen &amp; office) · Samarqand · STIR 304 882 571 · operating since 2016 · 37 employees · borrower since Oct 2025</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" class="btn">Contact borrower</button>
+          <button type="button" class="btn">Request documents</button>
+          <button type="button" class="btn btn-primary">Record review outcome</button>
+        </div>
+      </div>
+
+      <section class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" aria-label="Loan details">
+        <div class="kv">
+          <div><div class="eyebrow">Loan</div><div style="font-size: 14px">L-2025-0417 · investment</div><div class="muted">Disbursed 15 Oct 2025 · CNC equipment</div></div>
+          <div><div class="eyebrow">Original / outstanding</div><div class="num" style="font-size: 18px; font-weight: 500">740.4 <span class="muted" style="font-size: 12px; font-weight: 400">of 1 200.0 mln</span></div></div>
+          <div><div class="eyebrow">Installment</div><div class="num" style="font-size: 18px; font-weight: 500">46.8 <span class="muted" style="font-size: 12px; font-weight: 400">mln · 15th monthly</span></div><div class="muted">Next due 15 Oct 2026</div></div>
+          <div><div class="eyebrow">Term</div><div style="font-size: 14px" class="num">36 months · 11 paid, 25 left</div><div class="muted">Matures Sep 2028</div></div>
+          <div><div class="eyebrow">Collateral</div><div style="font-size: 14px">Equipment + workshop</div><div class="muted">Valued 1 640.0 mln (Oct 2025)</div></div>
+          <div><div class="eyebrow">Cash coverage of next installment</div><div class="num" style="font-size: 18px; font-weight: 500; color: #9B2318">1.4× <span class="muted" style="font-size: 12px; font-weight: 400">threshold 1.5×</span></div><div class="muted">65.5 mln cash at 30 Sep</div></div>
+        </div>
+        <div>
+          <div class="muted" style="font-size: 12px; margin-bottom: 6px">Repayment history · 11 installments · 10 on time, 1 late (Sep, 2 days)</div>
+          <div style="display: grid; grid-template-columns: repeat(36, minmax(0, 1fr)); gap: 3px" aria-label="36 installments: 10 paid on time, 1 paid late, 25 upcoming">
+            <span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #C2410C"></span>
+            <span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span>
+          </div>
+          <div style="display: flex; justify-content: space-between" class="muted"><span style="font-size: 12px">Nov 2025</span><span style="font-size: 12px"><span style="display: inline-block; width: 8px; height: 8px; background: #0F6E63; border-radius: 2px; margin-right: 4px"></span>on time <span style="display: inline-block; width: 8px; height: 8px; background: #C2410C; border-radius: 2px; margin: 0 4px 0 10px"></span>late <span style="display: inline-block; width: 8px; height: 8px; background: #E3DFD6; border-radius: 2px; margin: 0 4px 0 10px"></span>upcoming</span><span style="font-size: 12px">Sep 2028</span></div>
+        </div>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+
+        <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+
+          <section class="panel" aria-label="Monitoring alerts">
+            <div style="padding: 12px 14px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 14px; font-weight: 600">Why this borrower is under Attention</h2>
+              <span class="muted" style="font-size: 12px">4 indicators moved · thresholds shown · Q3 2026 vs Q2 2026</span>
+            </div>
+            <div class="alert">
+              <span class="pill pill-attn">Revenue</span>
+              <div><div style="font-weight: 500">Revenue −28.0% vs previous quarter</div><div class="muted">1 289.0 vs 1 790.0 mln. Threshold −15%. Operating expenses unchanged (1 391.0 vs 1 405.0), so Q3 produced an estimated loss of 102.0 mln. <button type="button" class="ev" onClick="{{ pick.rev }}">Sales ledger &amp; bank inflows</button></div></div>
+              <span class="muted" style="font-size: 12px; white-space: nowrap">02 Oct</span>
+            </div>
+            <div class="alert">
+              <span class="pill pill-attn">Receivables</span>
+              <div><div style="font-weight: 500">Receivables +41% while sales fell</div><div class="muted">403.0 vs 286.0 mln. 61% of the increase is one customer, a retail furniture chain that took 38% of 2025 sales and has 247.0 mln unpaid. <button type="button" class="ev" onClick="{{ pick.chain }}">Customer concentration</button></div></div>
+              <span class="muted" style="font-size: 12px; white-space: nowrap">02 Oct</span>
+            </div>
+            <div class="alert">
+              <span class="pill pill-watch">Cash coverage</span>
+              <div><div style="font-weight: 500">Cash covers the next installment 1.4× (threshold 1.5×)</div><div class="muted">65.5 mln cash at 30 Sep against 46.8 mln due 15 Oct. Coverage was 3.2× at 30 Jun and 4.2× at 31 Dec. <button type="button" class="ev" onClick="{{ pick.cash }}">Bank balance history</button></div></div>
+              <span class="muted" style="font-size: 12px; white-space: nowrap">02 Oct</span>
+            </div>
+            <div class="alert">
+              <span class="pill pill-watch">Punctuality</span>
+              <div><div style="font-weight: 500">September installment paid 2 days late — first late payment</div><div class="muted">Due 15 Sep, received 17 Sep, full amount. Bank balance on 15 Sep was 31.2 mln — below the installment. <button type="button" class="ev" onClick="{{ pick.late }}">Payment record</button></div></div>
+              <span class="muted" style="font-size: 12px; white-space: nowrap">17 Sep</span>
+            </div>
+          </section>
+
+          <section class="panel" aria-label="Financial performance over time">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px 0; gap: 8px; flex-wrap: wrap">
+              <div>
+                <h2 style="font-size: 14px; font-weight: 600">Quarterly revenue and operating expenses</h2>
+                <p class="muted" style="font-size: 12px">mln UZS · Q4 2025 – Q3 2026 · from quarterly statements uploaded by the borrower</p>
+              </div>
+              <div style="display: flex; gap: 14px; font-size: 12px" aria-hidden="true">
+                <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0F6E63; display: inline-block"></span>Revenue</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #A39B8B; display: inline-block"></span>Operating expenses</span>
+              </div>
+            </div>
+            <div style="padding: 6px 10px 0">
+              <svg viewBox="0 0 720 230" width="100%" role="img" aria-label="Quarterly revenue: Q4 2025 1 842, Q1 2026 1 736, Q2 2026 1 790, Q3 2026 1 289 million UZS. Operating expenses stayed between 1 388 and 1 412 in every quarter.">
+                <g stroke="#EEEBE4"><line x1="50" y1="200" x2="710" y2="200"></line><line x1="50" y1="110" x2="710" y2="110"></line><line x1="50" y1="20" x2="710" y2="20"></line></g>
+                <g fill="#66615A" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="end"><text x="44" y="204">0</text><text x="44" y="114">1 000</text><text x="44" y="24">2 000</text></g>
+                <g fill="#0F6E63">
+                  <rect x="90" y="34.2" width="48" height="165.8" rx="3"></rect><rect x="250" y="43.8" width="48" height="156.2" rx="3"></rect><rect x="410" y="38.9" width="48" height="161.1" rx="3"></rect><rect x="570" y="84" width="48" height="116" rx="3"></rect>
+                </g>
+                <g fill="#A39B8B">
+                  <rect x="144" y="72.9" width="48" height="127.1" rx="3"></rect><rect x="304" y="75.1" width="48" height="124.9" rx="3"></rect><rect x="464" y="73.5" width="48" height="126.5" rx="3"></rect><rect x="624" y="74.8" width="48" height="125.2" rx="3"></rect>
+                </g>
+                <g fill="#1B1A17" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="114" y="28">1 842</text><text x="434" y="33">1 790</text><text x="594" y="78">1 289</text><text x="648" y="68">1 391</text></g>
+                <g fill="#66615A" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="141" y="220">Q4 2025</text><text x="301" y="220">Q1 2026</text><text x="461" y="220">Q2 2026</text><text x="621" y="220">Q3 2026</text></g>
+              </svg>
+            </div>
+            <div style="margin: 0 14px; padding-top: 10px; border-top: 1px solid #EEEBE4; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <span style="font-weight: 600">Cash coverage of next installment, quarter end</span><span class="muted" style="font-size: 12px">threshold 1.5× shown as dashed line</span>
+            </div>
+            <div style="padding: 2px 10px 10px">
+              <svg viewBox="0 0 720 110" width="100%" role="img" aria-label="Cash coverage of the next installment at quarter end: 4.2 times, 3.8, 3.2, then 1.4 times at the end of Q3 2026, below the 1.5 threshold.">
+                <line x1="50" y1="100" x2="710" y2="100" stroke="#EEEBE4"></line>
+                <line x1="50" y1="76" x2="710" y2="76" stroke="#C2410C" stroke-dasharray="4 4" stroke-width="1"></line>
+                <text x="706" y="72" fill="#9B2318" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="end">1.5×</text>
+                <polyline fill="none" stroke="#0F6E63" stroke-width="2" stroke-linejoin="round" points="141,32.8 301,39.2 461,48.8 621,77.6"></polyline>
+                <g fill="#fff" stroke="#0F6E63" stroke-width="2"><circle cx="141" cy="32.8" r="4"></circle><circle cx="301" cy="39.2" r="4"></circle><circle cx="461" cy="48.8" r="4"></circle></g>
+                <circle cx="621" cy="77.6" r="5" fill="#C2410C"></circle>
+                <g fill="#1B1A17" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="141" y="22">4.2×</text><text x="461" y="38">3.2×</text><text x="621" y="98">1.4×</text></g>
+              </svg>
+            </div>
+          </section>
+
+          <section class="panel" aria-label="AI explanation" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 14px; font-weight: 600">What changed, and why it matters for repayment</h2>
+              <span class="muted" style="font-size: 12px">AI explanation · generated 02 Oct, 23:10 · from Q3 statement, sales ledger and bank statement</span>
+            </div>
+            <p style="text-wrap: pretty"><strong>Revenue decreased by 28% compared with the previous period, while operating expenses remained relatively stable. Based on the available data, this may reduce the business's ability to meet upcoming loan payments.</strong></p>
+            <p style="text-wrap: pretty">The decline is concentrated in one customer. Orders from the retail furniture chain that took 38% of 2025 sales fell from <button type="button" class="ev num" onClick="{{ pick.chain }}">684.0</button> mln in Q2 to <button type="button" class="ev num" onClick="{{ pick.chain }}">212.0</button> mln in Q3 (−69%); sales to all other customers were almost flat (1 106.0 → 1 077.0, −2.6%). At the same time, that customer's unpaid invoices grew to 247.0 mln, so the business both sold less and collected less.</p>
+            <p style="text-wrap: pretty">Costs did not adjust: salaries are 58% of operating expenses and were paid in full every month. The quarter therefore produced an estimated loss of 102.0 mln, and the bank balance fell from <button type="button" class="ev num" onClick="{{ pick.cash }}">150.1</button> mln at 30 Jun to <button type="button" class="ev num" onClick="{{ pick.cash }}">65.5</button> mln at 30 Sep. The 15 Oct installment is covered by cash on hand; the November one depends on October collections or new orders.</p>
+            <div style="border: 1px solid #E8D8B5; background: #FBF7EE; border-radius: 5px; padding: 10px 12px"><strong>What the records don't show.</strong> Whether the chain's drop is a lost customer or postponed orders — no contract, order book or correspondence has been uploaded. Inventory is not reported quarterly, so finished stock that could be sold is unknown. Treat the loss figure as an estimate until the audited 9-month statement arrives.</div>
+            <div>
+              <div class="eyebrow" style="margin-bottom: 6px">Suggested next steps for the officer</div>
+              <ol style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px">
+                <li>Call the borrower before 15 Oct; ask for October sales to date and the chain's payment plan for the 247.0 mln.</li>
+                <li>Request the order book or framework contract with the chain to classify the drop (lost vs delayed).</li>
+                <li>If November coverage looks below 1.0×, discuss a short-term restructuring early rather than after a missed payment.</li>
+                <li>Collateral (1 640.0 valuation, Oct 2025) comfortably exceeds the 740.4 outstanding; a revaluation is not urgent.</li>
+              </ol>
+            </div>
+          </section>
+        </div>
+
+        <div style="flex: 0 1 420px; min-width: min(300px, 100%); display: flex; flex-direction: column; gap: 14px">
+
+          <aside class="panel" style="display: flex; flex-direction: column" aria-label="Evidence">
+            <div style="padding: 12px 14px 10px; border-bottom: 1px solid #EEEBE4; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+              <div>
+                <div class="eyebrow">Evidence</div>
+                <h2 style="font-size: 14px; font-weight: 600; margin-top: 2px">{{ ev.title }}</h2>
+                <div class="muted" style="font-size: 12px; margin-top: 2px">{{ ev.doc }}</div>
+              </div>
+              <span class="pill {{ ev.pillClass }}">{{ ev.tag }}</span>
+            </div>
+            <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+              <div class="passage mono">{{ ev.before }}<span class="hit">{{ ev.hit }}</span>{{ ev.after }}</div>
+              <table class="tbl" aria-label="Figures behind the alert">
+                <thead><tr><th>{{ ev.col1 }}</th><th class="r">{{ ev.col2 }}</th><th class="r">{{ ev.col3 }}</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ ev.rows }}" as="r" hint-placeholder-count="4">
+                    <tr><td>{{ r.a }}</td><td class="r num">{{ r.b }}</td><td class="r num">{{ r.c }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+              <p style="font-size: 13px">{{ ev.note }}</p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button type="button" class="btn btn-sm">Open source document</button>
+                <button type="button" class="btn btn-sm">Add to review note</button>
+              </div>
+            </div>
+          </aside>
+
+          <section class="panel" aria-label="How the condition developed" style="padding: 12px 14px 4px">
+            <h2 style="font-size: 14px; font-weight: 600; margin-bottom: 10px">How it developed</h2>
+            <div class="tl">
+              <span class="d">Jun 2026</span><span class="m"><span style="background: #0F6E63"></span></span><div class="t"><div style="font-weight: 500">Q2 review — Stable</div><div class="muted" style="font-size: 12px">Revenue 1 790.0, coverage 3.2×. Chain orders at usual 228/month.</div></div>
+              <span class="d">Jul 2026</span><span class="m"><span style="background: #D9A441"></span></span><div class="t"><div style="font-weight: 500">Chain orders fall to 71.0 mln</div><div class="muted" style="font-size: 12px">Seen in the July bank statement; one month below threshold does not change status.</div></div>
+              <span class="d">18 Aug</span><span class="m"><span style="background: #D9A441"></span></span><div class="t"><div style="font-weight: 500">Status → Watch</div><div class="muted" style="font-size: 12px">Second month of low inflows (1 302.0 for Jul–Aug annualised); receivables begin to age.</div></div>
+              <span class="d">17 Sep</span><span class="m"><span style="background: #C2410C"></span></span><div class="t"><div style="font-weight: 500">Installment paid 2 days late</div><div class="muted" style="font-size: 12px">Balance on due date 31.2 mln; paid after a 48.0 mln customer receipt on 17 Sep.</div></div>
+              <span class="d">02 Oct</span><span class="m"><span style="background: #C2410C"></span></span><div class="t"><div style="font-weight: 500">Q3 statement uploaded → Attention</div><div class="muted" style="font-size: 12px">Revenue −28%, receivables +41%, coverage 1.4×: three indicators beyond threshold.</div></div>
+              <div class="last" style="display: contents"><span class="d">Today</span><span class="m"><span style="background: #1B1A17"></span></span><div class="t"><div style="font-weight: 500">Officer review pending</div><div class="muted" style="font-size: 12px">Next installment due in 5 days.</div></div></div>
+            </div>
+          </section>
+
+          <section class="panel" aria-label="Documents and previous assessments" style="padding: 12px 14px 8px">
+            <h2 style="font-size: 14px; font-weight: 600; margin-bottom: 4px">Documents &amp; previous assessments</h2>
+            <div class="doc"><div><div style="font-weight: 500">Quarterly statement, Q3 2026 (Форма 1, 2)</div><div class="muted" style="font-size: 12px">Uploaded 01 Oct · 2 files</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><div><div style="font-weight: 500">Bank statement, Jul–Sep 2026</div><div class="muted" style="font-size: 12px">Uploaded 01 Oct · 614 transactions</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><div><div style="font-weight: 500">Sales ledger, Q3 2026</div><div class="muted" style="font-size: 12px">Uploaded 01 Oct · 188 invoices</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><div><div style="font-weight: 500">Q2 2026 monitoring review</div><div class="muted" style="font-size: 12px">G. Abdullayeva · 08 Jul 2026</div></div><span class="pill pill-stable">Stable</span></div>
+            <div class="doc"><div><div style="font-weight: 500">Q1 2026 monitoring review</div><div class="muted" style="font-size: 12px">G. Abdullayeva · 09 Apr 2026</div></div><span class="pill pill-stable">Stable</span></div>
+            <div class="doc"><div><div style="font-weight: 500">Origination assessment</div><div class="muted" style="font-size: 12px">S. Rahimov · 10 Oct 2025 · indicator: adequate</div></div><span class="pill pill-neutral">Approved by committee</span></div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 'rev' };
+  }
+  renderVals() {
+    const items = {
+      rev: {
+        title: 'Revenue −28.0% — Q3 vs Q2 2026', doc: 'Форма 2, Q3 2026 · line 010 · cross-checked with sales ledger and bank inflows', tag: 'Attention', pillClass: 'pill-attn',
+        before: 'Moliyaviy natijalar to\'g\'risida hisobot, 9 oy 2026\n010  Sotishdan sof tushum (III chorak)   ', hit: '1 289 040', after: '\n   II chorak: 1 790 215   |   o\'zgarish: −28,0%',
+        col1: 'Source', col2: 'Q2 2026', col3: 'Q3 2026',
+        rows: [
+          { a: 'Income statement, revenue', b: '1 790.2', c: '1 289.0' },
+          { a: 'Sales ledger, invoices issued', b: '1 790.2', c: '1 289.0' },
+          { a: 'Bank statement, customer receipts', b: '1 811.4', c: '1 172.6' },
+          { a: 'Operating expenses', b: '1 405.0', c: '1 391.0' }
+        ],
+        note: 'Three sources agree on the revenue figure. Receipts fell even more than sales (−35%), which is where the receivables alert comes from.'
+      },
+      chain: {
+        title: 'Customer concentration — retail chain', doc: 'Sales ledger Q3 2026 · 188 invoices · grouped by counterparty', tag: 'Attention', pillClass: 'pill-attn',
+        before: 'Xaridor: "SAMARQAND UY JIHOZLARI" savdo tarmog\'i\n2025 yildagi ulushi: 38%\nIII chorak sotuvlar: ', hit: '212 000 000', after: '   (II chorak: 684 000 000)\nTo\'lanmagan hisob-fakturalar: 247 000 000   (eng eskisi: 52 kun)',
+        col1: 'Customer group', col2: 'Q2 2026', col3: 'Q3 2026',
+        rows: [
+          { a: 'Retail chain (1 customer)', b: '684.0', c: '212.0' },
+          { a: 'All other customers (41)', b: '1 106.0', c: '1 077.0' },
+          { a: 'Unpaid by the chain, quarter end', b: '96.0', c: '247.0' }
+        ],
+        note: 'The rest of the customer base is healthy. The question for the officer is whether this one relationship is lost or paused — the records cannot tell.'
+      },
+      cash: {
+        title: 'Cash coverage 1.4× — bank balance history', doc: 'Bank statement · end-of-month balances · installment 46.8 mln', tag: 'Watch', pillClass: 'pill-watch',
+        before: 'Hisob qoldig\'i (oy oxiri), mln so\'m\n30.06.2026   150,1\n31.07.2026   118,4\n31.08.2026   108,0\n30.09.2026   ', hit: '65,5', after: '\nKeyingi to\'lov: 46,8 (15.10.2026)   →   qoplash: 1,4×',
+        col1: 'Month end', col2: 'Cash, mln', col3: 'Coverage',
+        rows: [
+          { a: '30 Jun 2026', b: '150.1', c: '3.2×' },
+          { a: '31 Jul 2026', b: '118.4', c: '2.5×' },
+          { a: '31 Aug 2026', b: '108.0', c: '2.3×' },
+          { a: '30 Sep 2026', b: '65.5', c: '1.4×' }
+        ],
+        note: 'Coverage has fallen every month since June. At the current burn (−28 mln/month) the November installment would not be covered from cash alone.'
+      },
+      late: {
+        title: 'September installment — paid 2 days late', doc: 'Bank statement · 15–17 Sep 2026 · loan L-2025-0417', tag: 'Watch', pillClass: 'pill-watch',
+        before: '15.09.2026   Qoldiq: 31 200 000   (to\'lov muddati — 46 800 000)\n17.09.2026   Kirim: "SAMARQAND UY JIHOZLARI" — 48 000 000\n17.09.2026   Chiqim: ', hit: 'Kredit L-2025-0417 bo\'yicha to\'lov — 46 800 000', after: '',
+        col1: 'Installment', col2: 'Due', col3: 'Paid',
+        rows: [
+          { a: 'No. 9 — Jul 2026', b: '15 Jul', c: '15 Jul' },
+          { a: 'No. 10 — Aug 2026', b: '15 Aug', c: '14 Aug' },
+          { a: 'No. 11 — Sep 2026', b: '15 Sep', c: '17 Sep' }
+        ],
+        note: 'The payment was made the day a customer receipt arrived — the borrower is paying from incoming cash, not reserves. First late payment in 11; no penalty interest applied.'
+      }
+    };
+    const pick = {};
+    Object.keys(items).forEach((k) => { pick[k] = () => this.setState({ sel: k }); });
+    return { ev: items[this.state.sel] || items.rev, pick };
+  }
+}
+</script>
+</body>
+</html>

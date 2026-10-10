@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Upload and analyze — Navro'z Tekstil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn-sm{height:30px;padding:0 10px;font-size:12px}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:9px 12px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:12px 12px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.ev:hover{background:#E8F1EF}
+.nav a{display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.fmt{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border:1px solid #E3DFD6;border-radius:4px;background:#fff;font-size:12px;color:#44403A}
+.bar{height:6px;border-radius:3px;background:#EEEBE4;overflow:hidden;width:120px}
+.bar span{display:block;height:100%;background:#0F6E63}
+.ficon{width:32px;height:38px;border:1px solid #D8D3C8;border-radius:3px;background:#FBFAF7;display:inline-flex;align-items:flex-end;justify-content:center;padding-bottom:4px;font-size:9px;font-weight:600;letter-spacing:.02em;color:#44403A;flex:none}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. The upload area is a visual mockup: files are not processed here.</span>
+  </div>
+
+  <header class="top">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #0F6E63; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+    </a>
+    <span class="pill pill-neutral">Business owner</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button" class="on">UZ</button><button type="button">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Portfolio.dc.html" class="muted" style="font-size: 13px">Open bank officer view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">SN</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">Navro'z Tekstil MChJ</div>
+        <div class="muted" style="font-size: 12px">Textile manufacturing · Namangan</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Main.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Overview</a>
+        <a href="Upload.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"></path></svg>Upload &amp; analyze</a>
+        <a href="Health.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Financial health</a>
+        <a href="AICFO.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>AI CFO</a>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 24px 28px 36px; display: flex; flex-direction: column; gap: 20px">
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between">
+        <div>
+          <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Upload &amp; analyze</h1>
+          <p class="muted" style="font-size: 13px; margin-top: 4px">Add statements, spreadsheets and bank exports. Documents in Uzbek (Latin or Cyrillic), Russian and English are read; figures are extracted with a confidence score and kept linked to their source.</p>
+        </div>
+        <a href="Health.dc.html" class="btn btn-primary">Continue to financial health →</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 20px">
+
+        <section class="panel" style="padding: 20px; display: flex; flex-direction: column; gap: 16px">
+          <div style="border: 1.5px dashed #B9B3A6; border-radius: 6px; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; background: #FBFAF7">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F6E63" stroke-width="1.8" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"></path></svg>
+            <div style="font-weight: 500">Drop files here</div>
+            <div class="muted" style="font-size: 13px">or</div>
+            <label for="file" class="btn" style="cursor: pointer">Choose files</label>
+            <input id="file" type="file" multiple style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden">
+            <div class="muted" style="font-size: 12px">Up to 25 MB per file · scans and photos are OCR-read</div>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom: 8px">Supported</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px">
+              <span class="fmt">PDF — digital or scanned</span>
+              <span class="fmt">XLSX · XLS · CSV</span>
+              <span class="fmt">Bank statement exports</span>
+              <span class="fmt">1C exports (XML, XLSX)</span>
+              <span class="fmt">JPG · PNG photos</span>
+            </div>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom: 8px">Recognised document types</div>
+            <div class="muted" style="font-size: 13px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 4px 16px">
+              <span>Balance sheet (Форма 1 / Buxgalteriya balansi)</span>
+              <span>Income statement (Форма 2 / Moliyaviy natijalar)</span>
+              <span>Bank statements (выписка / bank ko'chirmasi)</span>
+              <span>Tax declarations</span>
+              <span>Sales &amp; purchase ledgers</span>
+              <span>Invoices (счёт-фактура / hisob-faktura)</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Needs your clarification" style="display: flex; flex-direction: column">
+          <div style="padding: 16px 20px 10px; display: flex; justify-content: space-between; align-items: baseline">
+            <h2 style="font-size: 15px; font-weight: 600">Needs your clarification</h2>
+            <span class="pill pill-watch">3 open</span>
+          </div>
+          <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 12px">
+            <div style="border: 1px solid #E3DFD6; border-radius: 5px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+              <div style="font-size: 13px"><span style="font-weight: 500">Low-confidence figure</span> <span class="muted">· Balans_2025_skan.pdf, page 2, line 220</span></div>
+              <div class="muted" style="font-size: 13px">"Debitorlik qarzlari" read as <span class="mono num" style="color:#1B1A17">318 406</span> (confidence 71%). Line 3 of the scan is skewed. Which value is correct?</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button type="button" class="btn btn-sm">318 400 thousand</button>
+                <button type="button" class="btn btn-sm">318 406 thousand</button>
+                <button type="button" class="btn btn-sm">Enter manually</button>
+              </div>
+            </div>
+            <div style="border: 1px solid #E3DFD6; border-radius: 5px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+              <div style="font-size: 13px"><span style="font-weight: 500">14 transactions not categorised</span> <span class="muted">· bank statement, total 42.7 mln UZS</span></div>
+              <div class="muted" style="font-size: 13px">Outgoing transfers to "Mehnat Servis MChJ" labelled only "Shartnoma 17/26 bo'yicha to'lov". Is this a supplier, a loan, or something else?</div>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+                <label for="cat" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Category</label>
+                <select id="cat" style="height: 30px; padding: 0 8px; border: 1px solid #D8D3C8; border-radius: 4px; background: #fff; font-size: 12px"><option>Choose a category…</option><option>Supplier — materials</option><option>Supplier — services</option><option>Loan repayment</option><option>Owner withdrawal</option><option>Other</option></select>
+                <button type="button" class="btn btn-sm">Apply to all 14</button>
+              </div>
+            </div>
+            <div style="border: 1px solid #E3DFD6; border-radius: 5px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+              <div style="font-size: 13px"><span style="font-weight: 500">No financial statements for Q3 2026</span></div>
+              <div class="muted" style="font-size: 13px">July–September figures are built from the bank statement and the sales ledger only. Profit for Q3 is an estimate until Форма 2 for 9 months is uploaded.</div>
+              <div><a class="muted" href="Health.dc.html" style="font-size: 13px">See which figures are estimates →</a></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel" aria-label="Uploaded files">
+        <div style="padding: 16px 20px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <h2 style="font-size: 15px; font-weight: 600">Uploaded files</h2>
+          <span class="muted" style="font-size: 12px">5 files · 3 analyzed · 1 processing · 1 failed</span>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="tbl" style="min-width: 860px">
+            <thead><tr><th>File</th><th>Recognised as</th><th>Period</th><th>Status</th><th>Extracted</th><th class="r">Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div style="display: flex; gap: 10px; align-items: center"><span class="ficon">XLSX</span><div><div class="mono" style="font-size: 12px">bank_vypiska_2026-01_09.xlsx</div><div class="muted" style="font-size: 12px">1.8 MB · uploaded 09 Oct, 14:02</div></div></div></td>
+                <td>Bank statement <span class="muted">(выписка по счёту)</span></td>
+                <td class="num">01 Jan – 30 Sep 2026</td>
+                <td><span class="pill pill-stable">Analyzed</span></td>
+                <td style="font-size: 13px">2 418 transactions · 8 categories<div class="muted" style="font-size: 12px">14 uncategorised</div></td>
+                <td class="r"><a class="muted" href="Health.dc.html" style="font-size: 13px">View</a></td>
+              </tr>
+              <tr>
+                <td><div style="display: flex; gap: 10px; align-items: center"><span class="ficon">PDF</span><div><div class="mono" style="font-size: 12px">Forma2_1yarim_2026.pdf</div><div class="muted" style="font-size: 12px">412 KB · uploaded 09 Oct, 14:05</div></div></div></td>
+                <td>Income statement <span class="muted">(Форма 2)</span></td>
+                <td class="num">H1 2026</td>
+                <td><span class="pill pill-stable">Analyzed</span></td>
+                <td style="font-size: 13px">14 fields · avg confidence 97%</td>
+                <td class="r"><a class="muted" href="Health.dc.html" style="font-size: 13px">View</a></td>
+              </tr>
+              <tr>
+                <td><div style="display: flex; gap: 10px; align-items: center"><span class="ficon">XLSX</span><div><div class="mono" style="font-size: 12px">Sotuvlar_sentyabr.xlsx</div><div class="muted" style="font-size: 12px">640 KB · uploaded 10 Oct, 09:41</div></div></div></td>
+                <td>Sales ledger</td>
+                <td class="num">Sep 2026</td>
+                <td><div style="display: flex; align-items: center; gap: 8px"><span class="bar"><span style="width: 68%"></span></span><span class="num muted" style="font-size: 12px">68%</span></div></td>
+                <td style="font-size: 13px" class="muted">Matching invoices to bank receipts…</td>
+                <td class="r"><button type="button" class="btn btn-sm">Cancel</button></td>
+              </tr>
+              <tr>
+                <td><div style="display: flex; gap: 10px; align-items: center"><span class="ficon">PDF</span><div><div class="mono" style="font-size: 12px">Balans_2025_skan.pdf</div><div class="muted" style="font-size: 12px">6.2 MB · scanned · uploaded 09 Oct, 14:07</div></div></div></td>
+                <td>Balance sheet <span class="muted">(Buxgalteriya balansi)</span></td>
+                <td class="num">31 Dec 2025</td>
+                <td><span class="pill pill-watch">Needs clarification</span></td>
+                <td style="font-size: 13px">22 of 25 fields<div class="muted" style="font-size: 12px">3 below 80% confidence</div></td>
+                <td class="r"><button type="button" class="btn btn-sm">Resolve</button></td>
+              </tr>
+              <tr>
+                <td><div style="display: flex; gap: 10px; align-items: center"><span class="ficon">JPG</span><div><div class="mono" style="font-size: 12px">schet-faktura_0917.jpg</div><div class="muted" style="font-size: 12px">148 KB · uploaded 10 Oct, 09:44</div></div></div></td>
+                <td class="muted">Probably an invoice</td>
+                <td class="muted">—</td>
+                <td><span class="pill pill-attn">Could not analyze</span></td>
+                <td style="font-size: 13px">Image is 640×480 px and blurred; amounts are unreadable.<div class="muted" style="font-size: 12px">Re-take at full resolution or enter the invoice manually.</div></td>
+                <td class="r"><div style="display: inline-flex; gap: 6px"><button type="button" class="btn btn-sm">Re-upload</button><button type="button" class="btn btn-sm">Enter manually</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="What was extracted">
+        <div style="padding: 16px 20px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <div>
+            <h2 style="font-size: 15px; font-weight: 600">Extracted from Forma2_1yarim_2026.pdf</h2>
+            <p class="muted" style="font-size: 12px">Income statement, H1 2026 · thousand UZS as printed · every value keeps its page and line reference</p>
+          </div>
+          <a href="Health.dc.html" class="btn">Use these figures in analysis</a>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="tbl" style="min-width: 760px">
+            <thead><tr><th>Line</th><th>Field as printed</th><th>Interpreted as</th><th class="r">Current period</th><th class="r">Same period 2025</th><th>Confidence</th></tr></thead>
+            <tbody>
+              <tr><td class="num muted">010</td><td>Mahsulot (tovar, ish va xizmat)larni sotishdan sof tushum</td><td>Net revenue</td><td class="r num mono">6 349 900</td><td class="r num mono">5 812 400</td><td><span class="pill pill-stable">99%</span></td></tr>
+              <tr><td class="num muted">020</td><td>Sotilgan mahsulotning tannarxi</td><td>Cost of sales</td><td class="r num mono">4 021 600</td><td class="r num mono">3 702 100</td><td><span class="pill pill-stable">98%</span></td></tr>
+              <tr><td class="num muted">030</td><td>Yalpi foyda</td><td>Gross profit</td><td class="r num mono">2 328 300</td><td class="r num mono">2 110 300</td><td><span class="pill pill-stable">99%</span></td></tr>
+              <tr><td class="num muted">040</td><td>Davr xarajatlari</td><td>Operating expenses</td><td class="r num mono">1 486 200</td><td class="r num mono">1 398 700</td><td><span class="pill pill-stable">97%</span></td></tr>
+              <tr><td class="num muted">120</td><td>Moliyaviy faoliyat bo'yicha xarajatlar</td><td>Finance costs (loan interest)</td><td class="r num mono">162 000</td><td class="r num mono">174 000</td><td><span class="pill pill-stable">96%</span></td></tr>
+              <tr><td class="num muted">240</td><td>Daromad (foyda) solig'i</td><td>Profit tax</td><td class="r num mono">81 800</td><td class="r num mono">—</td><td><span class="pill pill-watch">84% · 2025 cell blank</span></td></tr>
+              <tr><td class="num muted">270</td><td>Hisobot davrining sof foydasi</td><td>Net profit</td><td class="r num mono">598 300</td><td class="r num mono">537 600</td><td><span class="pill pill-stable">99%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1160}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

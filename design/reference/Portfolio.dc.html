@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Portfolio overview — SME lending</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:1px 7px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.pill-info{background:#E6ECF7;color:#2B4C8C}
+.btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn-sm{height:28px;padding:0 10px;font-size:12px}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:8px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl tbody tr:hover td{background:#FBFAF7}
+.nav a{display:flex;align-items:center;gap:10px;height:36px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav a .cnt{margin-left:auto;font-size:11px;font-weight:600;color:#66615A;background:#EFECE5;border-radius:9px;padding:0 6px;line-height:18px}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.fig{padding:14px 20px}
+.fig+.fig{border-left:1px solid #EEEBE4}
+.big{font-size:24px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.q{display:grid;grid-template-columns:110px 1fr auto;gap:14px;padding:10px 16px;border-top:1px solid #EEEBE4;align-items:start}
+.q:hover{background:#FBFAF7}
+.tag{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#44403A}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}.fig+.fig{border-left:0;border-top:1px solid #EEEBE4}.q{grid-template-columns:1fr}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. Monitoring statuses are illustrative indicators, not a validated credit score. No bank systems are connected.</span>
+  </div>
+
+  <header class="top">
+    <a href="Portfolio.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #1B1A17; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+      <span class="muted" style="font-size: 13px">for lenders</span>
+    </a>
+    <span class="pill pill-neutral">Bank officer</span>
+    <div style="flex: 1"></div>
+    <label for="s" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search</label>
+    <input id="s" type="search" placeholder="Search borrower, application, STIR…" style="height: 32px; width: 260px; max-width: 100%; padding: 0 10px; border: 1px solid #D8D3C8; border-radius: 5px; background: #FBFAF7">
+    <div class="seg" aria-label="Interface language">
+      <button type="button">UZ</button><button type="button" class="on">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Main.dc.html" class="muted" style="font-size: 13px">Open business owner view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">GA</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">SME lending</div>
+        <div class="muted" style="font-size: 12px">Credit analyst · Tashkent regional office</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Portfolio.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Portfolio overview</a>
+        <a href="LoanReview.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>Applications<span class="cnt">12</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>Borrowers<span class="cnt">148</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20z M12 10v5M12 18h.01"></path></svg>Alerts<span class="cnt">9</span></a>
+      </div>
+      <div style="margin-top: 28px; padding: 12px; border: 1px solid #E3DFD6; border-radius: 6px; background: #fff; font-size: 12px">
+        <div class="eyebrow" style="margin-bottom: 6px">Monitoring run</div>
+        <div>Last run 10 Oct, 08:30</div>
+        <div class="muted">131 of 148 borrowers have a September statement; 17 are overdue on uploads.</div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 16px">
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between">
+        <div>
+          <h1 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em">Portfolio overview</h1>
+          <p class="muted" style="margin-top: 2px">Friday, 10 Oct 2026 · Exposure as of close of business 9 Oct · Monitoring based on documents uploaded by borrowers</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <a href="LoanReview.dc.html" class="btn">Next application in queue</a>
+          <a href="Borrowers.dc.html" class="btn btn-primary">Review alerts</a>
+        </div>
+      </div>
+
+      <section class="panel" aria-label="Portfolio figures" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr))">
+        <div class="fig"><div class="eyebrow">Businesses monitored</div><div class="big num" style="margin-top: 6px">148</div><div class="muted" style="margin-top: 4px">+3 disbursed this month · 131 with current statements</div></div>
+        <div class="fig"><div class="eyebrow">Outstanding exposure</div><div class="big num" style="margin-top: 6px">86.4 <span class="muted" style="font-size: 13px; font-weight: 400">bn UZS</span></div><div class="muted" style="margin-top: 4px">Median loan 412 mln · largest 4.2 bn</div></div>
+        <div class="fig"><div class="eyebrow">Applications awaiting review</div><div class="big num" style="margin-top: 6px">12</div><div style="margin-top: 4px"><span style="color:#8A4B06" class="num">4 beyond the 5-day target</span> <span class="muted">· 2.9 bn requested</span></div></div>
+        <div class="fig" style="background: #FBF7EE; border-radius: 0 6px 6px 0"><div class="eyebrow">Emerging warning signs</div><div class="big num" style="margin-top: 6px">9 <span class="muted" style="font-size: 13px; font-weight: 400">borrowers</span></div><div style="margin-top: 4px"><span class="num">6.2 bn</span> <span class="muted">exposure · 7.2% of portfolio · 2 new this week</span></div></div>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 16px">
+
+        <section class="panel" aria-label="Needs attention today" style="grid-column: span 1">
+          <div style="padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+            <h2 style="font-size: 15px; font-weight: 600">Needs attention today</h2>
+            <span class="muted" style="font-size: 12px">Ranked by exposure × urgency · 7 of 21 items</span>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#9B2318">Borrower</span>
+            <div><a href="BorrowerProfile.dc.html" style="font-weight: 600; text-decoration: none; color: #1B1A17">Zilola Mebel MChJ</a> <span class="pill pill-attn">Attention</span><div class="muted" style="margin-top: 2px">Revenue −28% Q3 vs Q2 while costs held; September installment paid 2 days late. 740.4 mln outstanding.</div></div>
+            <a href="BorrowerProfile.dc.html" class="btn btn-sm">Investigate</a>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#2B4C8C">Application</span>
+            <div><a href="LoanReview.dc.html" style="font-weight: 600; text-decoration: none; color: #1B1A17">Farovon Savdo MChJ</a> <span class="pill pill-info">In review · day 4</span><div class="muted" style="margin-top: 2px">850.0 mln requested. 3 issues found: undeclared loan repayments in the bank statement, revenue mismatch, missing Q2 tax declaration.</div></div>
+            <a href="LoanReview.dc.html" class="btn btn-sm">Open</a>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#2B4C8C">Application</span>
+            <div><span style="font-weight: 600">Oqtosh Qurilish Materiallari MChJ</span> <span class="pill pill-watch">Day 7 · over target</span><div class="muted" style="margin-top: 2px">1 500.0 mln requested. Waiting on applicant since 5 Oct for the 2025 balance sheet and a collateral valuation.</div></div>
+            <button type="button" class="btn btn-sm">Send reminder</button>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#8A4B06">Borrower</span>
+            <div><span style="font-weight: 600">Jizzax Yog' Zavodi MChJ</span> <span class="pill pill-watch">Watch</span><div class="muted" style="margin-top: 2px">September statement not uploaded, 14 days past the covenant date. Last known cash coverage 2.1×. 1 320.0 mln outstanding.</div></div>
+            <button type="button" class="btn btn-sm">Request statement</button>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#8A4B06">Borrower</span>
+            <div><span style="font-weight: 600">Oltin Vodiy Konserva MChJ</span> <span class="pill pill-watch">Watch · new</span><div class="muted" style="margin-top: 2px">Receivables +36% in September. May be the seasonal harvest pattern seen in 2025 — one more month of data would confirm it.</div></div>
+            <button type="button" class="btn btn-sm">Add note</button>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#2B4C8C">Application</span>
+            <div><span style="font-weight: 600">Nurafshon Agro Servis MChJ</span> <span class="pill pill-info">In review · day 9</span><div class="muted" style="margin-top: 2px">310.0 mln requested. One contradiction: headcount 18 in the application vs 11 in the payroll tax filing.</div></div>
+            <button type="button" class="btn btn-sm">Open</button>
+          </div>
+          <div class="q">
+            <span class="tag" style="color:#8A4B06">Borrower</span>
+            <div><span style="font-weight: 600">Chimgan Tur Servis MChJ</span> <span class="pill pill-watch">Watch</span><div class="muted" style="margin-top: 2px">Cash coverage of next installment fell to 1.2× (from 2.4×). Off-season for tourism; same dip occurred Oct 2025 and recovered.</div></div>
+            <button type="button" class="btn btn-sm">Open</button>
+          </div>
+          <div style="padding: 10px 16px; border-top: 1px solid #EEEBE4"><a href="Borrowers.dc.html" style="font-size: 13px">Show all 21 items →</a></div>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section class="panel" aria-label="Monitoring status distribution" style="padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 15px; font-weight: 600">Monitoring status · 148 borrowers</h2>
+              <span class="muted" style="font-size: 12px">Illustrative indicator — every status carries its reason</span>
+            </div>
+            <div style="display: flex; height: 16px; gap: 2px; border-radius: 3px; overflow: hidden" aria-hidden="true">
+              <span style="width: 79.6%; background: #0F6E63"></span><span style="width: 13.2%; background: #D9A441"></span><span style="width: 7.2%; background: #C2410C"></span>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Status</th><th>Means</th><th class="r">Borrowers</th><th class="r">Exposure, bn</th></tr></thead>
+              <tbody>
+                <tr><td><span class="pill pill-stable">Stable</span></td><td class="muted">No indicator moved beyond its threshold in the last 2 periods</td><td class="r num">121</td><td class="r num">68.8</td></tr>
+                <tr><td><span class="pill pill-watch">Watch</span></td><td class="muted">One indicator moved; cause not yet confirmed, or data is late</td><td class="r num">18</td><td class="r num">11.4</td></tr>
+                <tr><td><span class="pill pill-attn">Attention</span></td><td class="muted">Two or more indicators moved, or a payment was late</td><td class="r num">9</td><td class="r num">6.2</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="panel" aria-label="Portfolio trend" style="padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 15px; font-weight: 600">Portfolio trend · Apr – Sep 2026</h2>
+              <span class="muted" style="font-size: 12px">Exposure grows steadily; borrowers under Watch or Attention have doubled</span>
+            </div>
+            <div class="eyebrow" style="margin-top: 6px">Outstanding exposure, bn UZS</div>
+            <svg viewBox="0 0 720 110" width="100%" role="img" aria-label="Outstanding exposure by month: April 78.2, May 79.6, June 81.1, July 83.0, August 84.9, September 86.4 billion UZS.">
+              <line x1="50" y1="100" x2="710" y2="100" stroke="#EEEBE4"></line>
+              <polyline fill="none" stroke="#0F6E63" stroke-width="2" stroke-linejoin="round" points="86,85.3 196,76 306,66 416,53.3 526,40.7 636,30.7"></polyline>
+              <g fill="#fff" stroke="#0F6E63" stroke-width="2"><circle cx="86" cy="85.3" r="4"></circle><circle cx="196" cy="76" r="4"></circle><circle cx="306" cy="66" r="4"></circle><circle cx="416" cy="53.3" r="4"></circle><circle cx="526" cy="40.7" r="4"></circle></g>
+              <circle cx="636" cy="30.7" r="5" fill="#0F6E63"></circle>
+              <g fill="#1B1A17" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="86" y="74">78.2</text><text x="636" y="20">86.4</text></g>
+            </svg>
+            <div class="eyebrow">Borrowers under Watch or Attention</div>
+            <svg viewBox="0 0 720 125" width="100%" role="img" aria-label="Borrowers under Watch or Attention by month: April 11, May 12, June 14, July 17, August 22, September 27.">
+              <line x1="50" y1="100" x2="710" y2="100" stroke="#EEEBE4"></line>
+              <g fill="#D9A441">
+                <rect x="66" y="70.7" width="40" height="29.3" rx="3"></rect><rect x="176" y="68" width="40" height="32" rx="3"></rect><rect x="286" y="62.7" width="40" height="37.3" rx="3"></rect><rect x="396" y="54.7" width="40" height="45.3" rx="3"></rect><rect x="506" y="41.3" width="40" height="58.7" rx="3"></rect><rect x="616" y="28" width="40" height="72" rx="3"></rect>
+              </g>
+              <g fill="#1B1A17" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="86" y="64">11</text><text x="636" y="21">27</text></g>
+              <g fill="#66615A" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="86" y="118">Apr</text><text x="196" y="118">May</text><text x="306" y="118">Jun</text><text x="416" y="118">Jul</text><text x="526" y="118">Aug</text><text x="636" y="118">Sep</text></g>
+            </svg>
+          </section>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 16px">
+        <section class="panel" aria-label="New applications">
+          <div style="padding: 14px 16px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+            <h2 style="font-size: 15px; font-weight: 600">New applications</h2>
+            <span class="muted" style="font-size: 12px">6 of 12 · oldest first</span>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="tbl" style="min-width: 640px">
+              <thead><tr><th>Applicant</th><th class="r">Requested, mln</th><th class="r">Term</th><th>Received</th><th>Documents</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><div style="font-weight: 500">Nurafshon Agro Servis MChJ</div><div class="muted">Agricultural services · APP-2026-0925</div></td><td class="r num">310.0</td><td class="r num">12 m</td><td class="num">01 Oct <span class="muted">· 9 d</span></td><td>6 / 6</td><td><span class="pill pill-info">In review</span> <span class="muted">1 contradiction</span></td></tr>
+                <tr><td><div style="font-weight: 500">Oqtosh Qurilish Materiallari MChJ</div><div class="muted">Building materials · APP-2026-0928</div></td><td class="r num">1 500.0</td><td class="r num">36 m</td><td class="num">03 Oct <span class="muted">· 7 d</span></td><td>4 / 6</td><td><span class="pill pill-watch">Waiting on applicant</span></td></tr>
+                <tr><td><div style="font-weight: 500"><a href="LoanReview.dc.html">Farovon Savdo MChJ</a></div><div class="muted">Food distribution · APP-2026-0931</div></td><td class="r num">850.0</td><td class="r num">24 m</td><td class="num">06 Oct <span class="muted">· 4 d</span></td><td>5 / 6</td><td><span class="pill pill-info">In review</span> <span class="muted">3 issues</span></td></tr>
+                <tr><td><div style="font-weight: 500">Chirchiq Metall Servis MChJ</div><div class="muted">Metalworking · APP-2026-0933</div></td><td class="r num">960.0</td><td class="r num">24 m</td><td class="num">07 Oct <span class="muted">· 3 d</span></td><td>6 / 6</td><td><span class="pill pill-stable">Ready for review</span></td></tr>
+                <tr><td><div style="font-weight: 500">Samarqand Non Kombinati MChJ</div><div class="muted">Bakery · APP-2026-0934</div></td><td class="r num">420.0</td><td class="r num">18 m</td><td class="num">07 Oct <span class="muted">· 3 d</span></td><td>6 / 6</td><td><span class="pill pill-stable">Ready for review</span></td></tr>
+                <tr><td><div style="font-weight: 500">Buxoro Zardo'zlik MChJ</div><div class="muted">Textile crafts · APP-2026-0936</div></td><td class="r num">180.0</td><td class="r num">12 m</td><td class="num">09 Oct <span class="muted">· 1 d</span></td><td>2 / 6</td><td><span class="pill pill-neutral">Processing documents</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding: 10px 16px; border-top: 1px solid #EEEBE4"><a href="LoanReview.dc.html" style="font-size: 13px">All 12 applications →</a></div>
+        </section>
+
+        <section class="panel" aria-label="Status changes among existing borrowers">
+          <div style="padding: 14px 16px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+            <h2 style="font-size: 15px; font-weight: 600">Existing borrowers — status changes, last 7 days</h2>
+            <span class="muted" style="font-size: 12px">5 changes · 3 worsened · 2 improved</span>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="tbl" style="min-width: 640px">
+              <thead><tr><th>Borrower</th><th>Change</th><th>Date</th><th>Reason</th></tr></thead>
+              <tbody>
+                <tr><td><div style="font-weight: 500"><a href="BorrowerProfile.dc.html">Zilola Mebel MChJ</a></div><div class="muted">740.4 mln outstanding</div></td><td style="white-space: nowrap"><span class="pill pill-watch">Watch</span> → <span class="pill pill-attn">Attention</span></td><td class="num">02 Oct</td><td class="muted">Revenue −28% Q3 vs Q2, costs flat; installment 2 days late</td></tr>
+                <tr><td><div style="font-weight: 500">Oltin Vodiy Konserva MChJ</div><div class="muted">980.0 mln outstanding</div></td><td style="white-space: nowrap"><span class="pill pill-stable">Stable</span> → <span class="pill pill-watch">Watch</span></td><td class="num">05 Oct</td><td class="muted">Receivables +36%; seasonal cause not yet confirmed</td></tr>
+                <tr><td><div style="font-weight: 500">Toshkent Plastik MChJ</div><div class="muted">612.0 mln outstanding</div></td><td style="white-space: nowrap"><span class="pill pill-watch">Watch</span> → <span class="pill pill-stable">Stable</span></td><td class="num">06 Oct</td><td class="muted">Overdue receivable collected; cash coverage back to 2.9×</td></tr>
+                <tr><td><div style="font-weight: 500">Jizzax Yog' Zavodi MChJ</div><div class="muted">1 320.0 mln outstanding</div></td><td style="white-space: nowrap"><span class="pill pill-stable">Stable</span> → <span class="pill pill-watch">Watch</span></td><td class="num">08 Oct</td><td class="muted">September statement not uploaded, 14 days late</td></tr>
+                <tr><td><div style="font-weight: 500">Farg'ona Taxi Park MChJ</div><div class="muted">288.5 mln outstanding</div></td><td style="white-space: nowrap"><span class="pill pill-attn">Attention</span> → <span class="pill pill-watch">Watch</span></td><td class="num">09 Oct</td><td class="muted">Two missed installments caught up; revenue stabilised</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding: 10px 16px; border-top: 1px solid #EEEBE4"><a href="Borrowers.dc.html" style="font-size: 13px">Open borrower portfolio →</a></div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Loan application review — Farovon Savdo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:1px 7px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.pill-info{background:#E6ECF7;color:#2B4C8C}
+.btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn-sm{height:28px;padding:0 10px;font-size:12px}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:8px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 5px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.ev:hover{background:#E8F1EF}
+.ev.num{font-variant-numeric:tabular-nums}
+.nav a{display:flex;align-items:center;gap:10px;height:36px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav a .cnt{margin-left:auto;font-size:11px;font-weight:600;color:#66615A;background:#EFECE5;border-radius:9px;padding:0 6px;line-height:18px}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.tabs{display:flex;gap:2px;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.tabs a{padding:8px 12px;font-weight:500;color:#66615A;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:#1B1A17;border-bottom-color:#1B1A17}
+.issue{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:10px 14px;border-top:1px solid #EEEBE4;align-items:start}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px 16px}
+.kv .eyebrow{margin-bottom:2px}
+.doc{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEEBE4;font-size:12.5px}
+.ficon{width:28px;height:34px;border:1px solid #D8D3C8;border-radius:3px;background:#FBFAF7;display:inline-flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:8px;font-weight:600;color:#44403A}
+.passage{padding:10px 12px;font-size:12px;line-height:1.55;background:#FBFAF7;border:1px solid #E3DFD6;border-radius:4px;white-space:pre-wrap}
+.hit{background:#FFF1B8;border-bottom:2px solid #D9A441;padding:0 2px}
+.ratio{padding:10px 12px;border:1px solid #E3DFD6;border-radius:5px;display:flex;flex-direction:column;gap:2px}
+input,select,textarea{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}.issue{grid-template-columns:1fr}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. Click any dashed figure to inspect its source on the right. The risk indicator is illustrative, not a validated credit score.</span>
+  </div>
+
+  <header class="top">
+    <a href="Portfolio.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #1B1A17; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+      <span class="muted" style="font-size: 13px">for lenders</span>
+    </a>
+    <span class="pill pill-neutral">Bank officer</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button">UZ</button><button type="button" class="on">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Main.dc.html" class="muted" style="font-size: 13px">Open business owner view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">GA</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">SME lending</div>
+        <div class="muted" style="font-size: 12px">Credit analyst · Tashkent regional office</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Portfolio.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Portfolio overview</a>
+        <a href="LoanReview.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>Applications<span class="cnt">12</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>Borrowers<span class="cnt">148</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20z M12 10v5M12 18h.01"></path></svg>Alerts<span class="cnt">9</span></a>
+      </div>
+      <div style="margin-top: 28px; padding: 0 12px">
+        <div class="eyebrow" style="margin-bottom: 8px">In queue after this</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px" class="muted">
+          <span>Chirchiq Metall Servis · 960.0 mln</span>
+          <span>Samarqand Non Kombinati · 420.0 mln</span>
+          <span>Nurafshon Agro Servis · 310.0 mln</span>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 14px">
+
+      <div class="muted" style="font-size: 12px"><a href="Portfolio.dc.html" class="muted" style="text-decoration: none">Applications</a> / APP-2026-0931</div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; justify-content: space-between">
+        <div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+            <h1 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em">Farovon Savdo MChJ</h1>
+            <span class="pill pill-info">In review · day 4 of 5</span>
+            <span class="pill pill-attn">3 issues</span>
+          </div>
+          <p class="muted" style="margin-top: 2px">Food distribution (dairy &amp; frozen) · Tashkent, Yashnobod · STIR 302 447 118 · operating since 2018 · 42 employees · first application to this bank</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" class="btn">Request missing documents</button>
+          <button type="button" class="btn">Add note</button>
+          <button type="button" class="btn btn-primary">Record officer decision</button>
+        </div>
+      </div>
+
+      <section class="panel" style="padding: 12px 16px" aria-label="Request summary">
+        <div class="kv">
+          <div><div class="eyebrow">Requested</div><div class="num" style="font-size: 18px; font-weight: 500">850.0 <span class="muted" style="font-size: 12px; font-weight: 400">mln UZS</span></div></div>
+          <div><div class="eyebrow">Term &amp; repayment</div><div style="font-size: 14px">24 months · annuity</div><div class="muted">44.1 mln / month, 15th</div></div>
+          <div><div class="eyebrow">Purpose</div><div style="font-size: 14px">Working capital</div><div class="muted">Refrigerated van 320.0 · inventory 530.0</div></div>
+          <div><div class="eyebrow">Proposed collateral</div><div style="font-size: 14px">2 delivery vehicles</div><div class="muted">Valuation not yet received</div></div>
+          <div><div class="eyebrow">Installment vs revenue</div><div style="font-size: 14px" class="num">5.0% <span class="muted" style="font-size: 12px">of avg monthly revenue</span></div><div class="muted">886.1 mln/month, H1 2026</div></div>
+          <div><div class="eyebrow">Received</div><div style="font-size: 14px" class="num">06 Oct 2026</div><div class="muted">via branch · analyst G. Abdullayeva</div></div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Application sections">
+        <a href="#summary" class="on">Summary</a><a href="#issues">Issues · 3</a><a href="#figures">Figures</a><a href="#ratios">Ratios</a><a href="#analysis">AI analysis</a><a href="#documents">Documents · 6</a>
+      </nav>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+
+        <div id="summary" style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+
+          <section id="issues" class="panel" aria-label="Issues to resolve">
+            <div style="padding: 12px 14px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+              <h2 style="font-size: 14px; font-weight: 600">Issues to resolve before a decision</h2>
+              <span class="muted" style="font-size: 12px">Found automatically; each needs an officer's conclusion</span>
+            </div>
+            <div class="issue">
+              <span class="pill pill-attn">Undeclared obligation</span>
+              <div><div style="font-weight: 500">Bank statement shows loan repayments not listed in the application</div><div class="muted">8 monthly transfers of 18.5 mln UZS (Jan–Aug 2026) with purpose "погашение кредита по договору 2024-1177" to a credit institution. The application declares no existing loans and the balance sheet shows no long-term liabilities. <button type="button" class="ev" onClick="{{ pick.debt }}">8 transactions · 148.0 mln</button></div></div>
+              <button type="button" class="btn btn-sm">Ask applicant</button>
+            </div>
+            <div class="issue">
+              <span class="pill pill-watch">Contradiction</span>
+              <div><div style="font-weight: 500">2025 revenue differs between the application form and the income statement</div><div class="muted">Application: <button type="button" class="ev num" onClick="{{ pick.apprev }}">10 400.0</button> mln · Форма 2 for 2025: <button type="button" class="ev num" onClick="{{ pick.rev2025 }}">9 842.3</button> mln · difference 557.7 mln (5.7%). The form may include VAT; the statement is net of it.</div></div>
+              <button type="button" class="btn btn-sm">Mark explained</button>
+            </div>
+            <div class="issue">
+              <span class="pill pill-neutral">Missing document</span>
+              <div><div style="font-weight: 500">Tax declaration for Q2 2026 not provided</div><div class="muted">Needed to cross-check H1 2026 revenue. Requested from the applicant on 07 Oct; no reply yet. <button type="button" class="ev" onClick="{{ pick.tax }}">Request status</button></div></div>
+              <button type="button" class="btn btn-sm">Send reminder</button>
+            </div>
+          </section>
+
+          <section id="figures" class="panel" aria-label="Extracted financial figures">
+            <div style="padding: 12px 14px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 14px; font-weight: 600">Extracted figures</h2>
+              <span class="muted" style="font-size: 12px">mln UZS · click a figure to see where it came from</span>
+            </div>
+            <div style="overflow-x: auto">
+              <table class="tbl" style="min-width: 560px">
+                <thead><tr><th>Figure</th><th class="r">FY 2025</th><th class="r">H1 2026</th><th>Source</th><th>Confidence</th></tr></thead>
+                <tbody>
+                  <tr><td>Net revenue</td><td class="r"><button type="button" class="ev num" onClick="{{ pick.rev2025 }}">9 842.3</button></td><td class="r"><button type="button" class="ev num" onClick="{{ pick.revh1 }}">5 316.4</button></td><td class="muted">Форма 2, line 010</td><td><span class="pill pill-stable">98%</span></td></tr>
+                  <tr><td>Cost of sales</td><td class="r num">8 614.9</td><td class="r num">4 672.1</td><td class="muted">Форма 2, line 020</td><td><span class="pill pill-stable">97%</span></td></tr>
+                  <tr><td>Operating expenses</td><td class="r num">548.6</td><td class="r num">296.3</td><td class="muted">Форма 2, line 040</td><td><span class="pill pill-stable">96%</span></td></tr>
+                  <tr><td>Net profit</td><td class="r"><button type="button" class="ev num" onClick="{{ pick.np2025 }}">612.1</button></td><td class="r num">318.0</td><td class="muted">Форма 2, line 270</td><td><span class="pill pill-stable">99%</span></td></tr>
+                  <tr><td>Total assets</td><td class="r num">3 988.2</td><td class="r num">4 210.6</td><td class="muted">Форма 1, line 400</td><td><span class="pill pill-stable">95%</span></td></tr>
+                  <tr><td>Current assets</td><td class="r num">2 702.5</td><td class="r"><button type="button" class="ev num" onClick="{{ pick.ca }}">2 870.4</button></td><td class="muted">Форма 1, line 390</td><td><span class="pill pill-stable">95%</span></td></tr>
+                  <tr><td style="padding-left: 22px">of which inventory</td><td class="r num">1 298.0</td><td class="r num">1 412.8</td><td class="muted">Форма 1, line 140</td><td><span class="pill pill-watch">88% · scan</span></td></tr>
+                  <tr><td>Current liabilities</td><td class="r num">1 866.0</td><td class="r"><button type="button" class="ev num" onClick="{{ pick.cl }}">1 940.2</button></td><td class="muted">Форма 1, line 600</td><td><span class="pill pill-stable">95%</span></td></tr>
+                  <tr><td>Long-term liabilities</td><td class="r num">0.0</td><td class="r num">0.0</td><td class="muted">Форма 1, line 490</td><td><span class="pill pill-attn">Contradicts statement</span></td></tr>
+                  <tr><td>Avg monthly inflows (bank)</td><td class="r num muted">—</td><td class="r num">912.6</td><td class="muted">Statement, Jan–Aug</td><td><span class="pill pill-stable">100%</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="ratios" class="panel" aria-label="Financial ratios" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+              <h2 style="font-size: 14px; font-weight: 600">Ratios</h2>
+              <span class="muted" style="font-size: 12px">Computed from the extracted figures above · H1 2026 unless stated</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px">
+              <div class="ratio"><span class="eyebrow">Current ratio</span><span class="num" style="font-size: 20px; font-weight: 500">1.48</span><span class="muted" style="font-size: 12px">2 870.4 ÷ 1 940.2</span></div>
+              <div class="ratio"><span class="eyebrow">Quick ratio</span><span class="num" style="font-size: 20px; font-weight: 500">0.75</span><span class="muted" style="font-size: 12px">Excluding inventory 1 412.8</span></div>
+              <div class="ratio"><span class="eyebrow">Net margin</span><span class="num" style="font-size: 20px; font-weight: 500">6.0%</span><span class="muted" style="font-size: 12px">FY 2025: 6.2% · thin, stable</span></div>
+              <div class="ratio"><span class="eyebrow">Debt to equity</span><span class="num" style="font-size: 20px; font-weight: 500">0.85</span><span class="muted" style="font-size: 12px">Declared liabilities only</span></div>
+              <div class="ratio" style="border-color: #E8D8B5; background: #FBF7EE"><span class="eyebrow">Est. debt service coverage</span><span class="num" style="font-size: 20px; font-weight: 500">1.47 <span class="muted" style="font-size: 13px; font-weight: 400">→ 1.04</span></span><span class="muted" style="font-size: 12px">New loan only → incl. undeclared 18.5/month</span></div>
+              <div class="ratio"><span class="eyebrow">Receivable days</span><span class="num" style="font-size: 20px; font-weight: 500">31</span><span class="muted" style="font-size: 12px">Typical for retail distribution</span></div>
+            </div>
+          </section>
+
+          <section id="analysis" class="panel" aria-label="Preliminary assessment and AI analysis">
+            <div style="padding: 12px 14px; border-bottom: 1px solid #EEEBE4; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between">
+              <div>
+                <div class="eyebrow">Preliminary repayment-capacity indicator</div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px"><span style="font-size: 16px; font-weight: 600">Adequate, with two unresolved issues</span></div>
+              </div>
+              <div class="muted" style="font-size: 12px; max-width: 340px">Illustrative indicator derived from the extracted figures and rules shown below. It is not a validated credit score and does not replace the officer's assessment.</div>
+            </div>
+            <div style="padding: 12px 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; border-bottom: 1px solid #EEEBE4">
+              <div>
+                <div class="eyebrow" style="color: #0B5A51; margin-bottom: 6px">Supports repayment</div>
+                <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px">
+                  <li>Installment is 5.0% of average monthly revenue; bank inflows average <button type="button" class="ev num" onClick="{{ pick.inflow }}">912.6</button> mln/month</li>
+                  <li>Margins stable across 2025 and H1 2026 (6.2% → 6.0%)</li>
+                  <li>Eight years of operation; 140 active retail customers in the sales ledger</li>
+                </ul>
+              </div>
+              <div>
+                <div class="eyebrow" style="color: #9B2318; margin-bottom: 6px">Weighs against</div>
+                <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px">
+                  <li>An existing loan is being repaid but not declared — coverage falls to 1.04 if it continues</li>
+                  <li>Quick ratio 0.75: liquidity depends on selling inventory</li>
+                  <li>Revenue mismatch of 557.7 mln between the form and the statement</li>
+                </ul>
+              </div>
+            </div>
+            <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
+              <div class="eyebrow">AI analysis · generated 10 Oct, 08:41 · every figure links to its source</div>
+              <p style="text-wrap: pretty">Farovon Savdo is a distributor with high turnover and thin margins: revenue of <button type="button" class="ev num" onClick="{{ pick.rev2025 }}">9 842.3</button> mln in 2025 produced a net profit of <button type="button" class="ev num" onClick="{{ pick.np2025 }}">612.1</button> mln. The first half of 2026 ran at the same pace (<button type="button" class="ev num" onClick="{{ pick.revh1 }}">5 316.4</button> mln revenue, 318.0 mln profit), so the business is neither growing nor shrinking materially.</p>
+              <p style="text-wrap: pretty">On the declared figures the requested 44.1 mln monthly installment is comfortably covered. The bank statement, however, shows a regular 18.5 mln outflow labelled as a loan repayment to a credit institution — <button type="button" class="ev" onClick="{{ pick.debt }}">eight payments, Jan–Aug</button> — which appears nowhere in the application or on the balance sheet. If that obligation continues alongside the new loan, estimated coverage drops to about 1.04, leaving little room for a bad month.</p>
+              <p style="text-wrap: pretty">Liquidity is adequate (current ratio 1.48) but inventory-heavy: <button type="button" class="ev num" onClick="{{ pick.ca }}">2 870.4</button> mln of current assets against <button type="button" class="ev num" onClick="{{ pick.cl }}">1 940.2</button> mln of current liabilities, with 1 412.8 mln tied up in stock. For frozen and dairy goods this is normal but means the loan would be repaid from sales, not from cash reserves.</p>
+              <p style="text-wrap: pretty"><strong>Before a decision:</strong> obtain the agreement for loan 2024-1177 and its remaining balance; ask the applicant to reconcile the 10 400.0 vs 9 842.3 mln revenue figures (most likely VAT); receive the Q2 2026 tax declaration. No conclusion about the undeclared loan should be drawn from the statement alone.</p>
+            </div>
+          </section>
+
+          <section id="documents" class="panel" aria-label="Uploaded documents" style="padding: 12px 14px 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px">
+              <h2 style="font-size: 14px; font-weight: 600">Documents · 6 received, 1 missing</h2>
+              <span class="muted" style="font-size: 12px">Uploaded by the applicant 06 Oct</span>
+            </div>
+            <div class="doc"><span class="ficon">PDF</span><div><div style="font-weight: 500">Заявка на кредит (application form)</div><div class="muted">Ariza_FarovonSavdo.pdf · 3 pages · 24 fields</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><span class="ficon">PDF</span><div><div style="font-weight: 500">Форма 1 — Бухгалтерский баланс, 31.12.2025</div><div class="muted">Balans_2025.pdf · scanned · 2 pages</div></div><span class="pill pill-watch">Processed · 2 fields &lt; 90%</span></div>
+            <div class="doc"><span class="ficon">PDF</span><div><div style="font-weight: 500">Форма 1 — Бухгалтерский баланс, 30.06.2026</div><div class="muted">Balans_1H2026.pdf · 2 pages</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><span class="ficon">PDF</span><div><div style="font-weight: 500">Форма 2 — Отчёт о финансовых результатах, 2025</div><div class="muted">Forma2_2025.pdf · 2 pages</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><span class="ficon">PDF</span><div><div style="font-weight: 500">Форма 2 — Отчёт о финансовых результатах, 1-е полугодие 2026</div><div class="muted">Forma2_1H2026.pdf · 2 pages</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc"><span class="ficon">XLSX</span><div><div style="font-weight: 500">Выписка по расчётному счёту, 01.01–31.08.2026</div><div class="muted">vypiska_2026.xlsx · 1 946 transactions · 9 categories</div></div><span class="pill pill-stable">Processed</span></div>
+            <div class="doc" style="opacity: .85"><span class="ficon" style="border-style: dashed">—</span><div><div style="font-weight: 500">Налоговая декларация, 2 квартал 2026</div><div class="muted">Requested 07 Oct · not received</div></div><span class="pill pill-neutral">Missing</span></div>
+          </section>
+
+          <div class="muted" style="font-size: 12px; padding: 0 2px">The system prepares the file; it does not approve or reject. The officer's decision and reasoning are recorded with the evidence reviewed.</div>
+        </div>
+
+        <aside class="panel" style="flex: 0 1 420px; min-width: min(300px, 100%); position: sticky; top: 16px; display: flex; flex-direction: column" aria-label="Evidence">
+          <div style="padding: 12px 14px 10px; border-bottom: 1px solid #EEEBE4; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div>
+              <div class="eyebrow">Evidence</div>
+              <h2 style="font-size: 14px; font-weight: 600; margin-top: 2px">{{ ev.title }}</h2>
+              <div class="muted" style="font-size: 12px; margin-top: 2px">{{ ev.doc }}</div>
+            </div>
+            <span class="pill {{ ev.pillClass }}">{{ ev.conf }}</span>
+          </div>
+          <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+            <div class="muted" style="font-size: 12px">{{ ev.where }}</div>
+            <div class="passage mono">{{ ev.before }}<span class="hit">{{ ev.hit }}</span>{{ ev.after }}</div>
+            <div class="eyebrow">Interpretation</div>
+            <p style="font-size: 13px">{{ ev.note }}</p>
+            <sc-if value="{{ ev.hasRows }}" hint-placeholder-val="{{ true }}">
+              <table class="tbl" aria-label="Related records">
+                <thead><tr><th>{{ ev.col1 }}</th><th>{{ ev.col2 }}</th><th class="r">UZS</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ ev.rows }}" as="r" hint-placeholder-count="3">
+                    <tr><td class="num">{{ r.a }}</td><td>{{ r.b }}</td><td class="r num mono">{{ r.c }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </sc-if>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button type="button" class="btn btn-sm">Open page in document</button>
+              <button type="button" class="btn btn-sm">Mark as verified</button>
+              <button type="button" class="btn btn-sm">Correct value</button>
+            </div>
+          </div>
+          <div style="padding: 10px 14px 12px; border-top: 1px solid #EEEBE4">
+            <div class="eyebrow" style="margin-bottom: 6px">Review trail</div>
+            <div class="muted" style="font-size: 12px; display: flex; flex-direction: column; gap: 4px">
+              <span>08:41 · AI analysis generated from 6 documents</span>
+              <span>09:12 · G. Abdullayeva verified revenue 2025</span>
+              <span>09:15 · Reminder sent: Q2 tax declaration</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 'debt' };
+  }
+  renderVals() {
+    const items = {
+      rev2025: {
+        title: 'Net revenue, FY 2025 — 9 842.3 mln UZS', doc: 'Forma2_2025.pdf · Форма 2 · page 1 · line 010',
+        conf: '98% confidence', pillClass: 'pill-stable',
+        where: 'Column "За отчётный период", printed in thousand UZS.',
+        before: 'Отчёт о финансовых результатах за 2025 год\n010  Чистая выручка от реализации продукции (товаров, работ и услуг)   ', hit: '9 842 316', after: '\n020  Себестоимость реализованной продукции (товаров, работ и услуг)   8 614 902',
+        note: 'Net of VAT, as the statement format requires. The application form states 10 400.0 mln; the 557.7 mln gap is consistent with a VAT-inclusive figure (12%), but the applicant must confirm.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      revh1: {
+        title: 'Net revenue, H1 2026 — 5 316.4 mln UZS', doc: 'Forma2_1H2026.pdf · Форма 2 · page 1 · line 010',
+        conf: '98% confidence', pillClass: 'pill-stable',
+        where: 'Column "За отчётный период", thousand UZS. Prior-period column shows 4 790 115 for H1 2025.',
+        before: 'Отчёт о финансовых результатах за 1-е полугодие 2026 года\n010  Чистая выручка от реализации   ', hit: '5 316 428', after: '   |   4 790 115',
+        note: 'Annualised, this is 10 632.9 mln — 8.0% above 2025. Bank inflows for the same six months total 5 475.6 mln (103% of revenue), which is consistent with a distributor collecting on ~30-day terms.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      np2025: {
+        title: 'Net profit, FY 2025 — 612.1 mln UZS', doc: 'Forma2_2025.pdf · Форма 2 · page 2 · line 270',
+        conf: '99% confidence', pillClass: 'pill-stable',
+        where: 'Final line of the statement, after profit tax of 108.0 mln (line 240).',
+        before: '240  Налог на прибыль   108 017\n270  Чистая прибыль (убыток) отчётного периода   ', hit: '612 089', after: '',
+        note: 'Net margin 6.2%. Typical for food distribution in the comparable files reviewed by this office; low margins mean a 10% revenue drop would cut profit roughly in half.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      ca: {
+        title: 'Current assets, 30 Jun 2026 — 2 870.4 mln UZS', doc: 'Balans_1H2026.pdf · Форма 1 · page 1 · line 390',
+        conf: '95% confidence', pillClass: 'pill-stable',
+        where: 'Section II total. Component lines extracted: inventory 1 412.8 (line 140), receivables 1 102.0 (line 210), cash 355.6 (line 320).',
+        before: '140  Товарно-материальные запасы   1 412 806\n210  Дебиторская задолженность   1 102 004\n320  Денежные средства   355 590\n390  ИТОГО по разделу II   ', hit: '2 870 400', after: '',
+        note: 'Inventory is 49% of current assets. Frozen and dairy stock turns quickly (receivable days 31, inventory days ~55), so the figure is plausible but check for expired stock in the audit notes.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      cl: {
+        title: 'Current liabilities, 30 Jun 2026 — 1 940.2 mln UZS', doc: 'Balans_1H2026.pdf · Форма 1 · page 2 · line 600',
+        conf: '95% confidence', pillClass: 'pill-stable',
+        where: 'Section "Текущие обязательства" total. Long-term liabilities (line 490) are printed as 0.',
+        before: '490  Долгосрочные обязательства   0\n600  Текущие обязательства, всего   ', hit: '1 940 212', after: '\n   в т.ч. 601 задолженность поставщикам   1 644 980',
+        note: 'Mostly trade payables to suppliers (1 645.0). Zero long-term liabilities conflicts with the loan repayments visible in the bank statement — either the loan is short-term and included here, or it is not on the books.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      debt: {
+        title: 'Undeclared loan repayments — 148.0 mln UZS', doc: 'vypiska_2026.xlsx · bank statement · 8 rows, Jan–Aug 2026',
+        conf: 'Pattern · 100%', pillClass: 'pill-attn',
+        where: 'Outgoing transfers on the 20th of each month, identical amount, identical purpose text. Counterparty is a credit institution (name withheld in this demo).',
+        before: '20.02.2026   Платёжное поручение № 41\nПолучатель: [кредитная организация]\nСумма: ', hit: '18 500 000,00', after: '\nНазначение: Погашение кредита по договору № 2024-1177 от 14.11.2024',
+        note: 'Neither the application (section 7, "existing obligations": none) nor the balance sheet shows this loan. The remaining balance is unknown without the agreement. Treat as unresolved; do not infer the term.',
+        hasRows: true, col1: 'Date', col2: 'Purpose',
+        rows: [
+          { a: '20 Jan', b: 'Погашение кредита 2024-1177', c: '18 500 000' },
+          { a: '20 Feb', b: 'Погашение кредита 2024-1177', c: '18 500 000' },
+          { a: '20 Mar – 20 Aug', b: '6 identical transfers', c: '111 000 000' }
+        ]
+      },
+      apprev: {
+        title: 'Revenue as stated in the application — 10 400.0 mln UZS', doc: 'Ariza_FarovonSavdo.pdf · application form · page 2 · section 5',
+        conf: '99% confidence', pillClass: 'pill-stable',
+        where: 'Handwritten field, transcribed. The form does not say whether the figure includes VAT.',
+        before: 'Раздел 5. Финансовые показатели заявителя\nГодовая выручка за 2025 г., млн сум:   ', hit: '10 400', after: '\nЧистая прибыль за 2025 г., млн сум:   610',
+        note: '10 400.0 ÷ 1.12 = 9 285.7, so the figure is not exactly revenue plus 12% VAT either. Ask the applicant how it was calculated. The stated profit (610) matches the statement (612.1).',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      tax: {
+        title: 'Tax declaration, Q2 2026 — not received', doc: 'Document request · sent 07 Oct 2026, 16:20',
+        conf: 'Missing', pillClass: 'pill-neutral',
+        where: 'Required by the SME checklist to cross-check declared revenue against the tax authority filing.',
+        before: 'Request to applicant (via branch):\n"Просим предоставить налоговую декларацию по НДС и налогу на прибыль за 2 квартал 2026 г."\nStatus: ', hit: 'no response after 3 days', after: '',
+        note: 'Without it, H1 2026 revenue rests on the income statement alone. The decision deadline (day 5) is tomorrow; consider extending or recording the gap explicitly.',
+        hasRows: false, col1: '', col2: '', rows: []
+      },
+      inflow: {
+        title: 'Average monthly inflows — 912.6 mln UZS', doc: 'vypiska_2026.xlsx · bank statement · Jan–Aug 2026 · incoming side',
+        conf: '100% · computed', pillClass: 'pill-stable',
+        where: 'Sum of incoming transfers from customers, excluding owner contributions and refunds, divided by 8 months.',
+        before: 'Incoming, Jan–Aug 2026:   7 300 912 000\n  of which customers:    ', hit: '7 300 912 000', after: '\n  owner contributions:   0\n  refunds / returns:     −14 180 000\nMonths: 8   →   912 614 000 / month',
+        note: 'Inflows exceed income-statement revenue by about 3%, consistent with VAT-inclusive receipts. No single customer exceeds 9% of inflows — no concentration risk visible.',
+        hasRows: true, col1: 'Month', col2: 'Customer receipts',
+        rows: [
+          { a: 'Jun', b: 'highest month', c: '1 012 400 000' },
+          { a: 'Feb', b: 'lowest month', c: '798 600 000' },
+          { a: 'Aug', b: 'latest month', c: '934 100 000' }
+        ]
+      }
+    };
+    const pick = {};
+    Object.keys(items).forEach((k) => { pick[k] = () => this.setState({ sel: k }); });
+    return { ev: items[this.state.sel] || items.debt, pick };
+  }
+}
+</script>
+</body>
+</html>

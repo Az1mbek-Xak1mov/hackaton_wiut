@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Borrower portfolio — SME lending</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:1px 7px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.btn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:9px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap;background:#FBFAF7}
+.tbl td{padding:9px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl tbody tr:hover td{background:#FBFAF7}
+.nav a{display:flex;align-items:center;gap:10px;height:36px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav a .cnt{margin-left:auto;font-size:11px;font-weight:600;color:#66615A;background:#EFECE5;border-radius:9px;padding:0 6px;line-height:18px}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid #D8D3C8;border-radius:5px;background:#fff;color:#44403A;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer}
+.chip:hover{border-color:#B9B3A6}
+.chip.on{background:#1B1A17;border-color:#1B1A17;color:#fff}
+.chip .n{font-size:11px;font-weight:600;background:#EFECE5;color:#44403A;border-radius:9px;padding:0 6px;line-height:16px}
+.chip.on .n{background:#44403A;color:#fff}
+.up{color:#0B5A51}.down{color:#9B2318}.flat{color:#66615A}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. Status filters work on the 12 loaded rows; search and sorting are visual only. One borrower profile (Zilola Mebel) is built.</span>
+  </div>
+
+  <header class="top">
+    <a href="Portfolio.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #1B1A17; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+      <span class="muted" style="font-size: 13px">for lenders</span>
+    </a>
+    <span class="pill pill-neutral">Bank officer</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button">UZ</button><button type="button" class="on">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Main.dc.html" class="muted" style="font-size: 13px">Open business owner view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">GA</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">SME lending</div>
+        <div class="muted" style="font-size: 12px">Credit analyst · Tashkent regional office</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Portfolio.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Portfolio overview</a>
+        <a href="LoanReview.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5M9 13h6M9 17h6"></path></svg>Applications<span class="cnt">12</span></a>
+        <a href="Borrowers.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>Borrowers<span class="cnt">148</span></a>
+        <a href="Borrowers.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20z M12 10v5M12 18h.01"></path></svg>Alerts<span class="cnt">9</span></a>
+      </div>
+      <div style="margin-top: 28px; padding: 12px; border: 1px solid #E3DFD6; border-radius: 6px; background: #fff; font-size: 12px">
+        <div class="eyebrow" style="margin-bottom: 6px">How statuses are set</div>
+        <div style="display: flex; flex-direction: column; gap: 6px" class="muted">
+          <span><span class="dot" style="background: #0F6E63"></span><strong style="color:#1B1A17">Stable</strong> — no indicator beyond threshold for 2 periods</span>
+          <span><span class="dot" style="background: #D9A441"></span><strong style="color:#1B1A17">Watch</strong> — one indicator moved, or data late</span>
+          <span><span class="dot" style="background: #C2410C"></span><strong style="color:#1B1A17">Attention</strong> — two indicators moved, or a late payment</span>
+        </div>
+        <div class="muted" style="margin-top: 8px">Indicators: revenue vs prior period, receivables, payables, cash coverage of next installment, payment punctuality, statement timeliness.</div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 14px">
+
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between">
+        <div>
+          <h1 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em">Borrower portfolio</h1>
+          <p class="muted" style="margin-top: 2px">148 business borrowers · 86.4 bn UZS outstanding · monitoring updated nightly from uploaded statements</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" class="btn">Export table</button>
+          <button type="button" class="btn">Request statements from 17 late uploaders</button>
+        </div>
+      </div>
+
+      <section class="panel" aria-label="Borrowers">
+        <div style="padding: 12px 14px; border-bottom: 1px solid #EEEBE4; display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap" aria-label="Filter by monitoring status">
+            <button type="button" class="chip {{ cAll }}" onClick="{{ setAll }}">All <span class="n">148</span></button>
+            <button type="button" class="chip {{ cStable }}" onClick="{{ setStable }}">Stable <span class="n">121</span></button>
+            <button type="button" class="chip {{ cWatch }}" onClick="{{ setWatch }}">Watch <span class="n">18</span></button>
+            <button type="button" class="chip {{ cAttn }}" onClick="{{ setAttn }}">Attention <span class="n">9</span></button>
+          </div>
+          <div style="flex: 1"></div>
+          <label for="ind" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Industry</label>
+          <select id="ind" style="height: 32px; padding: 0 8px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; font-size: 12.5px"><option>All industries</option><option>Manufacturing</option><option>Food processing</option><option>Trade &amp; distribution</option><option>Transport</option><option>Construction</option><option>Services</option></select>
+          <label for="reg" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Region</label>
+          <select id="reg" style="height: 32px; padding: 0 8px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; font-size: 12.5px"><option>All regions</option><option>Tashkent</option><option>Farg'ona valley</option><option>Samarqand</option><option>Buxoro</option><option>Other</option></select>
+          <label for="find" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search borrowers</label>
+          <input id="find" type="search" placeholder="Name or STIR" style="height: 32px; width: 180px; padding: 0 10px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; font-size: 12.5px">
+        </div>
+        <div style="overflow-x: auto">
+          <table class="tbl" style="min-width: 1080px">
+            <thead>
+              <tr>
+                <th>Business</th><th>Industry · region</th><th class="r">Outstanding, mln</th><th class="r">Revenue vs prior period</th><th class="r">Cash coverage</th><th>Latest period</th><th>Status · reason</th><th>Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="12">
+                <tr>
+                  <td>
+                    <sc-if value="{{ r.linked }}" hint-placeholder-val="{{ false }}">
+                      <a href="BorrowerProfile.dc.html" style="font-weight: 500">{{ r.name }}</a>
+                    </sc-if>
+                    <sc-if value="{{ r.notLinked }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-weight: 500">{{ r.name }}</span>
+                    </sc-if>
+                    <div class="muted" style="font-size: 12px">{{ r.loan }}</div>
+                  </td>
+                  <td>{{ r.industry }}<div class="muted" style="font-size: 12px">{{ r.region }}</div></td>
+                  <td class="r num">{{ r.out }}</td>
+                  <td class="r num {{ r.trendClass }}">{{ r.trend }}</td>
+                  <td class="r num">{{ r.cov }}</td>
+                  <td class="num">{{ r.period }}</td>
+                  <td><span class="pill {{ r.pillClass }}">{{ r.status }}</span><div class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ r.reason }}</div></td>
+                  <td class="num muted">{{ r.updated }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 10px 14px; border-top: 1px solid #EEEBE4; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap" class="muted">
+          <span>Showing {{ shown }} of {{ total }} {{ label }} borrowers · sorted by status severity, then exposure</span>
+          <span>Cash coverage = cash at period end ÷ next installment</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1120}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { f: 'all' };
+  }
+  renderVals() {
+    const data = [
+      { name: 'Zilola Mebel MChJ', loan: 'L-2025-0417 · 1 200.0 over 36 m', industry: 'Furniture manufacturing', region: 'Samarqand', out: '740.4', trend: '−28.0%', trendClass: 'down', cov: '1.4×', period: 'Q3 2026', s: 'attn', status: 'Attention', reason: 'Revenue −28% vs Q2 with costs flat; September installment paid 2 days late', updated: '10 Oct', linked: true },
+      { name: 'Qarshi Don Mahsulotlari MChJ', loan: 'L-2024-0288 · 1 800.0 over 48 m', industry: 'Grain products', region: 'Qashqadaryo', out: '1 075.0', trend: '−12.6%', trendClass: 'down', cov: '1.5×', period: 'Sep 2026', s: 'attn', status: 'Attention', reason: 'Payables +44% and cash coverage halved over two periods', updated: '07 Oct', linked: false },
+      { name: 'Nukus Qurilish MChJ', loan: 'L-2025-0102 · 4 200.0 over 60 m', industry: 'Construction', region: "Qoraqalpog'iston", out: '3 200.0', trend: '−7.9%', trendClass: 'down', cov: '1.8×', period: 'Sep 2026', s: 'watch', status: 'Watch', reason: 'Largest contract receivable (1 120.0) now 90+ days outstanding', updated: '06 Oct', linked: false },
+      { name: "Jizzax Yog' Zavodi MChJ", loan: 'L-2025-0233 · 1 600.0 over 36 m', industry: 'Oil processing', region: 'Jizzax', out: '1 320.0', trend: 'n/a', trendClass: 'flat', cov: '2.1× (Aug)', period: 'Aug 2026', s: 'watch', status: 'Watch', reason: 'September statement not uploaded, 14 days past covenant date', updated: '08 Oct', linked: false },
+      { name: 'Oltin Vodiy Konserva MChJ', loan: 'L-2025-0391 · 1 100.0 over 36 m', industry: 'Food processing', region: "Farg'ona", out: '980.0', trend: '+4.1%', trendClass: 'up', cov: '2.2×', period: 'Sep 2026', s: 'watch', status: 'Watch', reason: 'Receivables +36%; seasonal (harvest) cause not yet confirmed', updated: '10 Oct', linked: false },
+      { name: 'Chimgan Tur Servis MChJ', loan: 'L-2025-0315 · 600.0 over 24 m', industry: 'Tourism services', region: 'Tashkent region', out: '455.0', trend: '−19.5%', trendClass: 'down', cov: '1.2×', period: 'Sep 2026', s: 'watch', status: 'Watch', reason: 'Off-season revenue dip; same pattern as Oct 2025, recovered by December', updated: '10 Oct', linked: false },
+      { name: "Farg'ona Taxi Park MChJ", loan: 'L-2024-0510 · 450.0 over 36 m', industry: 'Passenger transport', region: "Farg'ona", out: '288.5', trend: '+6.8%', trendClass: 'up', cov: '1.6×', period: 'Sep 2026', s: 'watch', status: 'Watch', reason: 'Two missed installments caught up in September; needs 3 on-time months', updated: '09 Oct', linked: false },
+      { name: 'Namangan Meva Eksport MChJ', loan: 'L-2025-0044 · 2 500.0 over 36 m', industry: 'Fruit export', region: 'Namangan', out: '2 140.0', trend: '+38.4%', trendClass: 'up', cov: '4.1×', period: 'Sep 2026', s: 'stable', status: 'Stable', reason: 'Harvest-season peak; all indicators within range', updated: '10 Oct', linked: false },
+      { name: 'Buxoro Gilam MChJ', loan: 'L-2024-0197 · 2 400.0 over 48 m', industry: 'Carpet manufacturing', region: 'Buxoro', out: '1 850.0', trend: '+11.2%', trendClass: 'up', cov: '3.4×', period: 'Sep 2026', s: 'stable', status: 'Stable', reason: 'All indicators within range', updated: '10 Oct', linked: false },
+      { name: 'Toshkent Plastik MChJ', loan: 'L-2025-0276 · 800.0 over 30 m', industry: 'Plastics manufacturing', region: 'Tashkent', out: '612.0', trend: '+2.3%', trendClass: 'up', cov: '2.9×', period: 'Sep 2026', s: 'stable', status: 'Stable', reason: 'Returned from Watch on 06 Oct — overdue receivable collected', updated: '10 Oct', linked: false },
+      { name: 'Urganch Sut MChJ', loan: 'L-2025-0358 · 650.0 over 36 m', industry: 'Dairy', region: 'Xorazm', out: '520.0', trend: '+1.9%', trendClass: 'up', cov: '2.7×', period: 'Sep 2026', s: 'stable', status: 'Stable', reason: 'All indicators within range', updated: '10 Oct', linked: false },
+      { name: 'Andijon Avto Ehtiyot MChJ', loan: 'L-2025-0129 · 500.0 over 24 m', industry: 'Auto parts retail', region: 'Andijon', out: '396.0', trend: '−3.1%', trendClass: 'flat', cov: '2.5×', period: 'Sep 2026', s: 'stable', status: 'Stable', reason: 'All indicators within range', updated: '10 Oct', linked: false }
+    ];
+    const f = this.state.f;
+    const totals = { all: 148, stable: 121, watch: 18, attn: 9 };
+    const labels = { all: '', stable: 'Stable', watch: 'Watch', attn: 'Attention' };
+    const pill = { stable: 'pill-stable', watch: 'pill-watch', attn: 'pill-attn' };
+    const rows = data.filter((r) => f === 'all' || r.s === f).map((r) => ({ ...r, pillClass: pill[r.s], notLinked: !r.linked }));
+    return {
+      rows,
+      shown: rows.length,
+      total: totals[f],
+      label: labels[f],
+      cAll: f === 'all' ? 'on' : '',
+      cStable: f === 'stable' ? 'on' : '',
+      cWatch: f === 'watch' ? 'on' : '',
+      cAttn: f === 'attn' ? 'on' : '',
+      setAll: () => this.setState({ f: 'all' }),
+      setStable: () => this.setState({ f: 'stable' }),
+      setWatch: () => this.setState({ f: 'watch' }),
+      setAttn: () => this.setState({ f: 'attn' })
+    };
+  }
+}
+</script>
+</body>
+</html>

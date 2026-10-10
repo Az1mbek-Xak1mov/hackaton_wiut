@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Financial health — Navro'z Tekstil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:9px 12px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl tr.sum td{font-weight:600;border-top:1px solid #D8D3C8;background:#FBFAF7}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.ev:hover{background:#E8F1EF}
+.nav a{display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.wf{display:grid;grid-template-columns:150px 1fr 90px;gap:12px;align-items:center;font-size:13px;padding:5px 0}
+.wf .track{height:14px;position:relative}
+.wf .track span{position:absolute;top:0;height:14px;border-radius:2px}
+.est{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#8A4B06;font-weight:500}
+.age{display:flex;height:18px;border-radius:3px;overflow:hidden;gap:2px}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}.wf{grid-template-columns:110px 1fr 70px}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. Figures marked "estimate" are derived from the bank statement and sales ledger, not from filed statements.</span>
+  </div>
+
+  <header class="top">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #0F6E63; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+    </a>
+    <span class="pill pill-neutral">Business owner</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button" class="on">UZ</button><button type="button">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Portfolio.dc.html" class="muted" style="font-size: 13px">Open bank officer view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">SN</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">Navro'z Tekstil MChJ</div>
+        <div class="muted" style="font-size: 12px">Textile manufacturing · Namangan</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Main.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Overview</a>
+        <a href="Upload.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"></path></svg>Upload &amp; analyze</a>
+        <a href="Health.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Financial health</a>
+        <a href="AICFO.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>AI CFO</a>
+      </div>
+      <div style="margin-top: 28px; padding: 0 12px">
+        <div class="eyebrow" style="margin-bottom: 8px">On this page</div>
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+          <a href="#trend" class="muted" style="text-decoration: none">Revenue &amp; expenses</a>
+          <a href="#profit" class="muted" style="text-decoration: none">Profitability</a>
+          <a href="#cash" class="muted" style="text-decoration: none">Cash flow</a>
+          <a href="#ar" class="muted" style="text-decoration: none">Receivables &amp; payables</a>
+          <a href="#debt" class="muted" style="text-decoration: none">Debt</a>
+          <a href="#changes" class="muted" style="text-decoration: none">Significant changes</a>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 24px 28px 36px; display: flex; flex-direction: column; gap: 20px">
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between">
+        <div>
+          <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Financial health</h1>
+          <p class="muted" style="font-size: 13px; margin-top: 4px">September 2026 compared with August 2026 · all amounts in mln UZS unless stated</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+          <label for="cmp" class="muted" style="font-size: 13px">Compare with</label>
+          <select id="cmp" style="height: 36px; padding: 0 10px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; color: #1B1A17">
+            <option>Previous month (Aug 2026)</option><option>Same month last year</option><option>Previous quarter</option>
+          </select>
+          <a href="AICFO.dc.html" class="btn">Ask about these figures</a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 20px">
+
+        <section id="trend" class="panel" aria-label="Revenue and expenses trend">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 16px 20px 0; gap: 12px; flex-wrap: wrap">
+            <div>
+              <h2 style="font-size: 15px; font-weight: 600">Is revenue growing faster than expenses?</h2>
+              <p class="muted" style="font-size: 12px">Monthly, Apr – Sep 2026 · Jul–Sep <span class="est">estimate</span></p>
+            </div>
+            <div style="display: flex; gap: 14px; font-size: 12px" aria-hidden="true">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #0F6E63; display: inline-block"></span>Revenue</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 2px; background: #A39B8B; display: inline-block"></span>Expenses</span>
+            </div>
+          </div>
+          <div style="padding: 8px 12px 10px">
+            <svg viewBox="0 0 720 230" width="100%" role="img" aria-label="Revenue and expenses per month April to September 2026. Revenue rose from 1 102.4 to 1 284.5; expenses from 932.1 to 1 071.3 million UZS. Both grew, with expenses jumping in September.">
+              <g stroke="#EEEBE4"><line x1="50" y1="200" x2="710" y2="200"></line><line x1="50" y1="110" x2="710" y2="110"></line><line x1="50" y1="20" x2="710" y2="20"></line></g>
+              <g fill="#66615A" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="end"><text x="44" y="204">0</text><text x="44" y="114">700</text><text x="44" y="24">1 400</text></g>
+              <g fill="#0F6E63">
+                <rect x="70" y="58.3" width="32" height="141.7" rx="3"></rect><rect x="180" y="52.3" width="32" height="147.7" rx="3"></rect><rect x="290" y="63.2" width="32" height="136.8" rx="3"></rect><rect x="400" y="48.8" width="32" height="151.2" rx="3"></rect><rect x="510" y="44.5" width="32" height="155.5" rx="3"></rect><rect x="620" y="34.8" width="32" height="165.2" rx="3"></rect>
+              </g>
+              <g fill="#A39B8B">
+                <rect x="106" y="80.2" width="32" height="119.8" rx="3"></rect><rect x="216" y="75.5" width="32" height="124.5" rx="3"></rect><rect x="326" y="81.6" width="32" height="118.4" rx="3"></rect><rect x="436" y="71.6" width="32" height="128.4" rx="3"></rect><rect x="546" y="73.7" width="32" height="126.3" rx="3"></rect><rect x="656" y="62.3" width="32" height="137.7" rx="3"></rect>
+              </g>
+              <g fill="#1B1A17" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="636" y="28">1 284.5</text><text x="672" y="56">1 071.3</text></g>
+              <g fill="#66615A" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle"><text x="104" y="220">Apr</text><text x="214" y="220">May</text><text x="324" y="220">Jun</text><text x="434" y="220">Jul</text><text x="544" y="220">Aug</text><text x="654" y="220">Sep</text></g>
+            </svg>
+          </div>
+          <div style="margin: 0 20px 16px; padding-top: 12px; border-top: 1px solid #EEEBE4; font-size: 13px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px">
+            <div><div class="eyebrow">Revenue, 6 months</div><div class="num" style="font-size: 16px; font-weight: 500">+16.5%</div></div>
+            <div><div class="eyebrow">Expenses, 6 months</div><div class="num" style="font-size: 16px; font-weight: 500">+14.9%</div></div>
+            <div><div class="eyebrow">Net margin, Sep</div><div class="num" style="font-size: 16px; font-weight: 500">16.6% <span class="muted" style="font-size: 12px; font-weight: 400">Aug 18.8%</span></div></div>
+          </div>
+        </section>
+
+        <section id="profit" class="panel" aria-label="Profitability">
+          <div style="padding: 16px 20px 6px">
+            <h2 style="font-size: 15px; font-weight: 600">Am I actually profitable?</h2>
+            <p class="muted" style="font-size: 12px">Yes — 16.6% net margin in September. The margin fell because expenses grew faster than sales.</p>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Line</th><th class="r">Sep 2026</th><th class="r">Aug 2026</th><th class="r">Change</th></tr></thead>
+            <tbody>
+              <tr><td>Revenue</td><td class="r num">1 284.5</td><td class="r num">1 209.8</td><td class="r num" style="color:#0B5A51">+6.2%</td></tr>
+              <tr><td>Cost of sales (materials)</td><td class="r num">612.4</td><td class="r num">571.9</td><td class="r num">+7.1%</td></tr>
+              <tr class="sum"><td>Gross profit <span class="muted" style="font-weight: 400">· 52.3% margin</span></td><td class="r num">672.1</td><td class="r num">637.9</td><td class="r num">+5.4%</td></tr>
+              <tr><td style="padding-left: 24px">Salaries (64 employees)</td><td class="r num">298.4</td><td class="r num">298.4</td><td class="r num muted">0.0%</td></tr>
+              <tr><td style="padding-left: 24px">Electricity</td><td class="r num">42.8</td><td class="r num">24.4</td><td class="r num" style="color:#8A4B06">+75.4%</td></tr>
+              <tr><td style="padding-left: 24px">Transport &amp; logistics</td><td class="r num">38.1</td><td class="r num">25.5</td><td class="r num" style="color:#8A4B06">+49.4%</td></tr>
+              <tr><td style="padding-left: 24px">Rent</td><td class="r num">16.0</td><td class="r num">16.0</td><td class="r num muted">0.0%</td></tr>
+              <tr><td style="padding-left: 24px">Other operating</td><td class="r num">39.6</td><td class="r num">20.3</td><td class="r num" style="color:#8A4B06">+95.1%</td></tr>
+              <tr class="sum"><td>Operating expenses</td><td class="r num">434.9</td><td class="r num">384.6</td><td class="r num">+13.1%</td></tr>
+              <tr><td>Loan interest</td><td class="r num">24.0</td><td class="r num">25.5</td><td class="r num">−5.9%</td></tr>
+              <tr class="sum"><td>Net profit <span class="est" style="font-weight: 400">· Q3 profit tax not yet accrued</span></td><td class="r num">213.2</td><td class="r num">227.8</td><td class="r num" style="color:#9B2318">−6.4%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 20px">
+
+        <section id="cash" class="panel" aria-label="Cash flow movements" style="padding: 16px 20px 18px; display: flex; flex-direction: column; gap: 8px">
+          <div>
+            <h2 style="font-size: 15px; font-weight: 600">Where did the cash go in September?</h2>
+            <p class="muted" style="font-size: 12px">Actual bank movements · mln UZS · bar length is the amount</p>
+          </div>
+          <div style="display: flex; flex-direction: column; margin-top: 6px">
+            <div class="wf"><span style="font-weight: 600">Opening balance, 1 Sep</span><div class="track"><span style="left: 0; width: 36.3%; background: #1B1A17"></span></div><span class="r num" style="text-align: right; font-weight: 600">436.1</span></div>
+            <div class="wf"><span>Collections from customers</span><div class="track"><span style="left: 0; width: 89.6%; background: #0F6E63"></span></div><span class="num" style="text-align: right; color: #0B5A51">+1 075.6</span></div>
+            <div class="wf"><span>Suppliers &amp; materials</span><div class="track"><span style="left: 0; width: 40.4%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−484.3</span></div>
+            <div class="wf"><span>Salaries</span><div class="track"><span style="left: 0; width: 24.9%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−298.4</span></div>
+            <div class="wf"><span>Yarn prepayment <span class="muted">(inventory)</span></span><div class="track"><span style="left: 0; width: 15.4%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−185.0</span></div>
+            <div class="wf"><span>Loan installment</span><div class="track"><span style="left: 0; width: 8%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−96.0</span></div>
+            <div class="wf"><span>Taxes &amp; contributions</span><div class="track"><span style="left: 0; width: 5.9%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−71.2</span></div>
+            <div class="wf"><span>Rent &amp; utilities</span><div class="track"><span style="left: 0; width: 4.9%; background: #A39B8B"></span></div><span class="num" style="text-align: right">−58.6</span></div>
+            <div class="wf" style="border-top: 1px solid #D8D3C8; margin-top: 4px; padding-top: 9px"><span style="font-weight: 600">Closing balance, 30 Sep</span><div class="track"><span style="left: 0; width: 26.5%; background: #1B1A17"></span></div><span class="num" style="text-align: right; font-weight: 600">318.2</span></div>
+          </div>
+          <p class="muted" style="font-size: 13px; margin-top: 6px">Net outflow <span class="num" style="color: #1B1A17">−117.9</span>. Two items were not expenses: the 185.0 yarn prepayment (inventory) and 72.0 of loan principal. <a href="AICFO.dc.html">Why profit and cash differ →</a></p>
+        </section>
+
+        <section id="ar" class="panel" aria-label="Receivables and payables" style="display: flex; flex-direction: column">
+          <div style="padding: 16px 20px 8px">
+            <h2 style="font-size: 15px; font-weight: 600">Who owes me, and whom do I owe?</h2>
+            <p class="muted" style="font-size: 12px">From the sales and purchase ledgers, matched against bank receipts</p>
+          </div>
+          <div style="padding: 4px 20px 14px; display: flex; flex-direction: column; gap: 14px">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px"><span style="font-weight: 600">Receivables · 611.4</span><span class="muted">Aug 402.5 · <span class="num" style="color:#9B2318">+51.9%</span></span></div>
+              <div class="age" style="margin-top: 8px" aria-hidden="true">
+                <span style="width: 48.8%; background: #0F6E63"></span><span style="width: 12.3%; background: #5E9B92"></span><span style="width: 38.9%; background: #C2410C"></span>
+              </div>
+              <table class="tbl" style="margin-top: 6px">
+                <thead><tr><th>Aging</th><th class="r">mln UZS</th><th>Largest counterparty</th></tr></thead>
+                <tbody>
+                  <tr><td><span style="display: inline-block; width: 8px; height: 8px; background: #0F6E63; border-radius: 2px; margin-right: 6px"></span>Not yet due</td><td class="r num">298.1</td><td class="muted">Toshkent Mato Bozori MChJ · 112.4</td></tr>
+                  <tr><td><span style="display: inline-block; width: 8px; height: 8px; background: #5E9B92; border-radius: 2px; margin-right: 6px"></span>1–30 days overdue</td><td class="r num">75.3</td><td class="muted">Andijon Kiyim Fabrikasi · 41.0</td></tr>
+                  <tr><td><span style="display: inline-block; width: 8px; height: 8px; background: #C2410C; border-radius: 2px; margin-right: 6px"></span>31–60 days overdue</td><td class="r num">238.0</td><td>Dilshod Trade MChJ · 238.0 <a class="ev" href="AICFO.dc.html">20 invoices</a></td></tr>
+                  <tr><td><span style="display: inline-block; width: 8px; height: 8px; background: #EEEBE4; border-radius: 2px; margin-right: 6px"></span>Over 60 days</td><td class="r num">0.0</td><td class="muted">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="border-top: 1px solid #EEEBE4; padding-top: 12px">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 13px"><span style="font-weight: 600">Payables · 311.4</span><span class="muted">Aug 236.2 · <span class="num">+31.8%</span></span></div>
+              <p class="muted" style="font-size: 13px; margin-top: 4px">Largest: Qo'qon Paxta Tola MChJ 142.0 due 18 Oct (contract 41/26). None overdue. You are collecting slower than you are paying — the gap widened by 133.7 mln this month.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 20px">
+
+        <section id="debt" class="panel" aria-label="Debt and payment obligations" style="padding: 16px 20px 18px; display: flex; flex-direction: column; gap: 12px">
+          <div>
+            <h2 style="font-size: 15px; font-weight: 600">Debt &amp; obligations</h2>
+            <p class="muted" style="font-size: 12px">One bank loan identified from the statement; terms entered by you on 12 Sep</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); gap: 12px; font-size: 13px">
+            <div><div class="eyebrow">Outstanding principal</div><div class="num" style="font-size: 18px; font-weight: 500; margin-top: 2px">864.0</div></div>
+            <div><div class="eyebrow">Monthly installment</div><div class="num" style="font-size: 18px; font-weight: 500; margin-top: 2px">96.0 <span class="muted" style="font-size: 12px; font-weight: 400">on the 15th</span></div></div>
+            <div><div class="eyebrow">Remaining</div><div class="num" style="font-size: 18px; font-weight: 500; margin-top: 2px">12 <span class="muted" style="font-size: 12px; font-weight: 400">of 24 · to Sep 2027</span></div></div>
+            <div><div class="eyebrow">Installment ÷ monthly profit</div><div class="num" style="font-size: 18px; font-weight: 500; margin-top: 2px">0.45×</div></div>
+          </div>
+          <div>
+            <div class="muted" style="font-size: 12px; margin-bottom: 6px">Repayment history · Oct 2025 – Sep 2026</div>
+            <div style="display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 3px" aria-label="24 installments: 12 paid on time, 12 upcoming">
+              <span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span><span style="height: 10px; border-radius: 2px; background: #0F6E63"></span>
+              <span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span><span style="height: 10px; border-radius: 2px; background: #E3DFD6"></span>
+            </div>
+            <div class="muted" style="font-size: 12px; margin-top: 6px">12 of 12 paid on time · next due 15 Oct 2026</div>
+          </div>
+          <div style="border-top: 1px solid #EEEBE4; padding-top: 10px; font-size: 13px" class="muted">Lease, tax and supplier obligations for the next 30 days are listed on the <a href="Main.dc.html">overview</a> (632.2 mln due by 31 Oct).</div>
+        </section>
+
+        <section id="changes" class="panel" aria-label="Significant changes explained">
+          <div style="padding: 16px 20px 8px">
+            <h2 style="font-size: 15px; font-weight: 600">Significant changes, explained</h2>
+            <p class="muted" style="font-size: 12px">Movements above 10% or 50 mln UZS, with their cause where the records show it</p>
+          </div>
+          <div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 12px; font-size: 13px">
+            <div style="display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding-top: 10px; border-top: 1px solid #EEEBE4">
+              <span class="num" style="font-weight: 600; color: #9B2318">+208.9</span>
+              <p><strong>Receivables.</strong> 78% of the increase is one counterparty: Dilshod Trade MChJ, 20 invoices dated 12–27 Aug on 30-day terms, none paid. Collections from all other customers were normal. <a class="ev" href="AICFO.dc.html">Sales ledger rows 412–431</a></p>
+            </div>
+            <div style="display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding-top: 10px; border-top: 1px solid #EEEBE4">
+              <span class="num" style="font-weight: 600; color: #8A4B06">+50.3</span>
+              <p><strong>Operating expenses.</strong> Electricity +18.4 (September bill 42.8 vs 24.4: the statement shows two grid payments, one covering August arrears), transport +12.6 (new deliveries to Andijon), other +19.3 (one-off equipment repair, 17.9). <a class="ev" href="AICFO.dc.html">Bank statement, 6 rows</a></p>
+            </div>
+            <div style="display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding-top: 10px; border-top: 1px solid #EEEBE4">
+              <span class="num" style="font-weight: 600">−117.9</span>
+              <p><strong>Cash.</strong> Profit was 213.2, but 208.9 of sales were not collected, 185.0 went into yarn inventory and 72.0 repaid principal. Timing, not profitability, drove the decline. <a class="ev" href="AICFO.dc.html">Profit-to-cash bridge</a></p>
+            </div>
+            <div style="display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding-top: 10px; border-top: 1px solid #EEEBE4">
+              <span class="num muted" style="font-weight: 600">n/a</span>
+              <p class="muted"><strong style="color:#1B1A17">Inventory.</strong> No stock count was uploaded, so inventory value and turnover are not shown. Upload a stock report or the 9-month balance sheet to include them.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

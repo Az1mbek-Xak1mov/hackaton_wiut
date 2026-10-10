@@ -1,0 +1,231 @@
+{
+  "_note": "Synthetic demonstration data. All amounts in mln UZS unless a field says otherwise. Figures reconcile across screens — keep them. Prose copy (AI answers, evidence passages, reasons) lives in design/reference/*.dc.html; this file holds the numbers and structure.",
+  "owner": {
+    "business": { "name": "Navro'z Tekstil MChJ", "industry": "Textile manufacturing", "region": "Namangan", "employees": 64, "user": "SN" },
+    "period": { "current": "2026-09", "compare": "2026-08", "asOf": "2026-09-30", "coverage": "2026-01..2026-09", "docsAnalyzed": 3, "docsTotal": 5 },
+    "figures": {
+      "revenue": { "cur": 1284.5, "prev": 1209.8, "deltaPct": 6.2 },
+      "expenses": { "cur": 1071.3, "prev": 982.0, "deltaPct": 9.1 },
+      "netProfit": { "cur": 213.2, "prev": 227.8, "marginCur": 16.6, "marginPrev": 18.8 },
+      "cash": { "cur": 318.2, "prev": 436.1, "deltaPct": -27.0, "delta": -117.9, "flag": "Falling" }
+    },
+    "monthly": {
+      "months": ["2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],
+      "revenue": [1102.4, 1148.9, 1063.7, 1176.2, 1209.8, 1284.5],
+      "expenses": [932.1, 968.3, 921.0, 998.4, 982.0, 1071.3],
+      "cashIn": [1088.0, 1121.0, 1071.0, 1142.0, 1180.0, 1075.6],
+      "cashOut": [1040.0, 1085.5, 1047.4, 1210.3, 1247.5, 1193.5],
+      "cashEnd": [512.8, 548.3, 571.9, 503.6, 436.1, 318.2],
+      "receivablesEnd": [318.0, 342.0, 361.0, 384.0, 402.5, 611.4],
+      "estimateFrom": "2026-07"
+    },
+    "pnl": {
+      "columns": ["2026-09", "2026-08"],
+      "rows": [
+        { "line": "Revenue", "v": [1284.5, 1209.8] },
+        { "line": "Cost of sales (materials)", "v": [612.4, 571.9] },
+        { "line": "Gross profit", "v": [672.1, 637.9], "sum": true, "margin": [52.3, 52.7] },
+        { "line": "Salaries (64 employees)", "v": [298.4, 298.4], "indent": true },
+        { "line": "Electricity", "v": [42.8, 24.4], "indent": true },
+        { "line": "Transport & logistics", "v": [38.1, 25.5], "indent": true },
+        { "line": "Rent", "v": [16.0, 16.0], "indent": true },
+        { "line": "Other operating", "v": [39.6, 20.3], "indent": true },
+        { "line": "Operating expenses", "v": [434.9, 384.6], "sum": true },
+        { "line": "Loan interest", "v": [24.0, 25.5] },
+        { "line": "Net profit", "v": [213.2, 227.8], "sum": true, "note": "Q3 profit tax not yet accrued — estimate" }
+      ]
+    },
+    "cashWaterfall": [
+      { "label": "Opening balance, 1 Sep", "v": 436.1, "kind": "balance" },
+      { "label": "Collections from customers", "v": 1075.6, "kind": "in" },
+      { "label": "Suppliers & materials", "v": -484.3, "kind": "out" },
+      { "label": "Salaries", "v": -298.4, "kind": "out" },
+      { "label": "Yarn prepayment (inventory)", "v": -185.0, "kind": "out" },
+      { "label": "Loan installment", "v": -96.0, "kind": "out" },
+      { "label": "Taxes & contributions", "v": -71.2, "kind": "out" },
+      { "label": "Rent & utilities", "v": -58.6, "kind": "out" },
+      { "label": "Closing balance, 30 Sep", "v": 318.2, "kind": "balance" }
+    ],
+    "profitToCashBridge": [
+      { "label": "Net profit", "v": 213.2, "evidence": null },
+      { "label": "Depreciation (no cash leaves)", "v": 18.4, "evidence": null },
+      { "label": "Sales invoiced but not yet paid", "v": -208.9, "evidence": "dilshod" },
+      { "label": "Yarn bought ahead (inventory)", "v": -185.0, "evidence": "yarn" },
+      { "label": "Supplier invoices not yet paid", "v": 75.2, "evidence": null },
+      { "label": "Salaries & taxes accrued, paid in Oct", "v": 41.2, "evidence": null },
+      { "label": "Loan principal repaid", "v": -72.0, "evidence": "loan" },
+      { "label": "Change in cash", "v": -117.9, "sum": true }
+    ],
+    "receivables": {
+      "total": 611.4, "prev": 402.5,
+      "aging": [
+        { "bucket": "Not yet due", "v": 298.1, "largest": "Toshkent Mato Bozori MChJ · 112.4" },
+        { "bucket": "1–30 days overdue", "v": 75.3, "largest": "Andijon Kiyim Fabrikasi · 41.0" },
+        { "bucket": "31–60 days overdue", "v": 238.0, "largest": "Dilshod Trade MChJ · 238.0", "evidence": "dilshod" },
+        { "bucket": "Over 60 days", "v": 0.0, "largest": null }
+      ]
+    },
+    "payables": { "total": 311.4, "prev": 236.2, "largest": { "name": "Qo'qon Paxta Tola MChJ", "v": 142.0, "due": "2026-10-18", "contract": "41/26" } },
+    "debt": { "contract": "2025-0882", "outstandingPrincipal": 864.0, "installment": 96.0, "principalPart": 72.0, "interestPart": 24.0, "dueDay": 15, "paid": 12, "total": 24, "maturity": "2027-09", "allOnTime": true, "nextDue": "2026-10-15" },
+    "obligations": [
+      { "due": "2026-10-05", "payee": "Salaries — 64 employees", "basis": "Recurring, 5th of month", "v": 298.4 },
+      { "due": "2026-10-15", "payee": "Bank loan installment", "basis": "Loan schedule", "v": 96.0 },
+      { "due": "2026-10-18", "payee": "Qo'qon Paxta Tola MChJ", "basis": "Contract 41/26, balance due", "v": 142.0 },
+      { "due": "2026-10-20", "payee": "Payroll taxes & social contributions", "basis": "Recurring, 20th of month", "v": 71.2 },
+      { "due": "2026-10-25", "payee": "Electricity — regional grid", "basis": "Recurring, Sep bill +18%", "v": 24.6 }
+    ],
+    "obligationsTotal": 632.2,
+    "projection30d": {
+      "cashToday": 318.2, "collectionsDueOct": 282.4, "overdueDilshod": 238.0, "paymentsDue": 632.2,
+      "scenarioPays": 206.4, "scenarioNoPay": -31.6,
+      "tightestDays": [ { "date": "2026-10-05", "balance": 19.8 }, { "date": "2026-10-15", "balance": 78.3 }, { "date": "2026-10-18", "balance": -31.6 } ]
+    },
+    "attention": [
+      { "rank": 1, "title": "Overdue receivable — Dilshod Trade MChJ", "amount": 238.0, "daysOverdue": 34, "pill": "attn", "pillLabel": "Act now", "evidence": ["dilshod"] },
+      { "rank": 2, "title": "Cash covers 50% of October obligations", "pill": "watch", "pillLabel": "Watch", "evidence": ["oct"] },
+      { "rank": 3, "title": "185.0 mln yarn prepayment reduced cash, not profit", "pill": "neutral", "pillLabel": "Explained", "evidence": ["yarn"] }
+    ],
+    "files": [
+      { "name": "bank_vypiska_2026-01_09.xlsx", "type": "XLSX", "size": "1.8 MB", "uploaded": "2026-10-09T14:02", "recognised": "Bank statement", "period": "2026-01-01..2026-09-30", "status": "analyzed", "extracted": "2 418 transactions · 8 categories", "note": "14 uncategorised" },
+      { "name": "Forma2_1yarim_2026.pdf", "type": "PDF", "size": "412 KB", "uploaded": "2026-10-09T14:05", "recognised": "Income statement (Форма 2)", "period": "H1 2026", "status": "analyzed", "extracted": "14 fields · avg confidence 97%" },
+      { "name": "Sotuvlar_sentyabr.xlsx", "type": "XLSX", "size": "640 KB", "uploaded": "2026-10-10T09:41", "recognised": "Sales ledger", "period": "2026-09", "status": "processing", "progress": 68, "step": "Matching invoices to bank receipts…" },
+      { "name": "Balans_2025_skan.pdf", "type": "PDF", "size": "6.2 MB", "uploaded": "2026-10-09T14:07", "recognised": "Balance sheet (Buxgalteriya balansi)", "period": "2025-12-31", "status": "clarification", "extracted": "22 of 25 fields", "note": "3 below 80% confidence" },
+      { "name": "schet-faktura_0917.jpg", "type": "JPG", "size": "148 KB", "uploaded": "2026-10-10T09:44", "recognised": "Probably an invoice", "period": null, "status": "failed", "cause": "Image is 640×480 px and blurred; amounts are unreadable.", "exits": ["Re-upload", "Enter manually"] }
+    ],
+    "extracted": {
+      "forma2_h1_2026": {
+        "unit": "thousand UZS as printed",
+        "rows": [
+          { "line": "010", "printed": "Mahsulot (tovar, ish va xizmat)larni sotishdan sof tushum", "field": "Net revenue", "cur": 6349900, "prev": 5812400, "conf": 99 },
+          { "line": "020", "printed": "Sotilgan mahsulotning tannarxi", "field": "Cost of sales", "cur": 4021600, "prev": 3702100, "conf": 98 },
+          { "line": "030", "printed": "Yalpi foyda", "field": "Gross profit", "cur": 2328300, "prev": 2110300, "conf": 99 },
+          { "line": "040", "printed": "Davr xarajatlari", "field": "Operating expenses", "cur": 1486200, "prev": 1398700, "conf": 97 },
+          { "line": "120", "printed": "Moliyaviy faoliyat bo'yicha xarajatlar", "field": "Finance costs (loan interest)", "cur": 162000, "prev": 174000, "conf": 96 },
+          { "line": "240", "printed": "Daromad (foyda) solig'i", "field": "Profit tax", "cur": 81800, "prev": null, "conf": 84, "note": "2025 cell blank" },
+          { "line": "270", "printed": "Hisobot davrining sof foydasi", "field": "Net profit", "cur": 598300, "prev": 537600, "conf": 99 }
+        ]
+      }
+    },
+    "cfoEvidenceKeys": ["dilshod", "yarn", "loan", "oct"]
+  },
+  "bank": {
+    "officer": { "initials": "GA", "name": "G. Abdullayeva", "unit": "SME lending · Tashkent regional office" },
+    "asOf": "2026-10-09", "monitoringRun": "2026-10-10T08:30", "withCurrentStatements": 131, "lateUploaders": 17,
+    "figures": { "monitored": 148, "newThisMonth": 3, "exposureBn": 86.4, "medianLoan": 412, "largestBn": 4.2, "applicationsAwaiting": 12, "beyondTarget": 4, "requestedBn": 2.9, "warningBorrowers": 9, "warningExposureBn": 6.2, "warningPct": 7.2, "newThisWeek": 2 },
+    "statusDistribution": [
+      { "status": "stable", "label": "Stable", "means": "No indicator moved beyond its threshold in the last 2 periods", "n": 121, "exposureBn": 68.8 },
+      { "status": "watch", "label": "Watch", "means": "One indicator moved; cause not yet confirmed, or data is late", "n": 18, "exposureBn": 11.4 },
+      { "status": "attn", "label": "Attention", "means": "Two or more indicators moved, or a payment was late", "n": 9, "exposureBn": 6.2 }
+    ],
+    "trend": { "months": ["2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"], "exposureBn": [78.2, 79.6, 81.1, 83.0, 84.9, 86.4], "watchPlusAttn": [11, 12, 14, 17, 22, 27] },
+    "indicators": ["revenue vs prior period", "receivables", "payables", "cash coverage of next installment", "payment punctuality", "statement timeliness"],
+    "thresholds": { "revenueDropPct": -15, "cashCoverage": 1.5 },
+    "applications": [
+      { "id": "APP-2026-0925", "name": "Nurafshon Agro Servis MChJ", "industry": "Agricultural services", "requested": 310.0, "termMonths": 12, "received": "2026-10-01", "docs": "6/6", "status": "In review", "issues": "1 contradiction" },
+      { "id": "APP-2026-0928", "name": "Oqtosh Qurilish Materiallari MChJ", "industry": "Building materials", "requested": 1500.0, "termMonths": 36, "received": "2026-10-03", "docs": "4/6", "status": "Waiting on applicant" },
+      { "id": "APP-2026-0931", "name": "Farovon Savdo MChJ", "industry": "Food distribution", "requested": 850.0, "termMonths": 24, "received": "2026-10-06", "docs": "5/6", "status": "In review", "issues": "3 issues", "built": true },
+      { "id": "APP-2026-0933", "name": "Chirchiq Metall Servis MChJ", "industry": "Metalworking", "requested": 960.0, "termMonths": 24, "received": "2026-10-07", "docs": "6/6", "status": "Ready for review" },
+      { "id": "APP-2026-0934", "name": "Samarqand Non Kombinati MChJ", "industry": "Bakery", "requested": 420.0, "termMonths": 18, "received": "2026-10-07", "docs": "6/6", "status": "Ready for review" },
+      { "id": "APP-2026-0936", "name": "Buxoro Zardo'zlik MChJ", "industry": "Textile crafts", "requested": 180.0, "termMonths": 12, "received": "2026-10-09", "docs": "2/6", "status": "Processing documents" }
+    ],
+    "statusChanges": [
+      { "name": "Zilola Mebel MChJ", "outstanding": 740.4, "from": "watch", "to": "attn", "date": "2026-10-02", "reason": "Revenue −28% Q3 vs Q2, costs flat; installment 2 days late", "built": true },
+      { "name": "Oltin Vodiy Konserva MChJ", "outstanding": 980.0, "from": "stable", "to": "watch", "date": "2026-10-05", "reason": "Receivables +36%; seasonal cause not yet confirmed" },
+      { "name": "Toshkent Plastik MChJ", "outstanding": 612.0, "from": "watch", "to": "stable", "date": "2026-10-06", "reason": "Overdue receivable collected; cash coverage back to 2.9×" },
+      { "name": "Jizzax Yog' Zavodi MChJ", "outstanding": 1320.0, "from": "stable", "to": "watch", "date": "2026-10-08", "reason": "September statement not uploaded, 14 days late" },
+      { "name": "Farg'ona Taxi Park MChJ", "outstanding": 288.5, "from": "attn", "to": "watch", "date": "2026-10-09", "reason": "Two missed installments caught up; revenue stabilised" }
+    ],
+    "application": {
+      "id": "APP-2026-0931",
+      "applicant": { "name": "Farovon Savdo MChJ", "industry": "Food distribution (dairy & frozen)", "region": "Tashkent, Yashnobod", "stir": "302 447 118", "since": 2018, "employees": 42, "firstApplication": true },
+      "request": { "amount": 850.0, "termMonths": 24, "repayment": "annuity", "installment": 44.1, "dueDay": 15, "purpose": "Working capital", "purposeSplit": { "refrigeratedVan": 320.0, "inventory": 530.0 }, "collateral": "2 delivery vehicles", "collateralValuation": null, "installmentVsRevenuePct": 5.0, "avgMonthlyRevenue": 886.1, "received": "2026-10-06", "channel": "branch" },
+      "status": { "label": "In review", "day": 4, "slaDays": 5 },
+      "issues": [
+        { "type": "attn", "label": "Undeclared obligation", "title": "Bank statement shows loan repayments not listed in the application", "evidence": "debt" },
+        { "type": "watch", "label": "Contradiction", "title": "2025 revenue differs between the application form and the income statement", "evidence": ["apprev", "rev2025"], "diff": 557.7, "diffPct": 5.7 },
+        { "type": "neutral", "label": "Missing document", "title": "Tax declaration for Q2 2026 not provided", "evidence": "tax", "requested": "2026-10-07" }
+      ],
+      "figures": [
+        { "field": "Net revenue", "fy2025": 9842.3, "h12026": 5316.4, "source": "Форма 2, line 010", "conf": 98, "ev2025": "rev2025", "evH1": "revh1" },
+        { "field": "Cost of sales", "fy2025": 8614.9, "h12026": 4672.1, "source": "Форма 2, line 020", "conf": 97 },
+        { "field": "Operating expenses", "fy2025": 548.6, "h12026": 296.3, "source": "Форма 2, line 040", "conf": 96 },
+        { "field": "Net profit", "fy2025": 612.1, "h12026": 318.0, "source": "Форма 2, line 270", "conf": 99, "ev2025": "np2025" },
+        { "field": "Total assets", "fy2025": 3988.2, "h12026": 4210.6, "source": "Форма 1, line 400", "conf": 95 },
+        { "field": "Current assets", "fy2025": 2702.5, "h12026": 2870.4, "source": "Форма 1, line 390", "conf": 95, "evH1": "ca" },
+        { "field": "of which inventory", "fy2025": 1298.0, "h12026": 1412.8, "source": "Форма 1, line 140", "conf": 88, "note": "scan", "indent": true },
+        { "field": "Current liabilities", "fy2025": 1866.0, "h12026": 1940.2, "source": "Форма 1, line 600", "conf": 95, "evH1": "cl" },
+        { "field": "Long-term liabilities", "fy2025": 0.0, "h12026": 0.0, "source": "Форма 1, line 490", "flag": "Contradicts statement" },
+        { "field": "Avg monthly inflows (bank)", "fy2025": null, "h12026": 912.6, "source": "Statement, Jan–Aug", "conf": 100, "evH1": "inflow" }
+      ],
+      "ratios": [
+        { "label": "Current ratio", "v": "1.48", "note": "2 870.4 ÷ 1 940.2" },
+        { "label": "Quick ratio", "v": "0.75", "note": "Excluding inventory 1 412.8" },
+        { "label": "Net margin", "v": "6.0%", "note": "FY 2025: 6.2% · thin, stable" },
+        { "label": "Debt to equity", "v": "0.85", "note": "Declared liabilities only" },
+        { "label": "Est. debt service coverage", "v": "1.47 → 1.04", "note": "New loan only → incl. undeclared 18.5/month", "flag": true },
+        { "label": "Receivable days", "v": "31", "note": "Typical for retail distribution" }
+      ],
+      "indicator": { "label": "Adequate, with two unresolved issues", "disclaimer": "Illustrative indicator derived from the extracted figures and rules shown. Not a validated credit score; does not replace the officer's assessment." },
+      "undeclaredLoan": { "monthly": 18.5, "payments": 8, "total": 148.0, "contract": "2024-1177", "contractDate": "2024-11-14", "day": 20 },
+      "documents": [
+        { "title": "Заявка на кредит (application form)", "file": "Ariza_FarovonSavdo.pdf", "status": "processed" },
+        { "title": "Форма 1 — Бухгалтерский баланс, 31.12.2025", "file": "Balans_2025.pdf", "status": "processed", "note": "scanned · 2 fields < 90%" },
+        { "title": "Форма 1 — Бухгалтерский баланс, 30.06.2026", "file": "Balans_1H2026.pdf", "status": "processed" },
+        { "title": "Форма 2 — Отчёт о финансовых результатах, 2025", "file": "Forma2_2025.pdf", "status": "processed" },
+        { "title": "Форма 2 — Отчёт о финансовых результатах, 1-е полугодие 2026", "file": "Forma2_1H2026.pdf", "status": "processed" },
+        { "title": "Выписка по расчётному счёту, 01.01–31.08.2026", "file": "vypiska_2026.xlsx", "status": "processed", "note": "1 946 transactions · 9 categories" },
+        { "title": "Налоговая декларация, 2 квартал 2026", "file": null, "status": "missing", "requested": "2026-10-07" }
+      ],
+      "evidenceKeys": ["rev2025", "revh1", "np2025", "ca", "cl", "debt", "apprev", "tax", "inflow"],
+      "reviewTrail": [ "08:41 · AI analysis generated from 6 documents", "09:12 · G. Abdullayeva verified revenue 2025", "09:15 · Reminder sent: Q2 tax declaration" ]
+    },
+    "borrowers": [
+      { "id": "L-2025-0417", "name": "Zilola Mebel MChJ", "loan": "1 200.0 over 36 m", "industry": "Furniture manufacturing", "region": "Samarqand", "outstanding": 740.4, "trendPct": -28.0, "coverage": "1.4×", "period": "Q3 2026", "status": "attn", "reason": "Revenue −28% vs Q2 with costs flat; September installment paid 2 days late", "updated": "2026-10-10", "built": true },
+      { "id": "L-2024-0288", "name": "Qarshi Don Mahsulotlari MChJ", "loan": "1 800.0 over 48 m", "industry": "Grain products", "region": "Qashqadaryo", "outstanding": 1075.0, "trendPct": -12.6, "coverage": "1.5×", "period": "Sep 2026", "status": "attn", "reason": "Payables +44% and cash coverage halved over two periods", "updated": "2026-10-07" },
+      { "id": "L-2025-0102", "name": "Nukus Qurilish MChJ", "loan": "4 200.0 over 60 m", "industry": "Construction", "region": "Qoraqalpog'iston", "outstanding": 3200.0, "trendPct": -7.9, "coverage": "1.8×", "period": "Sep 2026", "status": "watch", "reason": "Largest contract receivable (1 120.0) now 90+ days outstanding", "updated": "2026-10-06" },
+      { "id": "L-2025-0233", "name": "Jizzax Yog' Zavodi MChJ", "loan": "1 600.0 over 36 m", "industry": "Oil processing", "region": "Jizzax", "outstanding": 1320.0, "trendPct": null, "coverage": "2.1× (Aug)", "period": "Aug 2026", "status": "watch", "reason": "September statement not uploaded, 14 days past covenant date", "updated": "2026-10-08" },
+      { "id": "L-2025-0391", "name": "Oltin Vodiy Konserva MChJ", "loan": "1 100.0 over 36 m", "industry": "Food processing", "region": "Farg'ona", "outstanding": 980.0, "trendPct": 4.1, "coverage": "2.2×", "period": "Sep 2026", "status": "watch", "reason": "Receivables +36%; seasonal (harvest) cause not yet confirmed", "updated": "2026-10-10" },
+      { "id": "L-2025-0315", "name": "Chimgan Tur Servis MChJ", "loan": "600.0 over 24 m", "industry": "Tourism services", "region": "Tashkent region", "outstanding": 455.0, "trendPct": -19.5, "coverage": "1.2×", "period": "Sep 2026", "status": "watch", "reason": "Off-season revenue dip; same pattern as Oct 2025, recovered by December", "updated": "2026-10-10" },
+      { "id": "L-2024-0510", "name": "Farg'ona Taxi Park MChJ", "loan": "450.0 over 36 m", "industry": "Passenger transport", "region": "Farg'ona", "outstanding": 288.5, "trendPct": 6.8, "coverage": "1.6×", "period": "Sep 2026", "status": "watch", "reason": "Two missed installments caught up in September; needs 3 on-time months", "updated": "2026-10-09" },
+      { "id": "L-2025-0044", "name": "Namangan Meva Eksport MChJ", "loan": "2 500.0 over 36 m", "industry": "Fruit export", "region": "Namangan", "outstanding": 2140.0, "trendPct": 38.4, "coverage": "4.1×", "period": "Sep 2026", "status": "stable", "reason": "Harvest-season peak; all indicators within range", "updated": "2026-10-10" },
+      { "id": "L-2024-0197", "name": "Buxoro Gilam MChJ", "loan": "2 400.0 over 48 m", "industry": "Carpet manufacturing", "region": "Buxoro", "outstanding": 1850.0, "trendPct": 11.2, "coverage": "3.4×", "period": "Sep 2026", "status": "stable", "reason": "All indicators within range", "updated": "2026-10-10" },
+      { "id": "L-2025-0276", "name": "Toshkent Plastik MChJ", "loan": "800.0 over 30 m", "industry": "Plastics manufacturing", "region": "Tashkent", "outstanding": 612.0, "trendPct": 2.3, "coverage": "2.9×", "period": "Sep 2026", "status": "stable", "reason": "Returned from Watch on 06 Oct — overdue receivable collected", "updated": "2026-10-10" },
+      { "id": "L-2025-0358", "name": "Urganch Sut MChJ", "loan": "650.0 over 36 m", "industry": "Dairy", "region": "Xorazm", "outstanding": 520.0, "trendPct": 1.9, "coverage": "2.7×", "period": "Sep 2026", "status": "stable", "reason": "All indicators within range", "updated": "2026-10-10" },
+      { "id": "L-2025-0129", "name": "Andijon Avto Ehtiyot MChJ", "loan": "500.0 over 24 m", "industry": "Auto parts retail", "region": "Andijon", "outstanding": 396.0, "trendPct": -3.1, "coverage": "2.5×", "period": "Sep 2026", "status": "stable", "reason": "All indicators within range", "updated": "2026-10-10" }
+    ],
+    "borrowerProfile": {
+      "id": "L-2025-0417",
+      "business": { "name": "Zilola Mebel MChJ", "industry": "Furniture manufacturing (kitchen & office)", "region": "Samarqand", "stir": "304 882 571", "since": 2016, "employees": 37, "borrowerSince": "2025-10" },
+      "status": { "current": "attn", "since": "2026-10-02", "history": [ { "status": "stable", "until": "2026-08-18" }, { "status": "watch", "from": "2026-08-18" }, { "status": "attn", "from": "2026-10-02" } ] },
+      "loan": { "type": "investment", "purpose": "CNC equipment", "disbursed": "2025-10-15", "original": 1200.0, "outstanding": 740.4, "installment": 46.8, "dueDay": 15, "nextDue": "2026-10-15", "termMonths": 36, "paid": 11, "left": 25, "maturity": "2028-09", "collateral": "Equipment + workshop", "collateralValuation": 1640.0, "collateralValuedAt": "2025-10", "repayments": { "onTime": 10, "late": [ { "n": 11, "due": "2026-09-15", "paid": "2026-09-17", "daysLate": 2 } ] } },
+      "quarterly": { "quarters": ["Q4 2025", "Q1 2026", "Q2 2026", "Q3 2026"], "revenue": [1842, 1736, 1790, 1289], "opex": [1412, 1388, 1405, 1391], "receivablesEnd": [262, 274, 286, 403], "cashEnd": [198.0, 176.0, 150.1, 65.5], "coverage": [4.2, 3.8, 3.2, 1.4], "q3EstimatedLoss": -102.0 },
+      "monthlyCash": [ { "m": "2026-06", "v": 150.1 }, { "m": "2026-07", "v": 118.4 }, { "m": "2026-08", "v": 108.0 }, { "m": "2026-09", "v": 65.5 } ],
+      "alerts": [
+        { "type": "attn", "label": "Revenue", "title": "Revenue −28.0% vs previous quarter", "evidence": "rev", "date": "2026-10-02" },
+        { "type": "attn", "label": "Receivables", "title": "Receivables +41% while sales fell", "evidence": "chain", "date": "2026-10-02" },
+        { "type": "watch", "label": "Cash coverage", "title": "Cash covers the next installment 1.4× (threshold 1.5×)", "evidence": "cash", "date": "2026-10-02" },
+        { "type": "watch", "label": "Punctuality", "title": "September installment paid 2 days late — first late payment", "evidence": "late", "date": "2026-09-17" }
+      ],
+      "concentration": { "customer": "Samarqand Uy Jihozlari (retail chain)", "share2025Pct": 38, "q2": 684.0, "q3": 212.0, "unpaid": 247.0, "oldestDays": 52, "othersQ2": 1106.0, "othersQ3": 1077.0 },
+      "timeline": [
+        { "date": "2026-06", "title": "Q2 review — Stable", "status": "stable" },
+        { "date": "2026-07", "title": "Chain orders fall to 71.0 mln", "status": "watch" },
+        { "date": "2026-08-18", "title": "Status → Watch", "status": "watch" },
+        { "date": "2026-09-17", "title": "Installment paid 2 days late", "status": "attn" },
+        { "date": "2026-10-02", "title": "Q3 statement uploaded → Attention", "status": "attn" },
+        { "date": "2026-10-10", "title": "Officer review pending", "status": "today" }
+      ],
+      "documents": [
+        { "title": "Quarterly statement, Q3 2026 (Форма 1, 2)", "uploaded": "2026-10-01", "status": "processed" },
+        { "title": "Bank statement, Jul–Sep 2026", "uploaded": "2026-10-01", "status": "processed", "note": "614 transactions" },
+        { "title": "Sales ledger, Q3 2026", "uploaded": "2026-10-01", "status": "processed", "note": "188 invoices" }
+      ],
+      "assessments": [
+        { "title": "Q2 2026 monitoring review", "by": "G. Abdullayeva", "date": "2026-07-08", "result": "Stable" },
+        { "title": "Q1 2026 monitoring review", "by": "G. Abdullayeva", "date": "2026-04-09", "result": "Stable" },
+        { "title": "Origination assessment", "by": "S. Rahimov", "date": "2025-10-10", "result": "Approved by committee", "indicator": "adequate" }
+      ],
+      "evidenceKeys": ["rev", "chain", "cash", "late"]
+    }
+  }
+}

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI CFO workspace — Navro'z Tekstil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn:hover{border-color:#B9B3A6;color:#1B1A17}.btn-primary:hover{background:#0B5A51;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:8px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl tr.sum td{font-weight:600;border-top:1px solid #D8D3C8;background:#FBFAF7}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.ev:hover{background:#E8F1EF}
+.nav a{display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;border-radius:5px;color:#44403A;text-decoration:none;font-weight:500;font-size:13px}
+.nav a:hover{background:#EFECE5;color:#1B1A17}
+.nav a.on{background:#E8F1EF;color:#0B5A51}
+.nav svg{flex:none}
+.proto{display:flex;align-items:center;gap:10px;height:28px;padding:0 20px;background:#FBEFD9;color:#8A4B06;font-size:12px;font-weight:500}
+.top{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;background:#fff;border-bottom:1px solid #E3DFD6;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #D8D3C8;border-radius:5px;overflow:hidden}
+.seg button{height:28px;padding:0 10px;border:0;background:#fff;color:#66615A;font:inherit;font-size:12px;font-weight:500;cursor:pointer}
+.seg button+button{border-left:1px solid #E3DFD6}
+.seg button.on{background:#1B1A17;color:#fff}
+.side{flex:1 1 220px;max-width:220px;padding:16px 12px;border-right:1px solid #E3DFD6;background:#FBFAF7}
+.msg-u{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.msg-a{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.ans{background:#fff;border:1px solid #E3DFD6;border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;font-size:14px}
+.ans p{text-wrap:pretty}
+.steps{display:flex;flex-direction:column;gap:6px;padding-left:0;margin:0;list-style:none;counter-reset:s}
+.steps li{display:grid;grid-template-columns:20px 1fr;gap:8px;font-size:13px}
+.steps li::before{counter-increment:s;content:counter(s);width:20px;height:20px;border-radius:4px;background:#EFECE5;color:#44403A;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.chip{display:inline-flex;align-items:center;height:30px;padding:0 12px;border:1px solid #D8D3C8;border-radius:15px;background:#fff;color:#1B1A17;font:inherit;font-size:12px;cursor:pointer}
+.chip:hover{border-color:#0F6E63;color:#0B5A51}
+.rec{font-size:12px;border:1px solid #E3DFD6;border-radius:4px;padding:8px 10px;background:#FBFAF7;display:grid;grid-template-columns:1fr auto;gap:4px 12px}
+input,select{font:inherit}
+@media (max-width:720px){.side{max-width:none;border-right:0;border-bottom:1px solid #E3DFD6}}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <div class="proto">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+    <span>Prototype — synthetic demonstration data. This conversation is scripted; evidence links on the right are interactive, the composer is not.</span>
+  </div>
+
+  <header class="top">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1B1A17">
+      <span style="width: 22px; height: 22px; border-radius: 4px; background: #0F6E63; display: inline-flex; align-items: center; justify-content: center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" aria-hidden="true"><path d="M4 18 10 11l4 4 6-8"></path></svg>
+      </span>
+      <span style="font-weight: 600; font-size: 15px; letter-spacing: -.01em">Sarhisob</span>
+    </a>
+    <span class="pill pill-neutral">Business owner</span>
+    <div style="flex: 1"></div>
+    <div class="seg" aria-label="Interface language">
+      <button type="button" class="on">UZ</button><button type="button">RU</button><button type="button">EN</button>
+    </div>
+    <a href="Portfolio.dc.html" class="muted" style="font-size: 13px">Open bank officer view →</a>
+    <span style="width: 30px; height: 30px; border-radius: 50%; background: #E3DFD6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #44403A">SN</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1; align-items: stretch">
+
+    <nav class="side nav" aria-label="Sections">
+      <div style="padding: 6px 12px 14px">
+        <div style="font-weight: 600; font-size: 14px">Navro'z Tekstil MChJ</div>
+        <div class="muted" style="font-size: 12px">Textile manufacturing · Namangan</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <a href="Main.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>Overview</a>
+        <a href="Upload.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"></path></svg>Upload &amp; analyze</a>
+        <a href="Health.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Financial health</a>
+        <a href="AICFO.dc.html" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>AI CFO</a>
+      </div>
+      <div style="margin-top: 28px; padding: 0 12px">
+        <div class="eyebrow" style="margin-bottom: 8px">Earlier conversations</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px" class="muted">
+          <span>Oct 3 · Can I afford a second knitting line?</span>
+          <span>Sep 21 · Electricity cost per metre</span>
+          <span>Sep 12 · Loan terms entered</span>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 24px 28px 36px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+      <section style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px" aria-label="Conversation">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between">
+          <div>
+            <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">AI CFO</h1>
+            <p class="muted" style="font-size: 13px; margin-top: 4px">Answers only from your records: bank statement Jan–Sep 2026, sales ledger Sep 2026, income statement H1 2026. Data to 30 Sep.</p>
+          </div>
+          <span class="pill pill-neutral">Today, 10 Oct</span>
+        </div>
+
+        <div class="msg-u">
+          <span class="av" style="background: #E3DFD6; color: #44403A">SN</span>
+          <p style="padding-top: 4px; font-weight: 500">Why is my cash balance falling even though I'm profitable?</p>
+        </div>
+
+        <div class="msg-a">
+          <span class="av" style="background: #0F6E63; color: #fff">AI</span>
+          <div class="ans">
+            <p><strong>Your cash fell by 117.9 mln UZS in September while you earned 213.2 mln net profit.</strong> The difference is timing: three large cash movements are not expenses, so they reduce cash without reducing profit.</p>
+            <table class="tbl" aria-label="Profit to cash bridge, September 2026">
+              <thead><tr><th>Profit → cash, September</th><th class="r">mln UZS</th><th>Record</th></tr></thead>
+              <tbody>
+                <tr><td>Net profit</td><td class="r num">+213.2</td><td><a href="Health.dc.html" class="ev">Profitability</a></td></tr>
+                <tr><td>Depreciation (no cash leaves)</td><td class="r num">+18.4</td><td><span class="muted">Форма 2, line 040</span></td></tr>
+                <tr><td>Sales invoiced but not yet paid</td><td class="r num" style="color:#9B2318">−208.9</td><td><button type="button" class="ev" onClick="{{ pick.dilshod }}">Dilshod Trade · 20 invoices</button></td></tr>
+                <tr><td>Yarn bought ahead (inventory)</td><td class="r num" style="color:#9B2318">−185.0</td><td><button type="button" class="ev" onClick="{{ pick.yarn }}">Bank statement · row 1 847</button></td></tr>
+                <tr><td>Supplier invoices not yet paid</td><td class="r num">+75.2</td><td><span class="muted">Purchase ledger</span></td></tr>
+                <tr><td>Salaries &amp; taxes accrued, paid in Oct</td><td class="r num">+41.2</td><td><span class="muted">Payroll register</span></td></tr>
+                <tr><td>Loan principal repaid</td><td class="r num" style="color:#9B2318">−72.0</td><td><button type="button" class="ev" onClick="{{ pick.loan }}">Bank statement · row 1 851</button></td></tr>
+                <tr class="sum"><td>Change in cash</td><td class="r num">−117.9</td><td class="muted" style="font-weight: 400">436.1 → 318.2</td></tr>
+              </tbody>
+            </table>
+            <p>Put simply: <strong>you earned the money, but 208.9 mln of it is still sitting with one customer</strong>, and you chose to put 185.0 mln into yarn before it was needed. Your margins are fine; your collections are not.</p>
+            <div>
+              <div class="eyebrow" style="margin-bottom: 6px">What I would do first</div>
+              <ol class="steps">
+                <li><span>Collect the 238.0 mln from Dilshod Trade MChJ — 34 days overdue. This single payment closes your October gap.</span></li>
+                <li><span>Ask Qo'qon Paxta Tola whether the remaining 142.0 mln (due 18 Oct) can be split; the prepayment already covers September's yarn.</span></li>
+                <li><span>Do not cut operating costs on the basis of this month — the problem is timing of cash, not profitability.</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg-u">
+          <span class="av" style="background: #E3DFD6; color: #44403A">SN</span>
+          <p style="padding-top: 4px; font-weight: 500">Will I have enough cash to cover my upcoming payments?</p>
+        </div>
+
+        <div class="msg-a">
+          <span class="av" style="background: #0F6E63; color: #fff">AI</span>
+          <div class="ans">
+            <p><strong>Not from cash on hand alone — and it depends on one customer.</strong> You owe 632.2 mln by 31 Oct and hold 318.2 mln. Invoices falling due in October should bring 282.4 mln; whether Dilshod Trade pays its overdue 238.0 mln decides the outcome.</p>
+            <table class="tbl" aria-label="Thirty-day cash projection, two scenarios">
+              <thead><tr><th>By 31 Oct</th><th class="r">Dilshod pays</th><th class="r">Dilshod does not pay</th></tr></thead>
+              <tbody>
+                <tr><td>Cash today</td><td class="r num">318.2</td><td class="r num">318.2</td></tr>
+                <tr><td>Collections due in October <button type="button" class="ev" onClick="{{ pick.oct }}">41 invoices</button></td><td class="r num">+282.4</td><td class="r num">+282.4</td></tr>
+                <tr><td>Overdue Dilshod Trade invoices</td><td class="r num">+238.0</td><td class="r num muted">0.0</td></tr>
+                <tr><td>Payments due <a class="ev" href="Main.dc.html">5 items</a></td><td class="r num">−632.2</td><td class="r num">−632.2</td></tr>
+                <tr class="sum"><td>Position on 31 Oct</td><td class="r num" style="color:#0B5A51">+206.4</td><td class="r num" style="color:#9B2318">−31.6</td></tr>
+              </tbody>
+            </table>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 13px">
+              <div class="eyebrow">Tightest day</div>
+              <div style="display: grid; grid-template-columns: 70px 1fr 60px; gap: 10px; align-items: center">
+                <span class="num">05 Oct</span><div style="height: 10px; background: #EEEBE4; border-radius: 2px; position: relative"><span style="position: absolute; left: 0; top: 0; height: 10px; width: 3%; background: #0F6E63; border-radius: 2px"></span></div><span class="num" style="text-align: right">19.8</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 70px 1fr 60px; gap: 10px; align-items: center">
+                <span class="num">15 Oct</span><div style="height: 10px; background: #EEEBE4; border-radius: 2px; position: relative"><span style="position: absolute; left: 0; top: 0; height: 10px; width: 12%; background: #0F6E63; border-radius: 2px"></span></div><span class="num" style="text-align: right">78.3</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 70px 1fr 60px; gap: 10px; align-items: center">
+                <span class="num" style="font-weight: 600">18 Oct</span><div style="height: 10px; background: #EEEBE4; border-radius: 2px; position: relative"><span style="position: absolute; left: 0; top: 0; height: 10px; width: 5%; background: #C2410C; border-radius: 2px"></span></div><span class="num" style="text-align: right; color: #9B2318; font-weight: 600">−31.6</span>
+              </div>
+              <p class="muted" style="font-size: 12px">Projected balance after each payment, without the Dilshod receipt. The shortfall appears when the 142.0 mln supplier payment falls due on 18 Oct.</p>
+            </div>
+            <div style="border: 1px solid #E8D8B5; background: #FBF7EE; border-radius: 5px; padding: 10px 12px; font-size: 13px">
+              <strong>What I can't see.</strong> There is no October sales forecast or order book in your records, so the 282.4 mln assumes every current invoice is paid on its due date. If you have an approved overdraft or credit line, upload the agreement — I have not counted any.
+            </div>
+            <div>
+              <div class="eyebrow" style="margin-bottom: 6px">Options, in order of cost</div>
+              <ol class="steps">
+                <li><span>Call Dilshod Trade today; offer a 2% discount for payment by 15 Oct (costs 4.8 mln, resolves the gap).</span></li>
+                <li><span>Agree with Qo'qon Paxta Tola to pay 142.0 mln in two parts, 18 Oct and 1 Nov.</span></li>
+                <li><span>Only if both fail: a short-term overdraft of ~50 mln. Your repayment record (12 of 12 on time) supports it.</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ask a question</label>
+            <input id="q" type="text" placeholder="Ask about any figure, period or counterparty…" style="flex: 1 1 280px; height: 40px; padding: 0 12px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; color: #1B1A17">
+            <button type="button" class="btn btn-primary" style="height: 40px">Ask</button>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button type="button" class="chip">Which expenses increased the most this month?</button>
+            <button type="button" class="chip">Draft a payment reminder to Dilshod Trade</button>
+            <button type="button" class="chip">Compare Q3 with Q2</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" style="flex: 0 1 400px; min-width: min(300px, 100%); display: flex; flex-direction: column; position: sticky; top: 16px" aria-label="Evidence">
+        <div style="padding: 14px 16px 10px; border-bottom: 1px solid #EEEBE4; display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+          <div>
+            <div class="eyebrow">Evidence</div>
+            <h2 style="font-size: 14px; font-weight: 600; margin-top: 2px">{{ ev.title }}</h2>
+          </div>
+          <span class="pill pill-neutral">{{ ev.badge }}</span>
+        </div>
+        <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 10px">
+          <div class="muted" style="font-size: 12px">{{ ev.source }}</div>
+          <div class="panel mono" style="padding: 10px 12px; font-size: 12px; line-height: 1.5; background: #FBFAF7; white-space: pre-wrap; border-color: #E3DFD6">{{ ev.passage }}</div>
+          <table class="tbl" aria-label="Records cited">
+            <thead><tr><th>{{ ev.col1 }}</th><th>{{ ev.col2 }}</th><th class="r">UZS</th></tr></thead>
+            <tbody>
+              <sc-for list="{{ ev.rows }}" as="r" hint-placeholder-count="4">
+                <tr><td class="num">{{ r.a }}</td><td>{{ r.b }}</td><td class="r num mono">{{ r.c }}</td></tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <p style="font-size: 13px">{{ ev.note }}</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <a href="Upload.dc.html" class="btn" style="height: 32px; font-size: 12px">Open source file</a>
+            <button type="button" class="btn" style="height: 32px; font-size: 12px">Flag as incorrect</button>
+          </div>
+        </div>
+        <div style="padding: 10px 16px 14px; border-top: 1px solid #EEEBE4">
+          <div class="eyebrow" style="margin-bottom: 8px">Cited in this conversation</div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <button type="button" class="ev" onClick="{{ pick.dilshod }}" style="justify-content: flex-start">Dilshod Trade — 20 unpaid invoices</button>
+            <button type="button" class="ev" onClick="{{ pick.yarn }}" style="justify-content: flex-start">Yarn prepayment — bank statement row 1 847</button>
+            <button type="button" class="ev" onClick="{{ pick.loan }}" style="justify-content: flex-start">Loan installment — bank statement row 1 851</button>
+            <button type="button" class="ev" onClick="{{ pick.oct }}" style="justify-content: flex-start">41 invoices due in October</button>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 'dilshod' };
+  }
+  renderVals() {
+    const items = {
+      dilshod: {
+        title: 'Dilshod Trade MChJ — unpaid invoices',
+        badge: 'Sales ledger',
+        source: 'Sotuvlar_sentyabr.xlsx · sheet "Debitorlar" · rows 412–431 · matched against bank statement: no incoming transfer from this payer since 27 Aug 2026',
+        passage: 'Xaridor: "DILSHOD TRADE" MChJ   STIR 305 118 442\nShartnoma: 09/26 dan 04.02.2026\nTo\'lov sharti: 30 kalendar kun\nJami qarzdorlik: 238 000 000,00 so\'m   (20 ta hisob-faktura)',
+        col1: 'Invoice date', col2: 'Invoice no.',
+        rows: [
+          { a: '12 Aug', b: '#0912 — trikotaj mato, 1 400 m', c: '14 200 000' },
+          { a: '14 Aug', b: '#0914 — trikotaj mato, 1 150 m', c: '11 650 000' },
+          { a: '19 Aug', b: '#0919 — trikotaj mato, 2 300 m', c: '23 400 000' },
+          { a: '27 Aug', b: '#0931 — trikotaj mato, 1 980 m', c: '20 100 000' },
+          { a: '…', b: '16 further invoices', c: '168 650 000' }
+        ],
+        note: 'All 20 invoices passed their 30-day term between 11 and 26 Sep. The oldest is 34 days overdue as of 10 Oct.'
+      },
+      yarn: {
+        title: 'Yarn prepayment — 185.0 mln UZS',
+        badge: 'Bank statement',
+        source: 'bank_vypiska_2026-01_09.xlsx · row 1 847 · 15 Sep 2026 · outgoing · categorised as "Inventory purchase (prepayment)" with 94% confidence',
+        passage: '15.09.2026  Платёжное поручение № 318\nПолучатель: "QO\'QON PAXTA TOLA" MChJ\nСумма: 185 000 000,00\nНазначение: Oldindan to\'lov, shartnoma 41/26 (ip, 42 t)',
+        col1: 'Date', col2: 'Counterparty / purpose',
+        rows: [
+          { a: '15 Sep', b: 'Qo\'qon Paxta Tola — prepayment 41/26', c: '−185 000 000' },
+          { a: '18 Oct', b: 'Qo\'qon Paxta Tola — balance due (contract)', c: '−142 000 000' },
+          { a: 'Aug', b: 'Same supplier, Aug purchases', c: '−118 400 000' }
+        ],
+        note: 'The contract total is 327.0 mln for 42 tonnes. September production used yarn worth 96.2 mln, so most of this prepayment is still in stock.'
+      },
+      loan: {
+        title: 'Loan installment — 96.0 mln UZS',
+        badge: 'Bank statement',
+        source: 'bank_vypiska_2026-01_09.xlsx · row 1 851 · 15 Sep 2026 · outgoing · matched to the loan schedule you entered on 12 Sep (installment 12 of 24)',
+        passage: '15.09.2026  Платёжное поручение № 319\nНазначение: Kredit shartnomasi 2025-0882 bo\'yicha to\'lov\nAsosiy qarz: 72 000 000,00   Foizlar: 24 000 000,00\nСумма: 96 000 000,00',
+        col1: 'Component', col2: 'Treatment',
+        rows: [
+          { a: 'Principal', b: 'Reduces cash and debt, not profit', c: '72 000 000' },
+          { a: 'Interest', b: 'Expense — already in net profit', c: '24 000 000' }
+        ],
+        note: 'Only the interest part appears in the profit figure; the principal is why the loan shows up in the profit-to-cash bridge.'
+      },
+      oct: {
+        title: '41 invoices falling due in October',
+        badge: 'Sales ledger',
+        source: 'Sotuvlar_sentyabr.xlsx · open invoices with due dates 1–31 Oct 2026 · excludes Dilshod Trade',
+        passage: 'Muddati oktyabrda keladigan hisob-fakturalar: 41 ta\nJami: 282 400 000,00 so\'m\nEng yirik xaridor: "TOSHKENT MATO BOZORI" MChJ — 112 400 000,00',
+        col1: 'Due week', col2: 'Invoices',
+        rows: [
+          { a: '1–7 Oct', b: '9 invoices · 4 customers', c: '61 200 000' },
+          { a: '8–14 Oct', b: '12 invoices · 6 customers', c: '88 700 000' },
+          { a: '15–21 Oct', b: '11 invoices · 5 customers', c: '72 300 000' },
+          { a: '22–31 Oct', b: '9 invoices · 3 customers', c: '60 200 000' }
+        ],
+        note: 'Assumes payment on the due date. Over the last six months 83% of invoices were paid within 7 days of their due date.'
+      }
+    };
+    const pick = {};
+    Object.keys(items).forEach((k) => { pick[k] = () => this.setState({ sel: k }); });
+    return { ev: items[this.state.sel] || items.dilshod, pick };
+  }
+}
+</script>
+</body>
+</html>

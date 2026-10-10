@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sarhisob design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F6F4EF;color:#1B1A17;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:#0F6E63}a:hover{color:#0B5A51}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.panel{background:#fff;border:1px solid #E3DFD6;border-radius:6px}
+.eyebrow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#66615A;font-weight:600}
+.muted{color:#66615A}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap}
+.pill-stable{background:#E8F1EF;color:#0B5A51}
+.pill-watch{background:#FBEFD9;color:#8A4B06}
+.pill-attn{background:#FBE5E1;color:#9B2318}
+.pill-neutral{background:#EFECE5;color:#44403A}
+.pill-info{background:#E6ECF7;color:#2B4C8C}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:5px;border:1px solid #D8D3C8;background:#fff;color:#1B1A17;font:inherit;font-weight:500;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-primary{background:#0F6E63;border-color:#0F6E63;color:#fff}
+.btn-sm{height:30px;padding:0 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#66615A;padding:8px 10px;border-bottom:1px solid #E3DFD6;white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid #EEEBE4;vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.ev{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:3px;background:#fff;border:1px dashed #8FB5AE;color:#0B5A51;font:inherit;font-size:inherit;line-height:1.3;cursor:pointer;text-decoration:none}
+.sw{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center}
+.sw span:first-child{width:44px;height:36px;border-radius:5px;border:1px solid rgba(0,0,0,.08)}
+.sec{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.sec h2{font-size:15px;font-weight:600}
+.spec{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:baseline;padding:6px 0;border-top:1px solid #EEEBE4}
+input,select{font:inherit}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1440px">
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between">
+    <div>
+      <div class="eyebrow">Sarhisob · design system</div>
+      <h1 style="font-size: 24px; font-weight: 600; letter-spacing: -.01em; margin-top: 4px">Calm, evidential, dense where it has to be</h1>
+      <p class="muted" style="margin-top: 4px; max-width: 760px">One system for two audiences. The owner side uses more air, larger numbers and plain-language headings; the officer side tightens type to 13px, packs tables and keeps evidence one click away. Nothing is coloured unless the colour carries meaning.</p>
+    </div>
+    <div style="display: flex; gap: 8px"><a class="btn" href="Main.dc.html">Owner screens</a><a class="btn" href="Portfolio.dc.html">Officer screens</a></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 16px">
+
+    <section class="panel sec" aria-label="Typography">
+      <h2>Typography — IBM Plex Sans + IBM Plex Mono</h2>
+      <p class="muted">Plex Sans for everything read; Plex Mono only for figures quoted from a source document (passages, extracted values), so a reader can tell "what the document says" from "what we computed". All numerals tabular.</p>
+      <div>
+        <div class="spec"><span class="muted">Page title · 22/600</span><span style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Overview — September 2026</span></div>
+        <div class="spec"><span class="muted">Section · 15/600</span><span style="font-size: 15px; font-weight: 600">Cash in vs cash out</span></div>
+        <div class="spec"><span class="muted">Key figure · 26/500</span><span class="num" style="font-size: 26px; font-weight: 500; letter-spacing: -.01em">1 284.5 <span class="muted" style="font-size: 14px; font-weight: 400">mln UZS</span></span></div>
+        <div class="spec"><span class="muted">Body · 14 (owner) / 13 (officer)</span><span>Profit was 213.2, but 208.9 of sales were not collected.</span></div>
+        <div class="spec"><span class="muted">Table · 12.5–13</span><span style="font-size: 12.5px">Qo'qon Paxta Tola MChJ · contract 41/26 · due 18 Oct</span></div>
+        <div class="spec"><span class="muted">Eyebrow · 11/600 caps</span><span class="eyebrow">Needs attention</span></div>
+        <div class="spec"><span class="muted">Source passage · Mono 12</span><span class="mono" style="font-size: 12px; background: #FBFAF7; border: 1px solid #E3DFD6; border-radius: 4px; padding: 4px 8px">010 Чистая выручка <span style="background: #FFF1B8; border-bottom: 2px solid #D9A441">9 842 316</span></span></div>
+      </div>
+    </section>
+
+    <section class="panel sec" aria-label="Color tokens">
+      <h2>Color tokens</h2>
+      <p class="muted">Warm paper ground, ink text, one teal accent. Status colours differ in lightness as well as hue, and never appear without a label and a reason.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px 16px">
+        <div class="sw"><span style="background: #F6F4EF"></span><div><div style="font-weight: 500">ground</div><div class="muted mono" style="font-size: 12px">#F6F4EF</div></div></div>
+        <div class="sw"><span style="background: #FFFFFF"></span><div><div style="font-weight: 500">surface</div><div class="muted mono" style="font-size: 12px">#FFFFFF · panels</div></div></div>
+        <div class="sw"><span style="background: #FBFAF7"></span><div><div style="font-weight: 500">surface-2</div><div class="muted mono" style="font-size: 12px">#FBFAF7 · sidebar, table head</div></div></div>
+        <div class="sw"><span style="background: #E3DFD6"></span><div><div style="font-weight: 500">border</div><div class="muted mono" style="font-size: 12px">#E3DFD6 · rows #EEEBE4</div></div></div>
+        <div class="sw"><span style="background: #1B1A17"></span><div><div style="font-weight: 500">ink</div><div class="muted mono" style="font-size: 12px">#1B1A17 · text</div></div></div>
+        <div class="sw"><span style="background: #66615A"></span><div><div style="font-weight: 500">ink-muted</div><div class="muted mono" style="font-size: 12px">#66615A · 5.6:1 on ground</div></div></div>
+        <div class="sw"><span style="background: #0F6E63"></span><div><div style="font-weight: 500">accent</div><div class="muted mono" style="font-size: 12px">#0F6E63 · primary, series 1</div></div></div>
+        <div class="sw"><span style="background: #A39B8B"></span><div><div style="font-weight: 500">series-compare</div><div class="muted mono" style="font-size: 12px">#A39B8B · the "other" bar</div></div></div>
+        <div class="sw"><span style="background: #E8F1EF; border-color: #0B5A51"></span><div><div style="font-weight: 500">status-stable</div><div class="muted mono" style="font-size: 12px">#E8F1EF / #0B5A51</div></div></div>
+        <div class="sw"><span style="background: #FBEFD9; border-color: #8A4B06"></span><div><div style="font-weight: 500">status-watch</div><div class="muted mono" style="font-size: 12px">#FBEFD9 / #8A4B06 · chart #D9A441</div></div></div>
+        <div class="sw"><span style="background: #FBE5E1; border-color: #9B2318"></span><div><div style="font-weight: 500">status-attention</div><div class="muted mono" style="font-size: 12px">#FBE5E1 / #9B2318 · chart #C2410C</div></div></div>
+        <div class="sw"><span style="background: #FFF1B8; border-color: #D9A441"></span><div><div style="font-weight: 500">evidence-highlight</div><div class="muted mono" style="font-size: 12px">#FFF1B8 · matched passage</div></div></div>
+      </div>
+    </section>
+
+    <section class="panel sec" aria-label="Spacing and layout">
+      <h2>Spacing, radii, layout</h2>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="font-weight: 500">Spacing scale</td><td>4 · 8 · 12 · 16 · 20 · 24 · 28 px. Panel padding 16–20 (owner), 12–14 (officer). Grid gap 20 (owner), 16 (officer).</td></tr>
+          <tr><td style="font-weight: 500">Radii</td><td>Panels 6 · controls 5 · pills 4 · chips 3. Nothing larger except phone cards (8).</td></tr>
+          <tr><td style="font-weight: 500">Shell</td><td>Prototype strip 28 · top bar 52 · side nav 220 (collapses above content below 720 px) · page width 1280–1440.</td></tr>
+          <tr><td style="font-weight: 500">Two-pane review</td><td>Analysis column flexes from 520 px; evidence pane 400–420 px, sticky, wraps underneath on narrow screens.</td></tr>
+          <tr><td style="font-weight: 500">Phone (owner only)</td><td>Single column, 44 px targets, one hero figure, bottom tab bar. Officer screens are desktop-first; tables scroll in a box.</td></tr>
+          <tr><td style="font-weight: 500">Numbers</td><td>UZS, space as thousands separator, one decimal in mln ("1 284.5 mln UZS"); full digits only when quoting a document ("9 842 316").</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel sec" aria-label="Buttons and controls">
+      <h2>Buttons &amp; form controls</h2>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+        <button type="button" class="btn btn-primary">Primary action</button>
+        <button type="button" class="btn">Secondary</button>
+        <button type="button" class="btn btn-sm">Small</button>
+        <button type="button" class="btn" disabled>Disabled</button>
+        <a href="#x" style="font-size: 13px">Text link →</a>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+        <label for="d1" class="muted">Period</label>
+        <select id="d1" style="height: 36px; padding: 0 10px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff"><option>September 2026</option></select>
+        <label for="d2" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search</label>
+        <input id="d2" type="search" placeholder="Search borrower, STIR…" style="height: 36px; padding: 0 10px; border: 1px solid #D8D3C8; border-radius: 5px; background: #fff; width: 220px">
+        <span style="display: inline-flex; border: 1px solid #D8D3C8; border-radius: 5px; overflow: hidden"><button type="button" style="height: 28px; padding: 0 10px; border: 0; background: #1B1A17; color: #fff; font: inherit; font-size: 12px; font-weight: 500">UZ</button><button type="button" style="height: 28px; padding: 0 10px; border: 0; border-left: 1px solid #E3DFD6; background: #fff; color: #66615A; font: inherit; font-size: 12px; font-weight: 500">RU</button><button type="button" style="height: 28px; padding: 0 10px; border: 0; border-left: 1px solid #E3DFD6; background: #fff; color: #66615A; font: inherit; font-size: 12px; font-weight: 500">EN</button></span>
+      </div>
+      <p class="muted">One primary button per screen. Buttons are real <span class="mono">&lt;button&gt;</span> or <span class="mono">&lt;a&gt;</span>; icon-only buttons carry an aria-label. Language switch is a segmented control in the top bar; the interface language and the document language are independent.</p>
+    </section>
+
+    <section class="panel sec" aria-label="Status indicators">
+      <h2>Status indicators — always with a reason</h2>
+      <table class="tbl">
+        <thead><tr><th>Pill</th><th>Used for</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill-stable">Stable</span> <span class="pill pill-stable">Analyzed</span></td><td>Monitoring within thresholds; document processed</td><td class="muted">Default state is unmarked; "Stable" appears only in status columns</td></tr>
+          <tr><td><span class="pill pill-watch">Watch</span> <span class="pill pill-watch">Needs clarification</span></td><td>One indicator moved; low-confidence field; late data</td><td class="muted">Reason text sits directly beneath, never in a tooltip</td></tr>
+          <tr><td><span class="pill pill-attn">Attention</span> <span class="pill pill-attn">Could not analyze</span></td><td>Two indicators moved; late payment; failed processing</td><td class="muted">Never auto-decides anything — it raises the item in a queue</td></tr>
+          <tr><td><span class="pill pill-info">In review</span> <span class="pill pill-neutral">Missing</span></td><td>Workflow state, absence of data</td><td class="muted">Blue/grey are workflow colours, not risk colours</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">The repayment-capacity indicator is labelled "preliminary, illustrative" wherever it appears. No numeric score is shown anywhere in the product.</p>
+    </section>
+
+    <section class="panel sec" aria-label="Evidence references and AI components">
+      <h2>Evidence references &amp; AI conversation</h2>
+      <p>A dashed chip marks any figure or claim that can be traced: <button type="button" class="ev num">9 842.3</button> or <button type="button" class="ev">Bank statement · row 1 847</button>. Clicking opens the evidence pane with the document, page, the matched passage (highlighted) and an interpretation. Plain numbers without a chip are computed from chipped ones.</p>
+      <div style="display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start">
+        <span style="width: 28px; height: 28px; border-radius: 50%; background: #0F6E63; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600">AI</span>
+        <div style="background: #fff; border: 1px solid #E3DFD6; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+          <p><strong>Direct answer first</strong>, in one sentence with the key figure.</p>
+          <p class="muted">Then the supporting table or bridge, each row pointing at a record. Then "what I can't see" in an amber box when data is missing. Then numbered next steps, cheapest first. No greeting, no sign-off, no emoji.</p>
+          <div style="border: 1px solid #E8D8B5; background: #FBF7EE; border-radius: 5px; padding: 8px 10px"><strong>What I can't see.</strong> States the missing document and what uploading it would change.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel sec" aria-label="Tables and charts">
+      <h2>Tables &amp; charts</h2>
+      <table class="tbl">
+        <thead><tr><th>Line</th><th class="r">Sep 2026</th><th class="r">Aug 2026</th><th class="r">Change</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td class="r num">1 284.5</td><td class="r num">1 209.8</td><td class="r num" style="color: #0B5A51">+6.2%</td></tr>
+          <tr><td>Electricity</td><td class="r num">42.8</td><td class="r num">24.4</td><td class="r num" style="color: #8A4B06">+75.4%</td></tr>
+          <tr><td style="font-weight: 600; border-top: 1px solid #D8D3C8; background: #FBFAF7">Net profit</td><td class="r num" style="font-weight: 600; border-top: 1px solid #D8D3C8; background: #FBFAF7">213.2</td><td class="r num" style="font-weight: 600; border-top: 1px solid #D8D3C8; background: #FBFAF7">227.8</td><td class="r num" style="font-weight: 600; border-top: 1px solid #D8D3C8; background: #FBFAF7; color: #9B2318">−6.4%</td></tr>
+        </tbody>
+      </table>
+      <ul style="margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px" class="muted">
+        <li>Uppercase 11px headers, right-aligned numerals, hairline row rules, totals on surface-2 with a stronger top rule.</li>
+        <li>Charts: two series at most — accent for "ours/now", warm grey for the comparison; one axis; recessive grid; a legend plus direct labels on the latest values only.</li>
+        <li>Status colours appear in charts only for thresholds and status counts, never as a third series.</li>
+        <li>Every chart answers a question stated in its heading ("Is revenue growing faster than expenses?").</li>
+      </ul>
+    </section>
+
+    <section class="panel sec" aria-label="Upload and empty states">
+      <h2>Upload, empty, error states</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px">
+        <div style="border: 1.5px dashed #B9B3A6; border-radius: 6px; padding: 14px; background: #FBFAF7; text-align: center"><div style="font-weight: 500">Drop files here</div><div class="muted" style="font-size: 12px">PDF · XLSX · CSV · JPG</div></div>
+        <div style="border: 1px solid #E3DFD6; border-radius: 6px; padding: 12px"><div style="display: flex; align-items: center; gap: 8px"><span style="height: 6px; width: 90px; background: #EEEBE4; border-radius: 3px; overflow: hidden; display: inline-block"><span style="display: block; height: 100%; width: 68%; background: #0F6E63"></span></span><span class="muted num" style="font-size: 12px">68%</span></div><div class="muted" style="font-size: 12px; margin-top: 6px">Processing — says what step it is on</div></div>
+        <div style="border: 1px solid #E3DFD6; border-radius: 6px; padding: 12px"><span class="pill pill-attn">Could not analyze</span><div class="muted" style="font-size: 12px; margin-top: 6px">Names the cause and offers two ways out (re-upload, enter manually)</div></div>
+        <div style="border: 1px solid #E3DFD6; border-radius: 6px; padding: 12px"><span class="num muted" style="font-weight: 600">n/a</span> <span style="font-weight: 500">Inventory</span><div class="muted" style="font-size: 12px; margin-top: 6px">Unavailable data is shown as an explicit row with what to upload — never invented</div></div>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
