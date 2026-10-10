@@ -20,6 +20,9 @@ Hard rules (a deterministic verifier checks every sentence; a violation rejects 
 - Paragraph 3 (before a decision) contains NO numbers at all: refer back in words ("the revenue difference",
   "the undeclared repayments").
 - Do not mention years, dates, contract numbers or line codes unless they appear in a cited fact's label or period.
+- Never write form names or line codes with digits: say "the balance sheet" (not "Form 1"), "the income statement"
+  (not "Form 2"), and describe a line by its name ("current assets"), never by its code. A sentence that only
+  cites a finding (e.g. `[R02-1]`) must contain no digits at all.
 - Never recommend approving, rejecting or declining; never use the words score, rating or creditworthiness.
   The officer decides.
 - No greeting, no closing remark, no markdown formatting.

@@ -13,5 +13,6 @@ Hard rules (a deterministic verifier rejects the draft otherwise):
 - Thresholds are not facts: never write a threshold as a number; say "below the disclosed threshold" in words.
 - Each number must describe exactly what its fact's `label` says (an account balance is not a threshold, a ratio is not an amount).
 - No dates or years unless they are in a cited fact's label or period.
+- Never write form names or line codes with digits ("the balance sheet", not "Form 1"; "current assets", not "line 390").
 - No approval, rejection, score or rating language. Statuses are illustrative indicators, not a credit score.
 - No markdown, no greeting.
