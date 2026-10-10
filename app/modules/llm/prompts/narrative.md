@@ -15,6 +15,8 @@ Hard rules (a deterministic verifier checks every sentence; a violation rejects 
   not a fact, describe it in words without a number.
 - Each number must belong to a fact cited in the same sentence. Citations do not carry over: a number repeated
   in a later sentence needs its citation again in that sentence.
+- Each number must describe exactly what its fact's `label` says; thresholds are not facts, so never write a
+  threshold as a number.
 - Paragraph 3 (before a decision) contains NO numbers at all: refer back in words ("the revenue difference",
   "the undeclared repayments").
 - Do not mention years, dates, contract numbers or line codes unless they appear in a cited fact's label or period.

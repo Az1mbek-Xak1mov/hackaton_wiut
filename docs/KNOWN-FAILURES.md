@@ -123,3 +123,9 @@ Every failure class observed in `eval/results/2026-10-10_2042_cd93dff.json` (syn
 28. **hard case H13 (loan repaid to a microfinance org under an abbreviation)** — 1 × · example `data/hard/H13/statement.xlsx`  
    Example detail: rules fired: R10  
    What it means: Hand-made hard case failed its automated check.
+
+## Generated text (observed on production with the live LLM, 2026-10-10 21:30)
+
+29. **The citation verifier checks membership, not meaning.** A number passes when it equals a value of a fact cited in the same sentence. In one live borrower explanation the model wrote "below the threshold of 1.31": 1.31 is the cited cash-coverage fact, while the disclosed threshold is 1.5×. The verifier accepted it.
+   Mitigation applied: the prompts now forbid threshold numbers and require each number to match its fact's label, and the affected explanations were regenerated. The remaining risk is a number used in the wrong role. Every number stays a clickable chip, so the officer sees the fact's label.
+30. **Uncited repetitions.** The first live drafts repeated "557.7 mln / 5.7%" in the next-steps paragraph without a citation. The verifier rejected all 3 attempts and the labelled template was shown. Fixed in the prompt (no numbers in that paragraph; citations do not carry over).
