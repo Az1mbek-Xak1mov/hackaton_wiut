@@ -1029,5 +1029,17 @@ const uz: Record<string, string> = {
   "{n} synthetic documents in {b} loan files that we generated and labelled; accuracy on real bank documents is measured in pilot month 1.": "Biz yaratgan va belgilagan {b} ta kredit arizasidagi {n} ta sintetik hujjat; haqiqiy bank hujjatlaridagi aniqlik pilotning birinchi oyida o'lchanadi.",
   "Of the problems it raises, the share that are real": "Ko'rsatilgan muammolar ichida haqiqiylari ulushi",
   "the rest are false alarms the officer dismisses": "qolgani — xodim rad etadigan yolg'on signallar",
+  "documents recognised correctly": "hujjat to'g'ri aniqlandi",
+  "Wrong values shown without a warning": "Ogohlantirishsiz ko'rsatilgan noto'g'ri qiymatlar",
+  "out of {n} values read; the weak spot is blurred scans": "o'qilgan {n} ta qiymatdan; zaif joy — xira skanlar",
+  "our main known weakness": "asosiy ma'lum zaif tomonimiz",
+  "Hard cases: rotated pages, stamps, blurred photos, English IFRS, password-protected PDF": "Murakkab holatlar: aylantirilgan sahifalar, muhrlar, xira suratlar, ingliz tilidagi MHXS, parolli PDF",
+  "From upload to result: PDF with text": "Yuklashdan natijagacha: matnli PDF",
+  "From upload to result: scanned PDF": "Yuklashdan natijagacha: skanerlangan PDF",
+  "From upload to result: phone photo": "Yuklashdan natijagacha: telefon surati",
+  "median of {n} public uploads on our server (4 vCPU, no GPU)": "serverimizdagi {n} ta ochiq yuklash bo'yicha mediana (4 vCPU, GPUsiz)",
+  "working day {d} of the {n}-day target (pilot assumption)": "{n} kunlik maqsaddan {d}-ish kuni (pilot farazi)",
+  "{n} beyond the 5-day review target (pilot assumption)": "5 kunlik ko'rib chiqish muddatidan oshgan: {n} (pilot farazi)",
+  "none beyond the 5-day review target (pilot assumption)": "5 kunlik ko'rib chiqish muddatidan oshgani yo'q (pilot farazi)",
 }
 export default uz

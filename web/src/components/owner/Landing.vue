@@ -16,23 +16,32 @@ onMounted(async () => {
 const fmt = (v: unknown) => (typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(3).replace(/0+$/, '')) : String(v))
 
 const measured = computed(() => {
-  const h = ev.value?.headline
+  const d = ev.value
+  const h = d?.headline
   if (!h) return []
   const rows: { label: string; value: string; note: string }[] = []
   const add = (key: string, label: string, note: string) => {
-    if (h[key] != null) rows.push({ label, value: fmt(h[key]), note })
+    if (h[key] != null) rows.push({ label: t(label), value: fmt(h[key]), note: t(note) })
   }
-  add('Document type accuracy', 'Recognises which document it is', 'accuracy, 1 = always right')
+  const dt = d.document_type as any[] | undefined
+  if (dt?.length) {
+    const ok = dt.reduce((a, r) => a + (r.correct || 0), 0)
+    const all = dt.reduce((a, r) => a + (r.documents || 0), 0)
+    rows.push({ label: t('Recognises which document it is'), value: t('{a} of {b}', { a: ok, b: all }), note: t('documents recognised correctly') })
+  }
   add('Form 1 field F1', 'Reads the lines of the balance sheet (Форма 1)', 'F1 score, 1 = perfect')
   add('Form 2 field F1', 'Reads the lines of the income statement (Форма 2)', 'F1 score, 1 = perfect')
+  const cells = (d.field_extraction as any[] | undefined)?.filter((r) => r.variant === 'all').reduce((a, r) => a + (r.cells || 0), 0)
+  if (h['Wrong values shown without a low-confidence flag'] != null)
+    rows.push({ label: t('Wrong values shown without a warning'), value: fmt(h['Wrong values shown without a low-confidence flag']), note: cells ? t('out of {n} values read; the weak spot is blurred scans', { n: cells }) : t('our main known weakness') })
   add('Contradiction detection recall (micro)', 'Finds figures that do not agree between documents', 'share of planted problems found')
   add('Contradiction detection precision (micro)', 'Of the problems it raises, the share that are real', 'the rest are false alarms the officer dismisses')
-  add('Hard cases passed', 'Hard cases: scans, blurred photos, English IFRS, wrong periods', 'built by hand')
-  const lp = ev.value?.latency_production?.by_doc_type as any[] | undefined
-  const textPdf = lp?.find((r) => r.doc_type === 'form1' && /text/i.test(r.path))
-  if (textPdf) rows.push({ label: t('Time to read a Форма 1 PDF on our server'), value: `${(textPdf.p50_ms / 1000).toFixed(1)} s`, note: t('median of {n} documents, 4 vCPU, no GPU', { n: textPdf.documents }) })
-  const scan = lp?.find((r) => r.doc_type === 'form1' && /OCR/i.test(r.path))
-  if (scan) rows.push({ label: t('Time to read a scanned Форма 1'), value: `${(scan.p50_ms / 1000).toFixed(1)} s`, note: t('median of {n} documents', { n: scan.documents }) })
+  add('Hard cases passed', 'Hard cases: rotated pages, stamps, blurred photos, English IFRS, password-protected PDF', 'built by hand')
+  const e2e = d.latency_production?.public_uploads_end_to_end as any[] | undefined
+  for (const [path, label] of [['PDF text layer', 'From upload to result: PDF with text'], ['OCR (scanned PDF)', 'From upload to result: scanned PDF'], ['OCR (photo/image)', 'From upload to result: phone photo']]) {
+    const r = e2e?.find((x) => x.path === path)
+    if (r) rows.push({ label: t(label), value: `${(r.p50_ms / 1000).toFixed(1)} s`, note: t('median of {n} public uploads on our server (4 vCPU, no GPU)', { n: r.documents }) })
+  }
   return rows
 })
 const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loan files that we generated and labelled; accuracy on real bank documents is measured in pilot month 1.', { n: ev.value.n_documents ?? '—', b: ev.value.n_bundles ?? '—' }) : ''))
@@ -96,9 +105,9 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
       <table v-else class="tbl measured">
         <tbody>
           <tr v-for="r in measured" :key="r.label">
-            <td>{{ t(r.label) }}</td>
+            <td>{{ r.label }}</td>
             <td class="r num val">{{ r.value }}</td>
-            <td class="muted note">{{ t(r.note) }}</td>
+            <td class="muted note">{{ r.note }}</td>
           </tr>
         </tbody>
       </table>

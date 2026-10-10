@@ -1047,5 +1047,17 @@ const ru: Record<string, string> = {
   "{n} synthetic documents in {b} loan files that we generated and labelled; accuracy on real bank documents is measured in pilot month 1.": "{n} синтетических документов в {b} кредитных досье, которые мы сгенерировали и разметили; точность на реальных документах банка измеряется в первый месяц пилота.",
   "Of the problems it raises, the share that are real": "Доля реальных проблем среди найденных",
   "the rest are false alarms the officer dismisses": "остальное — ложные срабатывания, которые специалист отклоняет",
+  "documents recognised correctly": "документов распознано верно",
+  "Wrong values shown without a warning": "Неверные значения без предупреждения",
+  "out of {n} values read; the weak spot is blurred scans": "из {n} прочитанных значений; слабое место — размытые сканы",
+  "our main known weakness": "наше главное известное слабое место",
+  "Hard cases: rotated pages, stamps, blurred photos, English IFRS, password-protected PDF": "Сложные случаи: повёрнутые страницы, печати, размытые фото, МСФО на английском, PDF с паролем",
+  "From upload to result: PDF with text": "От загрузки до результата: PDF с текстом",
+  "From upload to result: scanned PDF": "От загрузки до результата: скан PDF",
+  "From upload to result: phone photo": "От загрузки до результата: фото с телефона",
+  "median of {n} public uploads on our server (4 vCPU, no GPU)": "медиана по {n} публичным загрузкам на нашем сервере (4 vCPU, без GPU)",
+  "working day {d} of the {n}-day target (pilot assumption)": "рабочий день {d} из {n} по целевому сроку (допущение пилота)",
+  "{n} beyond the 5-day review target (pilot assumption)": "{n} сверх 5-дневного срока рассмотрения (допущение пилота)",
+  "none beyond the 5-day review target (pilot assumption)": "никто не превысил 5-дневный срок рассмотрения (допущение пилота)",
 }
 export default ru

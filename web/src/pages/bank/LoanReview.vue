@@ -78,7 +78,7 @@ onBeforeUnmount(() => timer && clearTimeout(timer))
 const statusPill = computed(() => {
   const a = data.value?.application
   if (!a) return null
-  const day = a.sla_day != null && a.sla_days != null ? ` · ${t('working day {d} of {n}', { d: a.sla_day, n: a.sla_days })}` : ''
+  const day = a.sla_day != null && a.sla_days != null ? ` · ${t('working day {d} of the {n}-day target (pilot assumption)', { d: a.sla_day, n: a.sla_days })}` : ''
   switch (a.status) {
     case 'processing':
       return { cls: 'pill-neutral', label: t('Reading documents') }

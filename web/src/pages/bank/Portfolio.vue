@@ -81,8 +81,8 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
           {{ t('Synthetic loan book (declared input)') }}
         </FigureCell>
         <FigureCell :eyebrow="t('Applications awaiting review')" :value="s.applications_awaiting">
-          <span v-if="s.beyond_target" style="color: var(--watch-fg)">{{ t('{n} beyond the 5-day target', { n: s.beyond_target }) }}</span>
-          <span v-else>{{ t('none beyond the 5-day target') }}</span>
+          <span v-if="s.beyond_target" style="color: var(--watch-fg)">{{ t('{n} beyond the 5-day review target (pilot assumption)', { n: s.beyond_target }) }}</span>
+          <span v-else>{{ t('none beyond the 5-day review target (pilot assumption)') }}</span>
           <template v-if="s.requested_display"> · {{ t('{amount} bn requested', { amount: s.requested_display }) }}</template>
         </FigureCell>
         <FigureCell :eyebrow="t('Emerging warning signs')" :value="s.warning.n" :unit="t('borrowers')" :flagged="s.warning.n > 0">
