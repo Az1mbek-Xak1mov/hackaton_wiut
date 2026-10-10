@@ -15,7 +15,7 @@ Scope: cost and savings only (no price to MKBANK). **Every input is an assumptio
 | p7 | Officer-minutes per borrower per month for monitoring, manual vs Converza | scenarios 15 / 30 / 45 min saved | assumption (not measured in the hackathon) |
 | p8 | FX rate | 12 500 UZS/USD | assumption; replace with the cbu.uz rate on the defence day |
 | p9 | LLM price (`gpt-4.1-mini`) | USD 0.40 / 1M input tokens, USD 1.60 / 1M output | list price at planning; verify on the OpenAI pricing page before the slide |
-| p10 | LLM tokens per application | estimate 10 800 in / 1 420 out (narrative 1.3 attempts × 6 000 / 900 + 5 unmapped-line calls × 600 / 50) | estimate; **replaced by the measured mean of `llm_calls`** (T-034) |
+| p10 | LLM tokens per application | **measured on production 2026-10-10 21:55**: 2.5 attempts × 4 025 input / 422 output tokens (n=4 narrative generations, 10 calls); borrower explanation 736 / 181 tokens per call (n=120) | `llm_calls` table |
 | p11 | Pilot duration | 3 months, 1 regional office | plan |
 | p12 | Engineer cost | 25 mln UZS/month | assumption |
 
@@ -23,7 +23,7 @@ Scope: cost and savings only (no price to MKBANK). **Every input is an assumptio
 
 | Item | Formula | Value |
 |---|---|---|
-| LLM per application | (10 800 × 0.40 + 1 420 × 1.60) / 1e6 USD × 12 500 | 0.00659 USD → **82 UZS** (estimate) |
+| LLM per application | (10 063 × 0.40 + 1 055 × 1.60) / 1e6 USD × 12 500 | 0.00571 USD → **71 UZS** (measured tokens, list price) |
 | LLM per monitored borrower-month | 1 narrative ≈ 6 000 / 900 tokens | 0.00384 USD → **48 UZS** |
 | Compute per file set (pilot) | CPU server 43.75 mln ÷ 36 months ÷ (50 + 148) file sets/month | **6 138 UZS** |
 

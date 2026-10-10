@@ -1,4 +1,4 @@
-# Handoff: state at 2026-10-10 20:55 (UTC+5)
+# Handoff: state at 2026-10-10 22:00 (UTC+5)
 
 Production: https://converza.uz on `e03aaba`, deployed by GitHub Actions (repo `Az1mbek-Xak1mov/hackaton_wiut`). It was seeded through the real pipeline: 777 documents, 6 applications, a monitoring run with 123 stable / 15 watch / 10 attention.
 
@@ -11,7 +11,7 @@ Production: https://converza.uz on `e03aaba`, deployed by GitHub Actions (repo `
 ## Remaining
 | Task | Who | Notes |
 |---|---|---|
-| OpenAI key | team | `ssh deploy@159.195.213.245`, set `OPENAI_API_KEY=` in `/srv/converza/.env`, then `cd /srv/converza/repo && docker compose -p converza --env-file /srv/converza/.env -f compose.prod.yml up -d api worker`. Then toggle LLM off/on on the loan review to regenerate, and check that a narrative and a CFO answer pass the verifier. Until then: template narrative, facts-only CFO (both labelled). |
+| OpenAI key | done 21:55 | Live on prod (`llm_configured: true`). Hero narrative accepted on attempt 2 (attempt 1 rejected; visible in the review trail). 60 borrower explanations accepted. CFO answers via tools in ~6 s. Measured ~71 UZS LLM cost per application. |
 | T-035 timed trial | 2 people | 3 bundles, manual vs Converza → `docs/plan/trial.csv` → replace the ROI slide's scenarios with the measured median |
 | T-037 phone tests | people | Android + iOS uploads on /analyse; tick the table in `05-DEMO.md` |
 | T-038 backup video | people | 3-min recording of the 05-DEMO click path on prod |
