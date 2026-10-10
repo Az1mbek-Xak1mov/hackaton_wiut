@@ -127,11 +127,13 @@ def _header_role(text: str) -> tuple[str | None, str | None, int | None]:
     return period, kind, (max(years) if years else None)
 
 
-def _assign_roles(cols: list[_Col], form: str) -> None:
+def _assign_roles(cols: list[_Col], form: str) -> bool:
+    """Assign cur/prev (and income/expense) roles. Returns True when the column order was confirmed by
+    header text, False when the statutory default order (prior | current) was assumed."""
     n = len(cols)
     if n == 1:
         cols[0].role = "cur"
-        return
+        return True
     if form == "form2" and n >= 4:
         use = cols[-4:]
         for c, r in zip(use, ["prev_inc", "prev_exp", "cur_inc", "cur_exp"]):
@@ -142,13 +144,14 @@ def _assign_roles(cols: list[_Col], form: str) -> None:
         if (p0 == "cur" and p1 == "prev") or (y0 and y1 and y0 > y1):
             for c, r in zip(use, ["cur_inc", "cur_exp", "prev_inc", "prev_exp"]):
                 c.role = r
-        return
+        return bool(p0 or p1 or (y0 and y1))
     left, right = cols[-2], cols[-1]
     left.role, right.role = "prev", "cur"
     pl, _, yl = _header_role(left.header)
     pr, _, yr = _header_role(right.header)
     if (pl == "cur" and pr != "cur") or (pr == "prev" and pl != "prev") or (yl and yr and yl > yr):
         left.role, right.role = "cur", "prev"
+    return bool(pl or pr or (yl and yr))
 
 
 def _fix_income_expense(cols: list[_Col], code_cands: list[_Cand]) -> None:
@@ -189,6 +192,9 @@ def _value_columns(cands: list[_Cand], form: str) -> list[_Col]:
         lo_x1, hi_x1 = min(g), max(g)
         x0s = [x0 for x1, x0 in pts if lo_x1 <= x1 <= hi_x1]
         cols.append(_Col(x1=statistics.mean(g), xs=g, x0min=min(x0s) if x0s else lo_x1 - 0.08))
+    if cols:  # OCR debris inside labels ('1', '22') forms small clusters: keep only real amount columns
+        biggest = max(len(c.xs) for c in cols)
+        cols = [c for c in cols if len(c.xs) >= 0.4 * biggest]
     return sorted(cols, key=lambda c: c.x1)
 
 
@@ -341,8 +347,9 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
         col.lo = min(col.xs) - 0.08
         col.hi = max(col.xs)
     _attach_headers(value_cols, rows_by_page, first_code_y, code_x)
+    order_confirmed = True
     if value_cols:
-        _assign_roles(value_cols, form)
+        order_confirmed = _assign_roles(value_cols, form)
         _fix_income_expense(value_cols, code_cands)
 
     # wrapped labels: attach text-only rows to the nearest code row on the same page
@@ -420,6 +427,10 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
             if c.ocr:
                 fconf = min(conf, wconf + 0.1)
             notes = [n for n in (note, unit_note) if n]
+            if not order_confirmed and len(value_cols) >= 2:
+                notes.append("column headers unreadable: statutory order (prior | current) assumed")
+                if c.ocr:
+                    fconf = min(fconf, 0.8)  # never a confident value when cur/prev could be swapped
             if role == "cur" and "prev" not in values and any(col.role.startswith("prev") for col in value_cols):
                 notes.append("prior-period cell blank")
             facts.append(FactDraft(

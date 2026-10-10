@@ -21,9 +21,9 @@ from app.pipeline.types import ParsedDoc, ParsedPage
 
 MAX_PAGES = 50
 MIN_SHORT_SIDE_PX = 900
-MIN_BLUR = 50.0
+MIN_BLUR = 25.0
 MIN_OCR_CONF = 60.0
-CONF_IF_BLURRED = 75.0
+CONF_IF_BLURRED = 65.0
 _STATEMENT_HEADER = {
     "date": r"\b(?:дата|sana|сана|date)\b",
     "debit": r"\b(?:дебет|debet|debit|расход|chiqim|чиқим|списание)\b",

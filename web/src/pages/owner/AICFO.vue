@@ -9,6 +9,7 @@ import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import InlineEvidence from '@/components/evidence/InlineEvidence'
 import { citedKeys } from '@/components/evidence/inline'
+import { t } from '@/i18n'
 
 interface Turn {
   question: string
@@ -35,6 +36,7 @@ const SUGGESTIONS = [
   'Will I have enough cash to cover my upcoming payments?',
   'Which expenses increased the most in the latest month?',
 ]
+const business = ref('')
 
 const analysed = computed(() => files.value.filter((f) => f.status === 'analyzed' || f.status === 'clarification'))
 const coverage = computed(() =>
@@ -47,10 +49,14 @@ onMounted(async () => {
   if (f.status === 'fulfilled') files.value = f.value.items
   if (h.status === 'fulfilled') {
     const raw = h.value
-    const items: CfoHistoryItem[] = Array.isArray(raw) ? raw : raw.items || []
-    if (!Array.isArray(raw) && raw.facts) ev.register(raw.facts)
+    const items: CfoHistoryItem[] = Array.isArray(raw) ? raw : raw.messages || raw.items || []
+    if (!Array.isArray(raw)) {
+      if (raw.facts) ev.register(raw.facts)
+      business.value = raw.business?.name || ''
+    }
     const out: Turn[] = []
     for (const it of items) {
+      if (it.facts) ev.register(it.facts)
       if (it.answer && (it.question || it.content)) {
         out.push({ question: it.question || it.content || '', answer: it.answer, mode: it.mode, citations: it.citations, trace: it.tool_trace })
       } else if (it.role === 'user') out.push({ question: it.content || it.question || '' })
@@ -110,35 +116,36 @@ function argText(a: Record<string, any>) {
 <template>
   <div class="page">
     <div class="twopane" style="gap: 20px">
-      <section class="main-col" style="gap: 18px" aria-label="Conversation">
+      <section class="main-col" style="gap: 18px" :aria-label="t('Conversation')">
         <div class="page-head">
           <div>
-            <h1>AI CFO</h1>
+            <h1>{{ t('AI CFO') }}<template v-if="business"> · {{ business }}</template></h1>
             <p class="meta" style="font-size: 13px">
-              Answers only from your records<template v-if="coverage">: {{ coverage }}</template><template v-else> — none analysed yet. <RouterLink to="/owner/upload">Upload statements</RouterLink> first</template>.
-              Every number links to the record it came from.
+              <template v-if="coverage">{{ t('Answers only from your records: {list}.', { list: coverage }) }}</template>
+              <template v-else>{{ t('Answers only from your records — none analysed yet.') }} <RouterLink to="/owner/upload">{{ t('Upload statements first.') }}</RouterLink></template>
+              {{ t('Every number links to the record it came from.') }}
             </p>
           </div>
         </div>
         <div v-if="histErr" class="error-box">{{ histErr }}</div>
 
-        <template v-for="(t, i) in turns" :key="i">
+        <template v-for="(turn, i) in turns" :key="i">
           <div class="msg">
             <span class="av user">{{ auth.initials }}</span>
-            <p style="padding-top: 4px; font-weight: 500">{{ t.question }}</p>
+            <p style="padding-top: 4px; font-weight: 500">{{ turn.question }}</p>
           </div>
           <div class="msg">
             <span class="av ai">AI</span>
-            <div v-if="t.pending" class="ans muted">Looking through your records…</div>
-            <div v-else-if="t.error" class="ans"><div class="error-box">{{ t.error }}</div></div>
-            <div v-else-if="t.answer" class="ans">
-              <div v-if="t.mode === 'facts_only'" class="row"><span class="pill pill-neutral">Language model off</span><span class="muted" style="font-size: 12px">These are the records matching your question, without a written answer.</span></div>
-              <p><strong><InlineEvidence :text="t.answer.direct_answer" /></strong></p>
-              <div v-if="t.answer.table?.length" class="scrollbox">
+            <div v-if="turn.pending" class="ans muted">{{ t('Looking through your records…') }}</div>
+            <div v-else-if="turn.error" class="ans"><div class="error-box">{{ turn.error }}</div></div>
+            <div v-else-if="turn.answer" class="ans">
+              <div v-if="turn.mode === 'facts_only'" class="row"><span class="pill pill-neutral">{{ t('Language model off') }}</span><span class="muted" style="font-size: 12px">{{ t('These are the records matching your question, without a written answer.') }}</span></div>
+              <p><strong><InlineEvidence :text="turn.answer.direct_answer" /></strong></p>
+              <div v-if="turn.answer.table?.length" class="scrollbox">
                 <table class="tbl">
-                  <thead><tr><th>Item</th><th class="r">Value</th><th>Record</th></tr></thead>
+                  <thead><tr><th>{{ t('Item') }}</th><th class="r">{{ t('Value') }}</th><th>{{ t('Record') }}</th></tr></thead>
                   <tbody>
-                    <tr v-for="(r, k) in t.answer.table" :key="k">
+                    <tr v-for="(r, k) in turn.answer.table" :key="k">
                       <td><InlineEvidence :text="r.label" /></td>
                       <td class="r num">
                         <template v-if="r.fact_key && ev.facts[r.fact_key]">{{ ev.facts[r.fact_key].display }} <span class="muted">{{ ev.facts[r.fact_key].display_unit }}</span></template>
@@ -151,17 +158,17 @@ function argText(a: Record<string, any>) {
                   </tbody>
                 </table>
               </div>
-              <div v-if="t.answer.cant_see" class="note"><strong>What I can't see.</strong> <InlineEvidence :text="t.answer.cant_see" /></div>
-              <div v-if="t.answer.next_steps?.length">
-                <div class="eyebrow" style="margin-bottom: 6px">What I would do first</div>
+              <div v-if="turn.answer.cant_see" class="note"><strong>{{ t("What I can't see.") }}</strong> <InlineEvidence :text="turn.answer.cant_see" /></div>
+              <div v-if="turn.answer.next_steps?.length">
+                <div class="eyebrow" style="margin-bottom: 6px">{{ t('What I would do first') }}</div>
                 <ol class="steps">
-                  <li v-for="(s, k) in t.answer.next_steps" :key="k"><InlineEvidence :text="s" /></li>
+                  <li v-for="(s, k) in turn.answer.next_steps" :key="k"><InlineEvidence :text="s" /></li>
                 </ol>
               </div>
-              <div v-if="t.trace?.length">
-                <button type="button" class="linkbtn" style="font-size: 12px" @click="showTrace[i] = !showTrace[i]">{{ showTrace[i] ? 'Hide' : 'How this was computed' }} · {{ t.trace.length }} step{{ t.trace.length === 1 ? '' : 's' }}</button>
+              <div v-if="turn.trace?.length">
+                <button type="button" class="linkbtn" style="font-size: 12px" @click="showTrace[i] = !showTrace[i]">{{ showTrace[i] ? t('Hide how this was computed') : t('How this was computed') }} · {{ t('{n} steps', { n: turn.trace.length }) }}</button>
                 <ol v-if="showTrace[i]" class="trace">
-                  <li v-for="(s, k) in t.trace" :key="k">
+                  <li v-for="(s, k) in turn.trace" :key="k">
                     <span class="mono">{{ s.tool }}({{ argText(s.args) }})</span>
                     <template v-if="s.result_key"> → <EvidenceChip :fact-key="s.result_key" long /></template>
                   </li>
@@ -172,26 +179,26 @@ function argText(a: Record<string, any>) {
         </template>
 
         <div v-if="!turns.length" class="panel empty">
-          Ask about any figure, period or counterparty in your uploaded records. The answer starts with one sentence, then shows the records behind it, says what it cannot see, and lists next steps — cheapest first.
+          {{ t('Ask about any figure, period or counterparty in your uploaded records. The answer starts with one sentence, then shows the records behind it, says what it cannot see, and lists next steps — cheapest first.') }}
         </div>
 
         <div ref="bottom" class="panel" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
           <form class="row" style="gap: 10px; flex-wrap: wrap" @submit.prevent="ask()">
-            <label for="q" class="sr-only">Ask a question</label>
-            <input id="q" v-model="question" type="text" class="input" placeholder="Ask about any figure, period or counterparty…" style="flex: 1 1 280px; height: 40px" :disabled="asking" />
-            <button type="submit" class="btn btn-primary" style="height: 40px" :disabled="asking || !question.trim()">{{ asking ? 'Asking…' : 'Ask' }}</button>
+            <label for="q" class="sr-only">{{ t('Ask a question') }}</label>
+            <input id="q" v-model="question" type="text" class="input" :placeholder="t('Ask about any figure, period or counterparty…')" style="flex: 1 1 280px; height: 40px" :disabled="asking" />
+            <button type="submit" class="btn btn-primary" style="height: 40px" :disabled="asking || !question.trim()">{{ asking ? t('Asking…') : t('Ask') }}</button>
           </form>
           <div class="row" style="gap: 8px">
-            <button v-for="s in SUGGESTIONS" :key="s" type="button" class="chip round" :disabled="asking" @click="ask(s)">{{ s }}</button>
+            <button v-for="s in SUGGESTIONS" :key="s" type="button" class="chip round" :disabled="asking" @click="ask(t(s))">{{ t(s) }}</button>
           </div>
         </div>
       </section>
 
       <div class="ev-col" style="flex-basis: 400px">
-        <EvidencePane :actions="false" empty-text="Click any dashed figure in an answer to see the record it came from.">
+        <EvidencePane :actions="false" :empty-text="t('Click any dashed figure in an answer to see the record it came from.')">
           <template #footer>
             <div v-if="cited.length" style="padding: 10px 14px 14px; border-top: 1px solid var(--border-row)">
-              <div class="eyebrow" style="margin-bottom: 8px">Cited in this conversation</div>
+              <div class="eyebrow" style="margin-bottom: 8px">{{ t('Cited in this conversation') }}</div>
               <div class="stack" style="gap: 6px; align-items: flex-start">
                 <EvidenceChip v-for="k in cited" :key="k" :fact-key="k" long />
               </div>

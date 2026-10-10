@@ -12,6 +12,7 @@ import BarGroupChart from '@/components/charts/BarGroupChart.vue'
 import LineChart from '@/components/charts/LineChart.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import Modal from '@/components/ui/Modal.vue'
+import { t, tn } from '@/i18n'
 
 const route = useRoute()
 const ev = useEvidence()
@@ -47,25 +48,25 @@ const loanCells = computed(() => {
   const cells: { label: string; main: string; sub?: string; warn?: boolean }[] = []
   const id = pick(l, 'loan_id', 'contract_no', 'id')
   const type = pick(l, 'type')
-  if (id || type) cells.push({ label: 'Loan', main: [id, type].filter(Boolean).join(' · '), sub: [pick(l, 'disbursed_on') ? `Disbursed ${fmtDate(pick(l, 'disbursed_on'))}` : null, pick(l, 'purpose')].filter(Boolean).join(' · ') })
+  if (id || type) cells.push({ label: t('Loan'), main: [id, type].filter(Boolean).join(' · '), sub: [pick(l, 'disbursed_on') ? t('Disbursed {d}', { d: fmtDate(pick(l, 'disbursed_on')) }) : null, pick(l, 'purpose')].filter(Boolean).join(' · ') })
   const out = pick(l, 'outstanding_display', 'outstanding')
   const orig = pick(l, 'original_display', 'original_amount', 'original')
-  if (out != null) cells.push({ label: 'Original / outstanding', main: `${out}`, sub: orig != null ? `of ${orig} mln` : undefined })
+  if (out != null) cells.push({ label: t('Original / outstanding'), main: `${out}`, sub: orig != null ? t('of {amount} mln', { amount: orig }) : undefined })
   const inst = pick(l, 'installment_display', 'installment')
-  if (inst != null) cells.push({ label: 'Installment', main: `${inst} mln`, sub: [pick(l, 'due_day') ? `${pick(l, 'due_day')}th monthly` : null, pick(l, 'next_due', 'next_due_on') ? `next due ${fmtDate(pick(l, 'next_due', 'next_due_on'))}` : null].filter(Boolean).join(' · ') })
+  if (inst != null) cells.push({ label: t('Installment'), main: t('{amount} mln', { amount: inst }), sub: [pick(l, 'due_day') ? t('monthly, day {d}', { d: pick(l, 'due_day') }) : null, pick(l, 'next_due', 'next_due_on') ? t('next due {d}', { d: fmtDate(pick(l, 'next_due', 'next_due_on')) }) : null].filter(Boolean).join(' · ') })
   const term = pick(l, 'term_months')
   if (term != null) {
     const paid = pick(l, 'paid_count', 'paid')
     const left = pick(l, 'left')
-    cells.push({ label: 'Term', main: `${term} months${paid != null ? ` · ${paid} paid` : ''}${left != null ? `, ${left} left` : ''}`, sub: pick(l, 'maturity_on', 'maturity') ? `Matures ${fmtDate(pick(l, 'maturity_on', 'maturity'))}` : undefined })
+    cells.push({ label: t('Term'), main: `${tn(term, '{n} month', '{n} months')}${paid != null ? ` · ${t('{n} paid', { n: paid })}` : ''}${left != null ? `, ${t('{n} left', { n: left })}` : ''}`, sub: pick(l, 'maturity_on', 'maturity') ? t('Matures {d}', { d: fmtDate(pick(l, 'maturity_on', 'maturity')) }) : undefined })
   }
   const col = pick(l, 'collateral')
-  if (col && (typeof col === 'string' || Object.keys(col).length)) cells.push({ label: 'Collateral', main: typeof col === 'string' ? col : col.description || col.type || col.name || 'Recorded', sub: typeof col === 'object' && (col.valuation_display || col.valuation) ? `Valued ${col.valuation_display || col.valuation}${col.valuation_display ? '' : ' mln'}${col.valued_at ? ` (${col.valued_at})` : ''}` : undefined })
+  if (col && (typeof col === 'string' || Object.keys(col).length)) cells.push({ label: t('Collateral'), main: typeof col === 'string' ? col : col.description || col.type || col.name || t('Recorded'), sub: typeof col === 'object' && (col.valuation_display || col.valuation) ? `${t('Valued')} ${col.valuation_display || col.valuation}${col.valuation_display ? '' : ' ' + t('mln')}${col.valued_at ? ` (${col.valued_at})` : ''}` : undefined })
   const cov = pick(l, 'coverage_display')
   const m04 = data.value?.status?.indicators?.M04
   if (cov) {
     const thr = m04?.threshold_display ?? (m04?.threshold != null ? `${m04.threshold}×` : pick(l, 'coverage_threshold_display'))
-    cells.push({ label: 'Cash coverage of next installment', main: cov, sub: thr ? `threshold ${thr}` : undefined, warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
+    cells.push({ label: t('Cash coverage of next installment'), main: cov, sub: thr ? t('threshold {v}', { v: thr }) : undefined, warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
   }
   return cells
 })
@@ -81,9 +82,9 @@ const stripCells = computed(() => {
     const r = repayments.value.find((x) => x.n === i)
     if (r && r.paid_on) {
       const late = (r.days_late ?? 0) > 0
-      out.push({ cls: late ? 'late' : 'ok', title: `#${i} due ${fmtDate(r.due_on)} · paid ${fmtDate(r.paid_on)}${late ? ` · ${r.days_late} days late` : ''}` })
-    } else if (r?.state === 'overdue') out.push({ cls: 'late', title: `#${i} due ${fmtDate(r.due_on)} · not paid` })
-    else out.push({ cls: 'up', title: r?.due_on ? `#${i} due ${fmtDate(r.due_on)}` : `#${i} upcoming` })
+      out.push({ cls: late ? 'late' : 'ok', title: `#${i} ${t('due {d}', { d: fmtDate(r.due_on) })} · ${t('paid {d}', { d: fmtDate(r.paid_on) })}${late ? ` · ${t('{n} days late', { n: r.days_late ?? 0 })}` : ''}` })
+    } else if (r?.state === 'overdue') out.push({ cls: 'late', title: `#${i} ${t('due {d}', { d: fmtDate(r.due_on) })} · ${t('not paid')}` })
+    else out.push({ cls: 'up', title: r?.due_on ? `#${i} ${t('due {d}', { d: fmtDate(r.due_on) })}` : `#${i} ${t('upcoming')}` })
   }
   return out
 })
@@ -145,12 +146,12 @@ const OUTCOMES = [
 ]
 async function submitOutcome() {
   outErr.value = ''
-  if (!outcome.value) return (outErr.value = 'Choose an outcome.')
-  if (reasoning.value.trim().length < 20) return (outErr.value = 'Write your reasoning (at least 20 characters).')
+  if (!outcome.value) return (outErr.value = t('Choose an outcome.'))
+  if (reasoning.value.trim().length < 20) return (outErr.value = t('Write your reasoning (at least 20 characters).'))
   outBusy.value = true
   try {
     await api.borrowerReviewOutcome(loanId.value, { outcome: outcome.value, reasoning: reasoning.value.trim(), evidence_reviewed: ev.opened })
-    outDone.value = 'Review outcome recorded with the evidence you opened. The system status is unchanged; it stays separate from your assessment.'
+    outDone.value = t('Review outcome recorded with the evidence you opened. The system status is unchanged; it stays separate from your assessment.')
     showOutcome.value = false
   } catch (e) {
     outErr.value = errMessage(e)
@@ -171,28 +172,28 @@ const statusHistory = computed(() => {
 
 <template>
   <div class="page">
-    <div class="crumbs"><RouterLink to="/bank/borrowers">Borrowers</RouterLink> / {{ data?.business?.name || loanId }}</div>
-    <div v-if="loading" class="panel empty">Loading borrower…</div>
-    <div v-else-if="err" class="error-box">{{ err }} <RouterLink to="/bank/borrowers">Back to borrowers</RouterLink></div>
+    <div class="crumbs"><RouterLink to="/bank/borrowers">{{ t('Borrowers') }}</RouterLink> / {{ data?.business?.name || loanId }}</div>
+    <div v-if="loading" class="panel empty">{{ t('Loading borrower…') }}</div>
+    <div v-else-if="err" class="error-box">{{ err }} <RouterLink to="/bank/borrowers">{{ t('Back to borrowers') }}</RouterLink></div>
 
     <template v-if="data">
       <div class="page-head" style="align-items: flex-start">
         <div>
           <div class="row" style="gap: 10px">
             <h1>{{ b.name }}</h1>
-            <span class="pill" :class="severityPillClass(data.status.current)">{{ statusLabel(data.status.current) }}<template v-if="data.status.since"> · since {{ fmtDate(data.status.since) }}</template></span>
-            <span v-if="statusHistory" class="muted">previously {{ statusHistory }}</span>
+            <span class="pill" :class="severityPillClass(data.status.current)">{{ statusLabel(data.status.current) }}<template v-if="data.status.since"> · {{ t('since {d}', { d: fmtDate(data.status.since) }) }}</template></span>
+            <span v-if="statusHistory" class="muted">{{ t('previously {list}', { list: statusHistory }) }}</span>
           </div>
-          <p v-if="data.status.reason" class="reason"><span class="eyebrow">Why</span> {{ data.status.reason }}</p>
+          <p v-if="data.status.reason" class="reason"><span class="eyebrow">{{ t('Why') }}</span> {{ data.status.reason }}</p>
           <p class="meta">
-            <template v-if="b.industry">{{ b.industry }}</template><template v-if="b.region"> · {{ b.region }}</template><template v-if="b.stir"> · STIR <span class="num">{{ b.stir }}</span></template><template v-if="b.since"> · operating since {{ b.since }}</template><template v-if="b.employees"> · {{ b.employees }} employees</template>
+            <template v-if="b.industry">{{ b.industry }}</template><template v-if="b.region"> · {{ b.region }}</template><template v-if="b.stir"> · {{ t('STIR') }} <span class="num">{{ b.stir }}</span></template><template v-if="b.since"> · {{ t('operating since {y}', { y: b.since }) }}</template><template v-if="b.employees"> · {{ tn(b.employees, '{n} employee', '{n} employees') }}</template>
           </p>
         </div>
-        <div class="actions"><button type="button" class="btn btn-primary" @click="showOutcome = true">Record review outcome</button></div>
+        <div class="actions"><button type="button" class="btn btn-primary" @click="showOutcome = true">{{ t('Record review outcome') }}</button></div>
       </div>
       <div v-if="outDone" class="note">{{ outDone }}</div>
 
-      <section v-if="loanCells.length || stripCells.length" class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" aria-label="Loan details">
+      <section v-if="loanCells.length || stripCells.length" class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" :aria-label="t('Loan details')">
         <div class="kv">
           <div v-for="c in loanCells" :key="c.label">
             <div class="eyebrow">{{ c.label }}</div>
@@ -201,12 +202,12 @@ const statusHistory = computed(() => {
           </div>
         </div>
         <div v-if="stripCells.length">
-          <div class="muted" style="font-size: 12px; margin-bottom: 6px">Repayment history · {{ paidCount }} installments paid · {{ paidCount - lateCount }} on time, {{ lateCount }} late</div>
-          <div class="strip" :style="{ gridTemplateColumns: `repeat(${stripCells.length}, minmax(0, 1fr))` }" role="img" :aria-label="`${stripCells.length} installments: ${paidCount - lateCount} on time, ${lateCount} late, ${stripCells.length - paidCount} upcoming`">
+          <div class="muted" style="font-size: 12px; margin-bottom: 6px">{{ t('Repayment history · {paid} installments paid · {ok} on time, {late} late', { paid: paidCount, ok: paidCount - lateCount, late: lateCount }) }}</div>
+          <div class="strip" :style="{ gridTemplateColumns: `repeat(${stripCells.length}, minmax(0, 1fr))` }" role="img" :aria-label="t('{n} installments: {ok} on time, {late} late, {up} upcoming', { n: stripCells.length, ok: paidCount - lateCount, late: lateCount, up: stripCells.length - paidCount })">
             <span v-for="(c, i) in stripCells" :key="i" :class="c.cls" :title="c.title"></span>
           </div>
           <div class="row muted" style="justify-content: flex-end; font-size: 12px; margin-top: 4px; gap: 12px">
-            <span><i class="lg ok"></i>on time</span><span><i class="lg late"></i>late</span><span><i class="lg up"></i>upcoming</span>
+            <span><i class="lg ok"></i>{{ t('on time') }}</span><span><i class="lg late"></i>{{ t('late') }}</span><span><i class="lg up"></i>{{ t('upcoming') }}</span>
           </div>
         </div>
       </section>
@@ -215,18 +216,18 @@ const statusHistory = computed(() => {
         <div class="main-col">
           <section class="panel" aria-label="Monitoring alerts">
             <div class="panel-head" style="padding: 12px 14px 8px">
-              <h2>Why this borrower is under {{ statusLabel(data.status.current) }}</h2>
+              <h2>{{ t('Why this borrower is under {s}', { s: statusLabel(data.status.current) }) }}</h2>
               <span class="ctx">{{ data.alerts.length }} indicator{{ data.alerts.length === 1 ? '' : 's' }} moved · thresholds disclosed</span>
             </div>
             <FindingRow v-for="a in data.alerts" :key="a.uuid" :finding="a" />
-            <div v-if="!data.alerts.length" class="empty" style="border-top: 1px solid var(--border-row)">No indicator crossed its threshold in the latest periods.</div>
+            <div v-if="!data.alerts.length" class="empty" style="border-top: 1px solid var(--border-row)">{{ t('No indicator crossed its threshold in the latest periods.') }}</div>
           </section>
 
           <section v-if="qLabels.length && qRevenue.some((v) => v != null)" class="panel" aria-label="Financial performance over time">
             <div class="panel-head" style="padding: 12px 14px 0">
               <div>
-                <h2>Quarterly revenue and operating expenses</h2>
-                <p class="muted" style="font-size: 12px">mln UZS · from statements uploaded by the borrower</p>
+                <h2>{{ t('Quarterly revenue and operating expenses') }}</h2>
+                <p class="muted" style="font-size: 12px">{{ t('mln UZS · from statements uploaded by the borrower') }}</p>
               </div>
             </div>
             <div style="padding: 6px 10px 0">
@@ -234,21 +235,21 @@ const statusHistory = computed(() => {
                 :labels="qLabels"
                 :a="qRevenue"
                 :b="qOpex"
-                a-name="Revenue"
-                b-name="Operating expenses"
+                :a-name="t('Revenue')"
+                :b-name="t('Operating expenses')"
                 :a-display="pickIdx(seriesDisplay('revenue') || [])"
                 :b-display="pickIdx(seriesDisplay('opex') || [])"
                 :summary="`Quarterly revenue: ${qLabels.map((l, i) => `${l} ${pickIdx(seriesDisplay('revenue') || [])[i] ?? 'n/a'}`).join(', ')} million UZS.`"
               />
             </div>
             <div v-if="qChipKeys.length" class="row" style="padding: 0 14px 10px; gap: 6px">
-              <span class="muted" style="font-size: 12px">Sources:</span>
+              <span class="muted" style="font-size: 12px">{{ t('Sources:') }}</span>
               <EvidenceChip v-for="k in qChipKeys" :key="k" :fact-key="k" long />
             </div>
             <template v-if="qCoverage.some((v) => v != null)">
               <div class="panel-head" style="margin: 0 14px; padding-top: 10px; border-top: 1px solid var(--border-row)">
-                <span style="font-weight: 600">Cash coverage of next installment, quarter end</span>
-                <span v-if="qThreshold != null" class="ctx">threshold shown as dashed line</span>
+                <span style="font-weight: 600">{{ t('Cash coverage of next installment, quarter end') }}</span>
+                <span v-if="qThreshold != null" class="ctx">{{ t('threshold shown as dashed line') }}</span>
               </div>
               <div style="padding: 2px 10px 10px">
                 <LineChart
@@ -265,20 +266,20 @@ const statusHistory = computed(() => {
 
           <section class="panel" aria-label="AI explanation" style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
             <div class="panel-head">
-              <h2>What changed, and why it matters for repayment</h2>
-              <span v-if="data.narrative?.markdown" class="ctx">{{ data.narrative.mode === 'llm' ? 'AI explanation · every figure links to its source' : 'Template summary · AI draft not used' }}</span>
+              <h2>{{ t('What changed, and why it matters for repayment') }}</h2>
+              <span v-if="data.narrative?.markdown" class="ctx">{{ data.narrative.mode === 'llm' ? t('AI explanation · every figure links to its source') : t('Template summary · AI draft not used') }}</span>
             </div>
             <NarrativeText v-if="data.narrative?.markdown && data.narrative.verified !== false" :markdown="data.narrative.markdown" />
-            <p v-else class="muted">No written explanation yet; the alerts above are complete on their own.</p>
+            <p v-else class="muted">{{ t('No written explanation yet; the alerts above are complete on their own.') }}</p>
           </section>
 
-          <div class="footer-line">{{ data.calibration_note }} Statuses are rule-based monitoring indicators, not a credit score. The officer records the review outcome; the system status stays separate from the officer's assessment.</div>
+          <div class="footer-line">{{ data.calibration_note }} {{ t("Statuses are rule-based monitoring indicators, not a credit score. The officer records the review outcome; the system status stays separate from the officer's assessment.") }}</div>
         </div>
 
         <div class="ev-col stack" style="gap: 16px">
           <EvidencePane :sticky="false" />
           <section v-if="data.timeline.length" class="panel" aria-label="How it developed" style="padding: 12px 14px">
-            <div class="eyebrow" style="margin-bottom: 8px">How it developed</div>
+            <div class="eyebrow" style="margin-bottom: 8px">{{ t('How it developed') }}</div>
             <div v-for="(t, i) in data.timeline" :key="i" class="tl">
               <span class="num muted" style="font-size: 12px">{{ fmtDate(t.date, { short: t.date.length > 7 }) }}</span>
               <span class="dotcol"><span class="dot" :class="t.status"></span><span v-if="i < data.timeline.length - 1" class="conn"></span></span>
@@ -286,7 +287,7 @@ const statusHistory = computed(() => {
             </div>
           </section>
           <section v-if="data.documents.length" class="panel" aria-label="Documents" style="padding: 12px 14px 8px">
-            <div class="eyebrow" style="margin-bottom: 4px">Documents &amp; previous assessments</div>
+            <div class="eyebrow" style="margin-bottom: 4px">{{ t('Documents & previous assessments') }}</div>
             <div v-for="(d, i) in data.documents" :key="i" class="doc" style="grid-template-columns: 1fr auto">
               <div style="min-width: 0">
                 <div style="font-weight: 500">{{ d.title || d.filename }}</div>
@@ -299,22 +300,22 @@ const statusHistory = computed(() => {
       </div>
     </template>
 
-    <Modal v-if="showOutcome && data" title="Record review outcome" @close="showOutcome = false">
+    <Modal v-if="showOutcome && data" :title="t('Record review outcome')" @close="showOutcome = false">
       <form class="stack" @submit.prevent="submitOutcome">
-        <p class="muted" style="font-size: 13px">Your assessment is stored with the {{ ev.opened.length }} piece{{ ev.opened.length === 1 ? '' : 's' }} of evidence you opened. The monitoring status itself is not changed by this.</p>
+        <p class="muted" style="font-size: 13px">{{ t('Your assessment is stored with the evidence you opened ({n}). The monitoring status itself is not changed by this.', { n: ev.opened.length }) }}</p>
         <fieldset class="stack" style="border: 0; padding: 0; margin: 0; gap: 6px">
-          <legend class="eyebrow" style="margin-bottom: 6px">Outcome</legend>
-          <label v-for="o in OUTCOMES" :key="o.v" class="row" style="gap: 8px; font-size: 13px"><input v-model="outcome" type="radio" name="outcome" :value="o.v" /> {{ o.label }}</label>
+          <legend class="eyebrow" style="margin-bottom: 6px">{{ t('Outcome') }}</legend>
+          <label v-for="o in OUTCOMES" :key="o.v" class="row" style="gap: 8px; font-size: 13px"><input v-model="outcome" type="radio" name="outcome" :value="o.v" /> {{ t(o.label) }}</label>
         </fieldset>
         <label class="stack" style="gap: 4px">
-          <span class="eyebrow">Reasoning</span>
-          <textarea v-model="reasoning" class="input" rows="5" placeholder="What did you conclude from the alerts and evidence?"></textarea>
-          <span class="muted" style="font-size: 12px">{{ reasoning.trim().length }} / 20 characters minimum</span>
+          <span class="eyebrow">{{ t('Reasoning') }}</span>
+          <textarea v-model="reasoning" class="input" rows="5" :placeholder="t('What did you conclude from the alerts and evidence?')"></textarea>
+          <span class="muted" style="font-size: 12px">{{ t('{n} / 20 characters minimum', { n: reasoning.trim().length }) }}</span>
         </label>
         <div v-if="outErr" class="error-box">{{ outErr }}</div>
         <div class="row">
-          <button type="submit" class="btn btn-primary" :disabled="outBusy">{{ outBusy ? 'Recording…' : 'Record outcome' }}</button>
-          <button type="button" class="btn" @click="showOutcome = false">Cancel</button>
+          <button type="submit" class="btn btn-primary" :disabled="outBusy">{{ outBusy ? t('Recording…') : t('Record outcome') }}</button>
+          <button type="button" class="btn" @click="showOutcome = false">{{ t('Cancel') }}</button>
         </div>
       </form>
     </Modal>

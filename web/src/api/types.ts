@@ -399,6 +399,7 @@ export interface CfoHistoryItem {
   tool_trace?: ToolTraceItem[]
   mode?: 'llm' | 'facts_only'
   created_at?: string
+  facts?: Record<string, Fact>
 }
 
 export interface ApiErrorBody {

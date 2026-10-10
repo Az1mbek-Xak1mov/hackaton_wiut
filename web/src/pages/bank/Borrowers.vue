@@ -3,7 +3,9 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, errMessage } from '@/api/client'
 import type { BorrowerList } from '@/api/types'
-import { fmtDate, fmtSignedPct, severityPillClass, statusLabel, thresholdText, trueMinus } from '@/api/format'
+import { fmtDate, fmtSignedPct, severityPillClass, statusLabel, trueMinus } from '@/api/format'
+import StatusRules from '@/components/StatusRules.vue'
+import { t } from '@/i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -52,8 +54,6 @@ function trendClass(v: number | null) {
   if (v > 0) return 'up-good'
   return 'muted'
 }
-const thresholdLines = computed(() => thresholdText(data.value?.thresholds))
-
 const CHIPS = [
   { k: 'all', label: 'All' },
   { k: 'stable', label: 'Stable' },
@@ -65,50 +65,44 @@ const CHIPS = [
 <template>
   <div class="page">
     <Teleport to="#side-extra" defer>
-      <div class="side-note">
-        <div class="eyebrow" style="margin-bottom: 6px">How statuses are set</div>
-        <p><strong>Stable</strong> — no indicator crossed its threshold in the last 2 periods.</p>
-        <p><strong>Watch</strong> — one indicator crossed, or the latest statement is late.</p>
-        <p><strong>Attention</strong> — two or more crossed, or an installment was paid late.</p>
-        <p class="muted">Indicators: revenue vs prior period, receivables vs sales, payables growth, cash coverage of the next installment, payment punctuality, statement timeliness.</p>
-        <template v-if="thresholdLines.length">
-          <div class="eyebrow" style="margin-top: 4px">Thresholds in the latest run</div>
-          <p v-for="(t, i) in thresholdLines" :key="i" class="muted">{{ t }}</p>
-        </template>
-        <p class="muted">{{ data?.calibration_note || 'Thresholds are illustrative; calibration against bank history is pilot month 1.' }} No numeric score is produced.</p>
-      </div>
+      <div class="side-note"><StatusRules :thresholds="data?.thresholds" :note="data?.calibration_note" /></div>
     </Teleport>
 
     <div class="page-head">
       <div>
-        <h1>Borrower portfolio</h1>
+        <h1>{{ t('Borrower portfolio') }}</h1>
         <p class="meta">
-          <template v-if="data">{{ data.counts.all }} business borrowers · </template>monitoring computed from uploaded statements
+          <template v-if="data">{{ t('{n} business borrowers', { n: data.counts.all }) }} · </template>{{ t('monitoring computed from uploaded statements') }}
         </p>
       </div>
     </div>
 
-    <section class="panel" aria-label="Borrowers">
+    <details class="panel mobile-only rules-m">
+      <summary>{{ t('How statuses are set') }}</summary>
+      <StatusRules :thresholds="data?.thresholds" :note="data?.calibration_note" />
+    </details>
+
+    <section class="panel" :aria-label="t('Borrowers')">
       <div style="padding: 12px 14px; border-bottom: 1px solid var(--border-row); display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
-        <div class="row" style="gap: 6px" role="group" aria-label="Filter by monitoring status">
+        <div class="row" style="gap: 6px" role="group" :aria-label="t('Filter by monitoring status')">
           <button v-for="c in CHIPS" :key="c.k" type="button" class="chip" :class="{ on: status === c.k }" :aria-pressed="status === c.k" @click="setStatus(c.k)">
-            {{ c.label }} <span v-if="data" class="n">{{ data.counts[c.k] }}</span>
+            {{ t(c.label) }} <span v-if="data" class="n">{{ data.counts[c.k] }}</span>
           </button>
         </div>
         <div style="flex: 1"></div>
-        <label class="sr-only" for="ind">Industry</label>
-        <select id="ind" v-model="industry" class="select"><option value="">All industries</option><option v-for="i in industries" :key="i">{{ i }}</option></select>
-        <label class="sr-only" for="reg">Region</label>
-        <select id="reg" v-model="region" class="select"><option value="">All regions</option><option v-for="r in regions" :key="r">{{ r }}</option></select>
-        <label class="sr-only" for="find">Search borrowers</label>
-        <input id="find" v-model="q" type="search" class="input" placeholder="Name or loan id" style="width: 180px" />
+        <label class="sr-only" for="ind">{{ t('Industry') }}</label>
+        <select id="ind" v-model="industry" class="select"><option value="">{{ t('All industries') }}</option><option v-for="i in industries" :key="i">{{ i }}</option></select>
+        <label class="sr-only" for="reg">{{ t('Region') }}</label>
+        <select id="reg" v-model="region" class="select"><option value="">{{ t('All regions') }}</option><option v-for="r in regions" :key="r">{{ r }}</option></select>
+        <label class="sr-only" for="find">{{ t('Search borrowers') }}</label>
+        <input id="find" v-model="q" type="search" class="input" :placeholder="t('Name or loan id')" style="width: 180px" />
       </div>
-      <div v-if="loading && !data" class="empty">Loading borrowers…</div>
+      <div v-if="loading && !data" class="empty">{{ t('Loading borrowers…') }}</div>
       <div v-else-if="err" class="error-box" style="margin: 12px">{{ err }}</div>
       <div v-else class="scrollbox">
         <table class="tbl hover" style="min-width: 1080px">
           <thead>
-            <tr><th>Business</th><th>Industry · region</th><th class="r">Outstanding, mln</th><th class="r">Revenue vs prior period</th><th class="r">Cash coverage</th><th>Latest period</th><th>Status · reason</th><th>Updated</th></tr>
+            <tr><th>{{ t('Business') }}</th><th>{{ t('Industry · region') }}</th><th class="r">{{ t('Outstanding, mln') }}</th><th class="r">{{ t('Revenue vs prior period') }}</th><th class="r">{{ t('Cash coverage') }}</th><th>{{ t('Latest period') }}</th><th>{{ t('Status · reason') }}</th><th>{{ t('Updated') }}</th></tr>
           </thead>
           <tbody>
             <tr v-for="r in rows" :key="r.uuid" class="clickable" @click="router.push(`/bank/borrowers/${r.loan_id}`)">
@@ -121,17 +115,20 @@ const CHIPS = [
               <td><span class="pill" :class="severityPillClass(r.status)">{{ statusLabel(r.status) }}</span><div class="muted" style="font-size: 12px; margin-top: 3px; max-width: 320px">{{ r.reason }}</div></td>
               <td class="num muted">{{ fmtDate(r.updated, { short: true }) }}</td>
             </tr>
-            <tr v-if="!rows.length"><td colspan="8" class="muted">{{ data?.counts.all ? 'No borrower matches these filters.' : 'No monitoring run yet — borrowers appear after their statements are processed.' }}</td></tr>
+            <tr v-if="!rows.length"><td colspan="8" class="muted">{{ data?.counts.all ? t('No borrower matches these filters.') : t('No monitoring run yet — borrowers appear after their statements are processed.') }}</td></tr>
           </tbody>
         </table>
       </div>
       <div class="muted" style="padding: 10px 14px; border-top: 1px solid var(--border-row); font-size: 12px">
-        Showing {{ rows.length }} of {{ data?.counts.all ?? 0 }} · sorted by status severity, then exposure. Cash coverage = month-end cash ÷ next installment.
+        {{ t('Showing {a} of {b} · sorted by status severity, then exposure. Cash coverage = month-end cash ÷ next installment.', { a: rows.length, b: data?.counts.all ?? 0 }) }}
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
-.side-note { margin-top: 24px; padding: 0 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px; }
+.side-note { margin-top: 24px; padding: 0 12px; }
+.rules-m { padding: 10px 14px; }
+.rules-m summary { cursor: pointer; font-weight: 600; font-size: 13px; }
+.rules-m[open] summary { margin-bottom: 8px; }
 </style>

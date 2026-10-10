@@ -209,7 +209,8 @@ export const api = {
     return request<CreatedWithJob>('/owner/files', { method: 'POST', form: fd })
   },
   cfoAsk: (question: string) => request<CfoResponse>('/cfo/messages', { method: 'POST', body: { question } }),
-  cfoHistory: () => request<CfoHistoryItem[] | { items: CfoHistoryItem[]; facts?: Record<string, Fact> }>('/cfo/messages'),
+  cfoHistory: () =>
+    request<CfoHistoryItem[] | { business?: OwnerBusiness; messages?: CfoHistoryItem[]; items?: CfoHistoryItem[]; facts?: Record<string, Fact> }>('/cfo/messages'),
 }
 
 export function errMessage(e: unknown): string {

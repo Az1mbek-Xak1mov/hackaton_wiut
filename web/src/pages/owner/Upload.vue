@@ -7,6 +7,7 @@ import { useEvidence } from '@/stores/evidence'
 import Dropzone from '@/components/ui/Dropzone.vue'
 import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
+import { t } from '@/i18n'
 
 const ev = useEvidence()
 const files = ref<DocumentOut[]>([])
@@ -42,7 +43,7 @@ async function upload(list: File[]) {
   upErr.value = ''
   for (const f of list) {
     if (f.size > 20 * 1024 * 1024) {
-      upErr.value = `${f.name} is ${fmtBytes(f.size)}; the limit is 20 MB.`
+      upErr.value = t('{file} is {size}; the limit is 20 MB.', { file: f.name, size: fmtBytes(f.size) })
       continue
     }
     uploading.value++
@@ -102,28 +103,28 @@ const otherFacts = computed(() => openFacts.value.filter((f) => !f.line_code))
   <div class="page">
     <div class="page-head">
       <div>
-        <h1>Upload &amp; analyze</h1>
-        <p class="meta">Bank statements, Форма 1 and Форма 2 feed the AI CFO and your bank's monitoring. {{ counts.analysed }} of {{ counts.total }} documents analysed.</p>
+        <h1>{{ t('Upload & analyze') }}</h1>
+        <p class="meta">{{ t("Bank statements, Форма 1 and Форма 2 feed the AI CFO and your bank's monitoring.") }} {{ t('{a} of {b} documents analyzed', { a: counts.analysed, b: counts.total }) }}</p>
       </div>
-      <RouterLink to="/owner/cfo" class="btn btn-primary">Ask the AI CFO →</RouterLink>
+      <RouterLink to="/owner/cfo" class="btn btn-primary">{{ t('Ask the AI CFO →') }}</RouterLink>
     </div>
 
-    <section class="panel" aria-label="Upload" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
-      <Dropzone multiple :disabled="uploading > 0" @files="upload" :title="uploading ? `Uploading ${uploading} file${uploading === 1 ? '' : 's'}…` : 'Drop statements and reports here'" hint="PDF · XLSX · JPG · PNG · up to 20 MB each" />
+    <section class="panel" :aria-label="t('Upload')" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <Dropzone multiple :disabled="uploading > 0" @files="upload" :title="uploading ? t('Uploading {n} file(s)…', { n: uploading }) : t('Drop statements and reports here')" :hint="t('PDF · XLSX · JPG · PNG · up to 20 MB each')" :button="t('Choose files')" />
       <div v-if="upErr" class="error-box">{{ upErr }}</div>
-      <div class="muted" style="font-size: 12px">Recognised: bank statement (XLSX), balance sheet (Форма 1), income statement (Форма 2). Values you correct are recorded with your name.</div>
+      <div class="muted" style="font-size: 12px">{{ t('Recognised: bank statement (XLSX), balance sheet (Форма 1), income statement (Форма 2). Values you correct are recorded with your name.') }}</div>
     </section>
 
     <section class="panel" aria-label="Uploaded files">
       <div class="panel-head" style="padding: 12px 14px 8px">
-        <h2>Uploaded files</h2>
-        <span class="ctx">Click a file to see what was extracted</span>
+        <h2>{{ t('Uploaded files') }}</h2>
+        <span class="ctx">{{ t('Click a file to see what was extracted') }}</span>
       </div>
-      <div v-if="loading" class="empty">Loading…</div>
+      <div v-if="loading" class="empty">{{ t('Loading…') }}</div>
       <div v-else-if="err" class="error-box" style="margin: 12px">{{ err }}</div>
       <div v-else class="scrollbox">
         <table class="tbl hover" style="min-width: 820px">
-          <thead><tr><th>File</th><th>Recognised as</th><th>Period</th><th>Status</th><th>Extracted</th></tr></thead>
+          <thead><tr><th>{{ t('File') }}</th><th>{{ t('Recognised as') }}</th><th>{{ t('Period') }}</th><th>{{ t('Status') }}</th><th>{{ t('Extracted') }}</th></tr></thead>
           <tbody>
             <tr v-for="d in files" :key="d.uuid" class="clickable" :class="{ sel: openUuid === d.uuid }" @click="toggle(d)">
               <td>
@@ -140,23 +141,23 @@ const otherFacts = computed(() => openFacts.value.filter((f) => !f.line_code))
               </td>
               <td class="muted" style="font-size: 12px">{{ summaryText(d) }}</td>
             </tr>
-            <tr v-if="!files.length"><td colspan="5" class="muted">No files yet. Upload a bank statement to start.</td></tr>
+            <tr v-if="!files.length"><td colspan="5" class="muted">{{ t('No files yet. Upload a bank statement to start.') }}</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
     <div v-if="openDoc" class="twopane">
-      <section class="main-col panel" :aria-label="`Extracted from ${openDoc.filename}`" style="gap: 0">
+      <section class="main-col panel" :aria-label="t('Extracted from {file}', { file: openDoc.filename })" style="gap: 0">
         <div class="panel-head" style="padding: 12px 14px 8px">
-          <h2>Extracted from <span class="mono" style="font-size: 13px">{{ openDoc.filename }}</span></h2>
-          <span class="ctx">Values as printed · click to see the page</span>
+          <h2>{{ t('Extracted from {file}', { file: '' }) }}<span class="mono" style="font-size: 13px">{{ openDoc.filename }}</span></h2>
+          <span class="ctx">{{ t('Values as printed · click a value to see it on the page') }}</span>
         </div>
         <div v-if="factsErr" class="error-box" style="margin: 12px">{{ factsErr }}</div>
-        <div v-else-if="!openFacts.length" class="empty">Nothing extracted from this file{{ openDoc.status === 'processing' ? ' yet' : '' }}.</div>
+        <div v-else-if="!openFacts.length" class="empty">{{ openDoc.status === 'processing' ? t('Nothing extracted from this file yet.') : t('Nothing extracted from this file.') }}</div>
         <div v-else class="scrollbox">
           <table class="tbl" style="min-width: 520px">
-            <thead><tr><th>Line</th><th>Interpreted as</th><th>Period</th><th class="r">Value</th><th>Confidence</th></tr></thead>
+            <thead><tr><th>{{ t('Line') }}</th><th>{{ t('Interpreted as') }}</th><th>{{ t('Period') }}</th><th class="r">{{ t('Value') }}</th><th>{{ t('Confidence') }}</th></tr></thead>
             <tbody>
               <tr v-for="f in [...lineFacts, ...otherFacts]" :key="f.key">
                 <td class="mono">{{ f.line_code || '—' }}</td>
