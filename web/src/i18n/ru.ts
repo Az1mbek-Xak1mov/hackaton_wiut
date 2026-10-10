@@ -634,5 +634,10 @@ const ru: Record<string, string> = {
   "Open": "Открыть",
   "Review": "Рассмотреть",
   "bn UZS": "млрд сум",
+  "In millions of UZS: 850 means 850 000 000 so'm.": "В миллионах сумов: 850 означает 850 000 000 сум.",
+  "Looks like so'm. In millions this is {mln}.": "Похоже, это сумы. В миллионах это {mln}.",
+  "= {uzs} so'm": "= {uzs} сум",
+  "e.g. 850": "например, 850",
+  "The amount is in millions of UZS. For {uzs} so'm enter {mln}.": "Сумма указывается в миллионах сумов. Для {uzs} сум введите {mln}.",
 }
 export default ru

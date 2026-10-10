@@ -20,7 +20,7 @@ export const useApp = defineStore('app', () => {
     try {
       const r = await api.ownerFiles()
       ownerBusiness.value = r.business || null
-      ownerCoverage.value = { analysed: r.items.filter((d) => d.status === 'analyzed').length, total: r.items.length }
+      ownerCoverage.value = { analysed: r.items.filter((d) => d.status === 'analyzed' || d.status === 'clarification').length, total: r.items.length }
     } catch {
       ownerBusiness.value = null
     }

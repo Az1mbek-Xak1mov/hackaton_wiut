@@ -626,5 +626,10 @@ const uz: Record<string, string> = {
   "Open": "Ochish",
   "Review": "Ko'rib chiqish",
   "bn UZS": "mlrd so'm",
+  "In millions of UZS: 850 means 850 000 000 so'm.": "Million so'mda: 850 — bu 850 000 000 so'm.",
+  "Looks like so'm. In millions this is {mln}.": "Bu so'mga o'xshaydi. Millionda bu {mln}.",
+  "= {uzs} so'm": "= {uzs} so'm",
+  "e.g. 850": "masalan, 850",
+  "The amount is in millions of UZS. For {uzs} so'm enter {mln}.": "Summa million so'mda kiritiladi. {uzs} so'm uchun {mln} kiriting.",
 }
 export default uz

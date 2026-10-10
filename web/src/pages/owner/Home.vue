@@ -23,6 +23,7 @@ async function loadFiles() {
   try {
     const r = await api.ownerFiles()
     files.value = r.items
+    app.ownerCoverage = { analysed: r.items.filter((d) => d.status === 'analyzed' || d.status === 'clarification').length, total: r.items.length }
     business.value = r.business?.name || ''
     loadErr.value = ''
   } catch (e) {
@@ -75,6 +76,13 @@ async function upload(list: File[]) {
 
 // ----- apply for a loan -----
 const amount = ref<number | null>(null)
+const fmtUzs = (n: number) => Math.round(n).toLocaleString('en-US').replace(/,/g, ' ')
+const amountHint = computed(() => {
+  const a = amount.value
+  if (!a || a <= 0) return { warn: false, text: t('In millions of UZS: 850 means 850 000 000 so\'m.') }
+  if (a >= 1_000_000) return { warn: true, text: t("Looks like so'm. In millions this is {mln}.", { mln: String(a / 1_000_000) }) }
+  return { warn: false, text: t("= {uzs} so'm", { uzs: fmtUzs(a * 1_000_000) }) }
+})
 const term = ref<number | null>(12)
 const purpose = ref('')
 const picked = ref<string[]>([])
@@ -92,6 +100,8 @@ async function apply() {
   applyErr.value = ''
   applyDone.value = ''
   if (!amount.value || amount.value <= 0) return (applyErr.value = t('Enter the amount you need.'))
+  if (amount.value >= 1_000_000)
+    return (applyErr.value = t("The amount is in millions of UZS. For {uzs} so'm enter {mln}.", { uzs: fmtUzs(amount.value), mln: String(amount.value / 1_000_000) }))
   if (!term.value || term.value < 1 || term.value > 120) return (applyErr.value = t('Enter a term between 1 and 120 months.'))
   if (purpose.value.trim().length < 3) return (applyErr.value = t('Describe the purpose of the loan.'))
   if (!picked.value.length) return (applyErr.value = t('Include at least one analysed document.'))
@@ -174,7 +184,7 @@ function appPill(s: string) {
         <form class="stack" style="gap: 10px" @submit.prevent="apply">
           <div class="panel-head"><h2>{{ t('Apply for a loan') }}</h2></div>
           <div class="apply-grid">
-            <label class="field"><span class="eyebrow">{{ t('Amount, mln UZS') }}</span><input v-model.number="amount" class="input num" type="number" min="1" step="0.1" required /></label>
+            <label class="field"><span class="eyebrow">{{ t('Amount, mln UZS') }}</span><input v-model.number="amount" class="input num" type="number" min="1" step="0.1" :placeholder="t('e.g. 850')" required /><span class="amount-hint" :class="{ warn: amountHint.warn }">{{ amountHint.text }}</span></label>
             <label class="field"><span class="eyebrow">{{ t('Term, months') }}</span><input v-model.number="term" class="input num" type="number" min="1" max="120" required /></label>
             <label class="field wide"><span class="eyebrow">{{ t('Purpose') }}</span><input v-model="purpose" class="input" required /></label>
           </div>
@@ -251,4 +261,6 @@ function appPill(s: string) {
 .wide { grid-column: 1 / -1; }
 .docs { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 @media (max-width: 720px) { .hero { font-size: 22px; } }
+.amount-hint { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+.amount-hint.warn { color: var(--watch-fg); font-weight: 500; }
 </style>

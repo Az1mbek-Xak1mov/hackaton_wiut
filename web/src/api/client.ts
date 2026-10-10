@@ -70,13 +70,19 @@ async function parseError(res: Response): Promise<ApiError> {
       if ('code' in j) body = j as ApiErrorBody
       else if ('detail' in j) {
         const d = (j as any).detail
-        body = { code: `http_${res.status}`, message: typeof d === 'string' ? d : JSON.stringify(d) }
+        body = { code: `http_${res.status}`, message: typeof d === 'string' ? d : 'Some fields are invalid. Please check the form and try again.' }
       }
     }
   } catch {
     /* not JSON */
   }
-  return new ApiError(res.status, body, `${res.status} ${res.statusText}`)
+  const fallback =
+    res.status >= 500 ? 'Something went wrong on our side. Please try again in a minute.'
+    : res.status === 413 ? 'The file is too large (maximum 20 MB).'
+    : res.status === 429 ? 'Too many uploads in a short time. Please wait a minute and try again.'
+    : res.status === 401 ? 'Your session has expired. Please sign in again.'
+    : `Request failed (${res.status}).`
+  return new ApiError(res.status, body, fallback)
 }
 
 let refreshing: Promise<boolean> | null = null
