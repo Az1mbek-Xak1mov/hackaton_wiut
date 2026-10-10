@@ -122,12 +122,16 @@ def seed_loan_book(root: Path) -> dict[str, int]:
 
 
 def seed_owner_business(root: Path, owner_user_id: int) -> int:
-    """The owner surface's business (Navro'z Tekstil) bound to owner@converza.uz."""
+    """Navro'z Tekstil. Bound to owner@converza.uz only when that account has no business yet (the start-up
+    seed normally gives it Farovon Savdo, whose loan application is the hero file in the bank's queue)."""
     c = _truth(root / "hero_navroz")["company"]
     with get_db_context() as db:
-        b = BorrowerService(db).upsert_borrower({"name": c["name"], "stir": c["stir"], "industry": c.get("industry", ""),
-                                                 "region": c.get("region", ""), "employees": c.get("employees"),
-                                                 "owner_user_id": owner_user_id}, None)
+        has_business = db.scalars(select(Borrower).where(Borrower.owner_user_id == owner_user_id)).first() is not None
+        data = {"name": c["name"], "stir": c["stir"], "industry": c.get("industry", ""),
+                "region": c.get("region", ""), "employees": c.get("employees")}
+        if not has_business:
+            data["owner_user_id"] = owner_user_id
+        b = BorrowerService(db).upsert_borrower(data, None)
         return b.id
 
 

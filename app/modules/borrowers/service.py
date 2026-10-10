@@ -74,7 +74,7 @@ class BorrowerService:
             # demo viewer / officer opening the owner surface: the business bound to the demo owner account
             b = self.db.scalars(select(Borrower).where(Borrower.owner_user_id.is_not(None)).order_by(Borrower.id)).first()
         else:
-            b = self.db.scalars(select(Borrower).where(Borrower.owner_user_id == user.id)).first()
+            b = self.db.scalars(select(Borrower).where(Borrower.owner_user_id == user.id).order_by(Borrower.id)).first()
         if b is None:
             raise NotFoundError("business", "No business is linked to this account")
         return b

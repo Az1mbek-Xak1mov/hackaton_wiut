@@ -64,7 +64,28 @@ router.beforeEach((to) => {
   return true
 })
 
+// After a deploy, an open tab still points at the previous build's page chunks, which no longer exist.
+// Loading the target URL in full picks up the new build instead of silently staying on the old page.
+router.onError((error, to) => {
+  const msg = String((error as Error)?.message || error)
+  if (/dynamically imported module|Importing a module script failed|Failed to fetch|Loading chunk/i.test(msg)) {
+    const key = `converza.reload.${to.fullPath}`
+    try {
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+    } catch {
+      /* storage unavailable */
+    }
+    window.location.assign(to.fullPath)
+  }
+})
+
 router.afterEach((to) => {
+  try {
+    sessionStorage.removeItem(`converza.reload.${to.fullPath}`)
+  } catch {
+    /* storage unavailable */
+  }
   document.title = to.meta.title ? `${to.meta.title} · Converza` : 'Converza'
 })
 
