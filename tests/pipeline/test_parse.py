@@ -71,3 +71,17 @@ def test_unknown_pdf_still_returns_what_was_read(tmp_path):
     r = readable_summary(doc)
     assert r["numbers"][0]["value"] == 12_450_000 and r["numbers"][0]["page_n"] == 1
     assert "2024-11-14" in r["dates"] and r["stirs"] == ["305112233"] and "Dear partner" in r["text_excerpt"]
+
+
+def test_statement_with_invoice_purposes_is_still_a_statement(tmp_path):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(["ҲИСОБ РАҚАМИДАН КЎЧИРМА"])
+    ws.append(["Давр: 01.01.2026 - 31.08.2026"])
+    ws.append(["Сана", "Ҳужжат №", "Айланма", None, "Контрагент"])
+    ws.append([None, None, "Дебет", "Кредит", "Номи", "СТИР", "Тўлов мақсади"])
+    for i in range(30):
+        ws.append(["05.01.2026", str(i), 1000, None, "X MChJ", "305112233", f"Счет-фактура № {i} hisob-faktura invoice"])
+    f = tmp_path / "s.xlsx"
+    wb.save(f)
+    assert parse_document(str(f), "", tmp_path / "o").doc_type == "bank_statement"

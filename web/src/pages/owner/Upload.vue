@@ -82,11 +82,11 @@ function summaryText(d: DocumentOut): string {
   if (typeof s.text === 'string') return s.text
   if (typeof s.extracted === 'string') return s.extracted
   const parts: string[] = []
-  for (const [k, v] of Object.entries(s)) {
-    if (['partial', 'text'].includes(k) || v == null || typeof v === 'object') continue
-    parts.push(`${k.replace(/_/g, ' ')}: ${v}`)
-    if (parts.length >= 3) break
-  }
+  if (s.transactions != null) parts.push(t('{n} transactions', { n: s.transactions }))
+  if (s.categories != null) parts.push(t('{n} categories', { n: s.categories }))
+  if (s.fields != null) parts.push(t('{n} fields', { n: s.fields }))
+  if (s.low_confidence) parts.push(t('{n} below 80% confidence', { n: s.low_confidence }))
+  if (s.unmapped_count) parts.push(t('{n} unmapped lines', { n: s.unmapped_count }))
   return parts.join(' · ')
 }
 

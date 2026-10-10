@@ -10,6 +10,7 @@ export function useAuthedImage(url: Ref<string | null | undefined>) {
   const loading = ref(false)
   const failed = ref(false)
   let current: string | null = null
+  let inflight: AbortController | null = null
 
   function revoke() {
     if (current) URL.revokeObjectURL(current)
@@ -20,6 +21,8 @@ export function useAuthedImage(url: Ref<string | null | undefined>) {
     url,
     async (u) => {
       revoke()
+      inflight?.abort() // a page image can be several hundred KB: don't let a stale one hold the connection
+      inflight = null
       failed.value = false
       if (!u) {
         src.value = null
@@ -34,7 +37,8 @@ export function useAuthedImage(url: Ref<string | null | undefined>) {
           headers.Authorization = `Bearer ${a.access}`
           target = `${u}${u.includes('?') ? '&' : '?'}token=${encodeURIComponent(a.access)}`
         }
-        const res = await fetch(target, { headers })
+        inflight = new AbortController()
+        const res = await fetch(target, { headers, signal: inflight.signal })
         if (!res.ok) throw new Error(String(res.status))
         const blob = await res.blob()
         if (url.value !== u) return
@@ -46,12 +50,15 @@ export function useAuthedImage(url: Ref<string | null | undefined>) {
           src.value = null
         }
       } finally {
-        loading.value = false
+        if (url.value === u) loading.value = false
       }
     },
     { immediate: true },
   )
 
-  onBeforeUnmount(revoke)
+  onBeforeUnmount(() => {
+    inflight?.abort()
+    revoke()
+  })
   return { src, loading, failed }
 }

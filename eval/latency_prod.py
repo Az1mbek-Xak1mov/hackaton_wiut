@@ -2,7 +2,7 @@
 
     uv run python -m eval.latency_prod              # query production, write + merge
     uv run python -m eval.latency_prod --dry-run    # query and print only
-    uv run python -m eval.latency_prod --merge-only # re-merge eval/results/latency_production.json into the newest results
+    uv run python -m eval.latency_prod --merge-only # re-merge eval/latency_production.json into the newest results
 
 Source: jobs.stage_timings["total"] (ms spent in pipeline stages, written by app/modules/jobs/runner.py) joined
 with documents.doc_type for finished `analyse_document` jobs. The SQL runs in a read-only session over
@@ -30,7 +30,7 @@ HOST = "deploy@159.195.213.245"
 COMPOSE = ["docker", "compose", "-p", "converza", "--env-file", "/srv/converza/.env",
            "-f", "/srv/converza/repo/compose.prod.yml"]
 RESULTS = ROOT / "eval" / "results"
-STANDALONE = RESULTS / "latency_production.json"
+STANDALONE = RESULTS.parent / "latency_production.json"
 SERVER = "4 vCPU, no GPU, 7.8 GiB RAM shared with other services; worker concurrency per WORKER_CONCURRENCY"
 
 SQL = """

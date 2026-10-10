@@ -333,6 +333,23 @@ def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6, retry_
                    lang=lang)
 
 
+def ocr_region(image_path: str, box: tuple[int, int, int, int], *, upscale: int = 3, lang: str | None = None) -> list[Word]:
+    """OCR one region of a saved page PNG (e.g. a header band the full-page pass lost). Words are returned
+    in PNG pixel coordinates."""
+    if not available_langs():
+        return []
+    img = Image.open(image_path).convert("L")
+    x0, y0, x1, y1 = (max(0, box[0]), max(0, box[1]), min(img.width, box[2]), min(img.height, box[3]))
+    if x1 - x0 < 10 or y1 - y0 < 10:
+        return []
+    crop = img.crop((x0, y0, x1, y1)).resize(((x1 - x0) * upscale, (y1 - y0) * upscale), Image.LANCZOS)
+    have = [l for l in available_langs() if l != "osd"]
+    lang = lang or "+".join(l for l in ("uzb_cyrl", "rus", "uzb") if l in have) or "eng"
+    words, _ = _tesseract(np.asarray(crop), lang, 6)
+    return [Word(text=w.text, x0=x0 + w.x0 / upscale, y0=y0 + w.y0 / upscale, x1=x0 + w.x1 / upscale,
+                 y1=y0 + w.y1 / upscale, conf=w.conf) for w in words]
+
+
 def reocr_digits(page_img: Image.Image, bbox: list[float], pad: float = 6.0) -> tuple[str, float] | None:
     """Second pass on one numeric cell with a digit whitelist. Returns (text, conf 0-1) or None."""
     x0, y0, x1, y1 = bbox

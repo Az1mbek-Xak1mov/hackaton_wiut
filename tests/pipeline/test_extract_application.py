@@ -61,3 +61,18 @@ def test_declared_debts_amount_in_thousands(tmp_path):
     by = {f.field: f for f in extract_application(parse_document(str(pdf), "", tmp_path / "out"))}
     assert by["application.declared_debts_total"].value == pytest.approx(148_000)
     assert by["application.requested_amount"].value == pytest.approx(850_000)
+
+
+def test_declared_debt_lines_become_facts(tmp_path):
+    pdf = _app_pdf(tmp_path / "a.pdf", [
+        "Mavjud kreditlar va qarzlar / Действующие кредиты и займы:   183 615 000 so'm",
+        "— Yangi Asr Bank, shartnoma / договор № 2025-0583: qoldiq / остаток 183 615 000 so'm, oylik to'lov / ежемесячный",
+        "платеж 22 438 000 so'm",
+        "Срок кредита / Kredit muddati / Loan term:   36 мес.",
+    ])
+    by = {f.field: f for f in extract_application(parse_document(str(pdf), "", tmp_path / "out"))}
+    assert by["application.declared_debt.1.contract_no"].note == "2025-0583"
+    assert by["application.declared_debt.1.monthly"].value == pytest.approx(22_438)
+    assert by["application.declared_debt.1.outstanding"].value == pytest.approx(183_615)
+    assert "2025-0583" in by["application.declared_debts_total"].note
+    assert by["application.term_months"].value == 36

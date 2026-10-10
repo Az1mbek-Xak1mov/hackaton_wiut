@@ -28,7 +28,7 @@ def test_public_analyse_end_to_end(client, session_factory, monkeypatch):
     assert res["unmapped"][0]["text"] == "Unofficial line"
     assert res["readable"]["pages"] == 1
     img = client.get(rev["page_image_url"])
-    assert img.status_code == 200 and img.headers["content-type"] == "image/png"
+    assert img.status_code == 200 and img.headers["content-type"] in ("image/jpeg", "image/png")
     # anonymous evidence-store fetch works for public documents
     keys = ",".join(f["key"] for f in res["facts"])
     assert len(client.get(f"/api/v1/facts?keys={keys}").json()["facts"]) == len(res["facts"])

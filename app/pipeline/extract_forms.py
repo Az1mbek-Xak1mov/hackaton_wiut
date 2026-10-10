@@ -114,7 +114,7 @@ def _header_role(text: str) -> tuple[str | None, str | None, int | None]:
     period = None
     if re.search(r"начал|boshi|бошига|бош[иа]|прошл|o'tgan|ўтган|oldingi|prior|previous|beginning|opening", t):
         period = "prev"
-    elif re.search(r"конец|конц|oxir|охир|отчетн\w* период|за отчетный|hisobot davrida|ҳисобот даврида|current|closing|end of", t):
+    elif re.search(r"конец|конц|oxir|охир|отчетн\w* период|за отчетный|hisobot davri|ҳисобот даври|current|closing|end of", t):
         period = "cur"
     else:
         period = _fuzzy_period(t)
@@ -152,6 +152,34 @@ def _assign_roles(cols: list[_Col], form: str) -> bool:
     if (pl == "cur" and pr != "cur") or (pr == "prev" and pl != "prev") or (yl and yr and yl > yr):
         left.role, right.role = "cur", "prev"
     return bool(pl or pr or (yl and yr))
+
+
+def _recover_headers(doc: ParsedDoc, cols: list[_Col], rows_by_page, first_code_y: dict[int, float],
+                     code_x: float | None, form: str) -> bool:
+    """The full-page OCR lost the column-header row (bold, between rules, small): OCR the band above the
+    first line code again, upscaled, and re-read the column headers from it."""
+    page = doc.pages[0]
+    y_lim = first_code_y.get(page.n)
+    if y_lim is None or not page.image_path:
+        return False
+    try:
+        from app.pipeline.ocr import ocr_region
+    except Exception:
+        return False
+    s = page.image_scale or 1.0
+    heights = sorted(w.y1 - w.y0 for w in page.words) or [20.0]
+    lh = heights[len(heights) // 2]
+    box = (0, int((y_lim - 14 * lh) * s), int(page.width * s), int((y_lim - 0.6 * lh) * s))
+    try:
+        words = ocr_region(page.image_path, box)
+    except Exception:
+        return False
+    if not words:
+        return False
+    page_words = [Word(text=w.text, x0=w.x0 / s, y0=w.y0 / s, x1=w.x1 / s, y1=w.y1 / s, conf=w.conf) for w in words]
+    rows = cluster_rows(page_words, page.n, ocr=True)
+    _attach_headers(cols, [(page.width, rows, True)], {page.n: y_lim}, code_x)
+    return _assign_roles(cols, form)
 
 
 def _fix_income_expense(cols: list[_Col], code_cands: list[_Cand]) -> None:
@@ -350,6 +378,8 @@ def extract_forms(doc: ParsedDoc, form: str | None = None) -> tuple[list[FactDra
     order_confirmed = True
     if value_cols:
         order_confirmed = _assign_roles(value_cols, form)
+        if not order_confirmed and len(value_cols) >= 2 and doc.pages[0].ocr_used:
+            order_confirmed = _recover_headers(doc, value_cols, rows_by_page, first_code_y, code_x, form)
         _fix_income_expense(value_cols, code_cands)
 
     # wrapped labels: attach text-only rows to the nearest code row on the same page

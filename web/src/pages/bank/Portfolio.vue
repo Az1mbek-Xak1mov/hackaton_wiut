@@ -125,17 +125,17 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
             <div v-if="distBar.length" style="display: flex; height: 16px; gap: 2px; border-radius: 3px; overflow: hidden" role="img" :aria-label="distBar.map((d) => `${d.label} ${d.n}`).join(', ')">
               <span v-for="d in distBar" :key="d.status" :style="{ flex: `${d.n} 1 0`, background: MARK[d.status] }"></span>
             </div>
-            <table class="tbl">
+            <div class="scrollbox"><table class="tbl">
               <thead><tr><th>{{ t('Status') }}</th><th>{{ t('Means') }}</th><th class="r">{{ t('Borrowers') }}</th><th class="r">{{ t('Exposure') }}</th></tr></thead>
               <tbody>
                 <tr v-for="d in s.status_distribution" :key="d.status">
-                  <td><span class="pill" :class="severityPillClass(d.status)">{{ d.label }}</span></td>
+                  <td><span class="pill" :class="severityPillClass(d.status)">{{ statusLabel(d.status) }}</span></td>
                   <td class="muted">{{ d.means }}</td>
                   <td class="r num"><RouterLink :to="`/bank/borrowers?status=${d.status}`">{{ d.n }}</RouterLink></td>
                   <td class="r num">{{ d.exposure_display }}<template v-if="!hasUnit(d.exposure_display)"> {{ t('bn') }}</template></td>
                 </tr>
               </tbody>
-            </table>
+            </table></div>
             <p class="muted" style="font-size: 12px">{{ s.calibration_note || t('Thresholds are illustrative; calibration against bank history is pilot month 1.') }} {{ t('No numeric score is produced.') }}</p>
           </section>
 

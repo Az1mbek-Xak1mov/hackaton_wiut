@@ -69,6 +69,7 @@ const items = computed<Item[]>(() => {
 .side { flex: 1 1 220px; max-width: 220px; padding: 16px 12px; border-right: 1px solid var(--border); background: var(--surface-2); }
 .who { padding: 6px 12px 14px; }
 .items { display: flex; flex-direction: column; gap: 2px; }
+.card a { display: inline; height: auto; padding: 0; background: none; color: var(--accent); font-weight: 400; font-size: 12px; }
 .card { margin-top: 28px; padding: 12px; border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); font-size: 12px; }
 @media (max-width: 720px) {
   .side { max-width: none; border-right: 0; border-bottom: 1px solid var(--border); padding: 10px 12px; }

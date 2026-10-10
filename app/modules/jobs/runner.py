@@ -211,7 +211,7 @@ def handle_analyse_document(db: Session, job: Job, st: Stages):
     out_dir = storage.doc_dir(str(doc.uuid))
     parsed = call(parse_document, str(storage.abs_path(doc.storage_path)), doc.mime, str(out_dir),
                   max_ocr_pages=settings.PUBLIC_MAX_OCR_PAGES if public else settings.BANK_MAX_OCR_PAGES,
-                  deadline=deadline_epoch)
+                  deadline=deadline_epoch, filename=doc.filename or "")
     _store_parsed(db, doc, parsed)
     summary = dict(doc.summary or {})
     summary["kind"] = parsed.kind

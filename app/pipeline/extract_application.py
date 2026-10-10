@@ -23,7 +23,7 @@ LABELS_EN = {"requested_amount": "Requested loan amount", "term_months": "Reques
 _NUM = re.compile(r"\(?-?\d[\d \u00a0.,]*\d\)?|\d")
 
 
-def _match_field(label: str) -> str | None:
+def _match_field(label: str, exact: bool = False) -> str | None:
     nl = norm_text(label)
     if not nl:
         return None
@@ -41,7 +41,7 @@ def _match_field(label: str) -> str | None:
                     s = fuzz.partial_ratio(nlab, nl) if len(nlab) >= 6 else 0.0
                 if s > best_s:
                     best, best_s = key, s
-    return best if best_s >= 92 else None
+    return best if best_s >= (100 if exact else 92) else None
 
 
 def _split(row: Row) -> tuple[list[Word], list[Word]] | None:
@@ -53,9 +53,32 @@ def _split(row: Row) -> tuple[list[Word], list[Word]] | None:
     return None
 
 
+def _split_at_number(row: Row) -> tuple[list[Word], list[Word]] | None:
+    """OCR lost the colon: 'Срок кредита / Kredit muddati 36 мес.' -> split before the first number,
+    only for numeric fields."""
+    for i, w in enumerate(row.words):
+        if i and re.match(r"^\(?\d", w.text):
+            if re.match(r"^\d{4}[-./]", w.text):  # a date or document number, not an amount
+                return None
+            key = _match_field(" ".join(x.text for x in row.words[:i]), exact=True)
+            if key in ("requested_amount", "term_months", "rate_pct", "declared_revenue_fy", "declared_debts_total"):
+                return row.words[:i], row.words[i:]
+            return None
+    return None
+
+
+def _unit_fix(text: str) -> str:
+    """OCR spellings of unit words: 'Tbic. cym' / 'тис. cym' -> 'тыс. сум', 'min so'm' -> 'mln so'm'."""
+    t = re.sub(r"\b(?:tbic|тис|tыс|тbic|tис)\.?", "тыс.", text, flags=re.I)
+    t = re.sub(r"\bcym\b", "сум", t, flags=re.I)
+    return re.sub(r"\bmin(?=\.?\s*(?:so|сўм|сум))", "mln", t, flags=re.I)
+
+
 def _first_amount(text: str) -> tuple[float, str] | None:
     for m in _NUM.finditer(text):
         raw = m.group(0).strip()
+        if re.fullmatch(r"\(?(?:19|20)\d{2}\)?", raw) and _NUM.search(text, m.end()):
+            continue  # "(2025) 12 388 520 000 сум": the year, then the amount
         v = parse_number(raw, prefer_integer=True)
         if v is not None:
             return v, raw
@@ -75,7 +98,7 @@ def extract_application(doc: ParsedDoc) -> list[FactDraft]:
     for page in doc.pages:
         rows = cluster_rows(page.words, page.n, ocr=page.ocr_used)
         for i, row in enumerate(rows):
-            sp = _split(row)
+            sp = _split(row) or _split_at_number(row)
             if not sp:
                 continue
             lab_words, val_words = sp
@@ -109,7 +132,68 @@ def extract_application(doc: ParsedDoc) -> list[FactDraft]:
             if f is not None:
                 facts.append(f)
                 seen.add(key)
+                if key == "declared_debts_total" and f.value:
+                    debts = _debt_lines(rows, i + 1, page)
+                    facts.extend(debts)
+                    contracts = [d.note for d in debts if d.field.endswith(".contract_no")]
+                    if contracts:  # rules (R06) read contract numbers from this fact's note
+                        f.note = (f.note + "; " if f.note else "") + "contracts: " + ", ".join(contracts)
     return facts
+
+
+_CONTRACT = re.compile(r"(?:№|no\.?|n°|n\?)\s*([A-Za-zА-Яа-я]{0,3}-?\d[\w\-/]*)", re.I)
+_MONTHLY = re.compile(r"(ежемесячн\w*\s+плат[её]ж\w*|oylik\s+to'lov\w*|ойлик\s+тўлов\w*|monthly\s+payment)", re.I)
+_BALANCE = re.compile(r"(остаток|qoldiq|қолдиқ|outstanding|balance)", re.I)
+
+
+def _amount_after(text: str, m) -> float | None:
+    if not m:
+        return None
+    tail = text[m.end():]
+    tail = re.split(r"[,;](?=\s*\D)", tail, maxsplit=1)[0]
+    a = _first_amount(tail)
+    return round(amount_to_kuzs(a[0], tail), 4) if a else None
+
+
+def _debt_lines(rows: list[Row], start: int, page) -> list[FactDraft]:
+    """'— Hamkorbank, shartnoma / договор № 2024-1177: qoldiq / остаток 148 000 000 so'm, oylik to'lov /
+    ежемесячный платеж 18 500 000 so'm' lines under the declared-debts field (may wrap over rows)."""
+    items: list[list[Row]] = []
+    for r in rows[start:start + 12]:
+        t = row_text(r).strip()
+        if not t:
+            continue
+        if re.match(r"^[—–\-•]", t):
+            items.append([r])
+        elif items and not _split(r) and not _match_field(t) and \
+                not re.match(r"^\s*(?:\d+-bo'lim|\d+-бўлим|раздел|section)\b", light_norm(t)):
+            items[-1].append(r)  # wrapped continuation of the debt line
+        else:
+            break
+    out: list[FactDraft] = []
+    conf = 0.97
+    for n, item in enumerate(items, start=1):
+        text = " ".join(row_text(r) for r in item)
+        words = [w for r in item for w in r.words]
+        base = dict(page_n=page.n, bbox=_r(union_bbox(words)), passage="\n".join(row_text(r) for r in item),
+                    confidence=conf if not page.ocr_used else 0.8, method="rule", kind="extracted", printed=text)
+        cm = _CONTRACT.search(text)
+        lender = re.sub(r"^[—–\-•\s]+", "", text.split(",")[0]).strip()
+        if cm:
+            out.append(FactDraft(field=f"application.declared_debt.{n}.contract_no", label=f"Declared debt {n}: contract",
+                                 value=0.0, unit="text", note=cm.group(1).rstrip(":.,"), **base))
+        if lender:
+            out.append(FactDraft(field=f"application.declared_debt.{n}.lender", label=f"Declared debt {n}: lender",
+                                 value=0.0, unit="text", note=lender, **base))
+        mo = _amount_after(text, _MONTHLY.search(text))
+        if mo is not None:
+            out.append(FactDraft(field=f"application.declared_debt.{n}.monthly", label=f"Declared debt {n}: monthly payment",
+                                 value=mo, unit="kUZS", **base))
+        bal = _amount_after(text, _BALANCE.search(text))
+        if bal is not None:
+            out.append(FactDraft(field=f"application.declared_debt.{n}.outstanding", label=f"Declared debt {n}: outstanding",
+                                 value=bal, unit="kUZS", **base))
+    return out
 
 
 def _r(b):
@@ -128,7 +212,7 @@ def _make(key: str, label: str, value_text: str, none_words: list[str], doc: Par
         if amt is None:
             return None
         v, raw = amt
-        unit_ctx = value_text + " " + label
+        unit_ctx = _unit_fix(value_text + " " + label)
         kuzs = amount_to_kuzs(v, unit_ctx)
         period = ""
         if key == "declared_revenue_fy":

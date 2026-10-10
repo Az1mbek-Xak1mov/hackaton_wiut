@@ -73,6 +73,17 @@ def xlsx_header_score(sheets) -> float:
     return 3.0 if best >= 3 else (1.0 if best == 2 else 0.0)
 
 
+def _title_rows(sheets) -> int:
+    """Rows above (and including) the transaction-table header, max 10 — the part of a sheet that says
+    what the document is. Transaction purpose texts ('счет-фактура № …') must not vote."""
+    for s_ in sheets[:1]:
+        for i, row in enumerate(s_.rows[:30]):
+            text = cls.light_norm(" ".join(str(v) for v in row if isinstance(v, str)))
+            if sum(1 for pat in _STATEMENT_HEADER.values() if re.search(pat, text)) >= 2:
+                return min(10, i + 2)
+    return 10
+
+
 def _codes_in(pages: list[ParsedPage]) -> set[str]:
     out = set()
     for p in pages:
@@ -170,7 +181,7 @@ def _parse_document(path: str, mime: str = "", out_dir: str | Path = ".", *, max
         except Exception as exc:  # corrupt workbook
             doc.failure_cause = f"The spreadsheet could not be opened ({exc.__class__.__name__})."
             return doc
-        text = sheet_text(doc.sheets)
+        text = sheet_text(doc.sheets, max_rows=_title_rows(doc.sheets))  # title + header only: purpose texts mention invoices
         doc.doc_type, doc.type_confidence, doc.type_reason = cls.classify_text(
             text, xlsx_header_score=xlsx_header_score(doc.sheets), kind="xlsx")
         doc.text_layer = True

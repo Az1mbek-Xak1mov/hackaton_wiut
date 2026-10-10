@@ -88,6 +88,7 @@ export interface VersionInfo {
   deployed_at: string
   llm_provider: string
   llm_enabled: boolean
+  llm_configured?: boolean
 }
 
 export interface TokenPair {

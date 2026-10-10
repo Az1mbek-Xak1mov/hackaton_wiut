@@ -1,5 +1,12 @@
 // Russian UI strings, keyed by the English text (see ./index.ts). Generated from the key list; edit freely.
 const ru: Record<string, string> = {
+  "{n} transactions": "{n} операций",
+  "{n} categories": "{n} категорий",
+  "{n} fields": "{n} полей",
+  "{n} below 80% confidence": "{n} ниже 80% достоверности",
+  "{n} unmapped lines": "{n} строк без кода",
+  "Loading page image… (a scanned page can take a few seconds)": "Загрузка изображения страницы… (скан может грузиться несколько секунд)",
+  "LLM is off — matching facts": "LLM выключена — подходящие факты",
   "Page not found": "Страница не найдена",
   "This address does not exist in Converza.": "Такого адреса в Converza нет.",
   "Analyse a document": "Анализ документа",

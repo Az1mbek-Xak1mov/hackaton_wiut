@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.db import get_db
-from app.modules.settings.service import llm_enabled
+from app.modules.settings.service import llm_configured, llm_enabled
 
 router = APIRouter(prefix="/api/v1", tags=["system"])
 
@@ -22,7 +22,8 @@ def version(db: Session = Depends(get_db)):
         enabled = False
     return {"git_sha": settings.GIT_SHA, "built_at": settings.BUILT_AT,
             "deployed_at": settings.DEPLOYED_AT or _STARTED_AT,
-            "llm_provider": settings.LLM_PROVIDER, "llm_enabled": enabled}
+            "llm_provider": settings.LLM_PROVIDER, "llm_enabled": enabled,
+            "llm_configured": llm_configured()}
 
 
 def latest_eval_result() -> dict:

@@ -1,5 +1,12 @@
 // Uzbek (Latin) UI strings, keyed by the English text (see ./index.ts). Generated from the key list; edit freely.
 const uz: Record<string, string> = {
+  "{n} transactions": "{n} ta operatsiya",
+  "{n} categories": "{n} ta turkum",
+  "{n} fields": "{n} ta maydon",
+  "{n} below 80% confidence": "{n} tasi 80% ishonchlilikdan past",
+  "{n} unmapped lines": "{n} ta kodsiz qator",
+  "Loading page image… (a scanned page can take a few seconds)": "Sahifa tasviri yuklanmoqda… (skan bir necha soniya olishi mumkin)",
+  "LLM is off — matching facts": "LLM o'chirilgan — mos faktlar",
   "Page not found": "Sahifa topilmadi",
   "This address does not exist in Converza.": "Converza'da bunday manzil yo'q.",
   "Analyse a document": "Hujjatni tahlil qilish",

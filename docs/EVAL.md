@@ -2,7 +2,7 @@
 
 > **Measured on our synthetic generator's test split and hand-made hard cases; overstates real-document accuracy; real-document evaluation is pilot month 1.**
 
-Source: `eval/results/2026-10-10_1834_283cd8d.json` · generated 2026-10-10T18:34:53+05:00 · git `283cd8d-dirty`  
+Source: `eval/results/2026-10-10_2042_cd93dff.json` · generated 2026-10-10T20:42:56+05:00 · git `cd93dff-dirty`  
 Dataset: synthetic test split: 40 bundles (b0160–b0199), 275 documents; hard cases: 20  
 Pipeline functions called directly (no database, LLM off). Borrower STIR and application date are given as known to the bank. Definitions: eval/metrics.py and docs/EVAL.md.
 
@@ -10,29 +10,29 @@ Regenerate: `uv run python -m eval.run --split test` then `uv run python -m eval
 
 ## Notes on this run
 
-- First test-split run (eval/results/superseded/2026-10-10_1824_283cd8d.json) exposed a gap that the dev split shows too: Uzbek-Cyrillic opening/closing balance labels on layout-B statements were not read, so month-end balances were missing for those statements. Fixed (transliteration before matching), checked on dev and train (100% month-end balances there), categoriser retrained on the regenerated train split, then this run. Nothing was tuned on the test split or the hard cases.
-- The extraction stage (track D1) may still be landing column and period fixes for scanned forms; the Form 1 / Form 2 figures for scans in this run reflect the code at git 283cd8d plus uncommitted changes (-dirty).
-- Hard case H13 (loan repaid to a microfinance organisation under an abbreviation) fails: the abbreviated purpose ('Kr. qayt. sh.') is not categorised as a loan repayment. It is a test-only case and was deliberately not patched.
+- Previous run: eval/results/2026-10-10_1834_283cd8d.json. Changes since (extraction track D1): column headers lost by full-page OCR are re-read from an upscaled crop of the header band; small spurious value columns (OCR debris inside labels) are dropped; values whose current/prior order could not be confirmed are capped at confidence 0.80; layout-B Uzbek-Cyrillic statements are classified from title/header rows only; declared-debt lines of the application are extracted as facts; '(2025)' year prefixes and OCR unit spellings ('Tbic. cym', 'min so'm') in application amounts are handled. Tuned on dev and train only, never on test or hard cases.
+- An intermediate run (eval/results/superseded/2026-10-10_2033_cd93dff.json) showed the application F1 dropping to 0.825 from a new colon-less label fallback that mistook the form number for the requested amount; fixed on dev before this run.
+- Hard case H13 (loan repaid to a microfinance organisation under an abbreviation) still fails: the abbreviated purpose ('Kr. qayt. sh.') is not categorised as a loan repayment. It is test-only and deliberately not patched.
 
 ## Headline
 
 | metric | value |
 |---|---:|
-| Form 1 field F1 | 0.9443 |
-| Form 2 field F1 | 0.9495 |
-| Loan application field F1 | 0.914 |
-| Wrong values shown without a low-confidence flag | 196 |
-| Document type accuracy | 0.9964 |
-| Contradiction detection precision (micro) | 0.6029 |
-| Contradiction detection recall (micro) | 0.7736 |
-| Categoriser accuracy (production: rules then model) | 0.9903 |
-| Categoriser macro-F1 (production) | 0.9597 |
-| Recurring payment detection precision | 0.9872 |
-| Recurring payment detection recall | 0.9585 |
+| Form 1 field F1 | 0.9747 |
+| Form 2 field F1 | 0.9756 |
+| Loan application field F1 | 0.9485 |
+| Wrong values shown without a low-confidence flag | 33 |
+| Document type accuracy | 1 |
+| Contradiction detection precision (micro) | 0.7143 |
+| Contradiction detection recall (micro) | 0.9434 |
+| Categoriser accuracy (production: rules then model) | 0.9904 |
+| Categoriser macro-F1 (production) | 0.96 |
+| Recurring payment detection precision | 0.9833 |
+| Recurring payment detection recall | 0.9751 |
 | Template narratives passing the citation verifier | 40 of 40 |
 | Hard cases passed | 18 of 20 |
-| Latency p50 per document, laptop (ms) | 1 011 |
-| Latency p95 per document, laptop (ms) | 31 348 |
+| Latency p50 per document, laptop (ms) | 672 |
+| Latency p95 per document, laptop (ms) | 19 316 |
 
 ## Field extraction (statutory forms and application form)
 
@@ -40,37 +40,37 @@ Unit = (document, line code, column). A wrong value counts as one FP and one FN;
 
 | doc type | variant | documents | cells | tp | fp | fn | precision | recall | f1 | silent errors |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| form1 | all | 80 | 5 023 | 4 634 | 158 | 389 | 0.967 | 0.9226 | 0.9443 | 128 |
+| form1 | all | 80 | 5 023 | 4 817 | 44 | 206 | 0.9909 | 0.959 | 0.9747 | 14 |
 | form1 | text layer | 43 | 2 699 | 2 699 | 0 | 0 | 1 | 1 | 1 | 0 |
 | form1 | scan 300 dpi | 18 | 1 134 | 1 103 | 4 | 31 | 0.9964 | 0.9727 | 0.9844 | 1 |
-| form1 | scan 150 dpi | 19 | 1 190 | 832 | 154 | 358 | 0.8438 | 0.6992 | 0.7647 | 127 |
-| form2 | all | 80 | 2 616 | 2 443 | 87 | 173 | 0.9656 | 0.9339 | 0.9495 | 68 |
+| form1 | scan 150 dpi | 19 | 1 190 | 1 015 | 40 | 175 | 0.9621 | 0.8529 | 0.9042 | 13 |
+| form2 | all | 80 | 2 616 | 2 518 | 28 | 98 | 0.989 | 0.9625 | 0.9756 | 19 |
 | form2 | text layer | 45 | 1 473 | 1 473 | 0 | 0 | 1 | 1 | 1 | 0 |
-| form2 | scan 300 dpi | 9 | 292 | 261 | 21 | 31 | 0.9255 | 0.8938 | 0.9094 | 15 |
-| form2 | scan 150 dpi | 16 | 523 | 433 | 49 | 90 | 0.8983 | 0.8279 | 0.8617 | 40 |
+| form2 | scan 300 dpi | 9 | 292 | 292 | 0 | 0 | 1 | 1 | 1 | 0 |
+| form2 | scan 150 dpi | 16 | 523 | 477 | 11 | 46 | 0.9775 | 0.912 | 0.9436 | 6 |
 | form2 | phone photo | 10 | 328 | 276 | 17 | 52 | 0.942 | 0.8415 | 0.8889 | 13 |
-| loan_application | all | 40 | 200 | 170 | 2 | 30 | 0.9884 | 0.85 | 0.914 | 0 |
+| loan_application | all | 40 | 200 | 184 | 4 | 16 | 0.9787 | 0.92 | 0.9485 | 0 |
 | loan_application | text layer | 16 | 80 | 80 | 0 | 0 | 1 | 1 | 1 | 0 |
-| loan_application | scan 300 dpi | 9 | 45 | 35 | 0 | 10 | 1 | 0.7778 | 0.875 | 0 |
-| loan_application | scan 150 dpi | 6 | 30 | 21 | 1 | 9 | 0.9545 | 0.7 | 0.8077 | 0 |
-| loan_application | phone photo | 9 | 45 | 34 | 1 | 11 | 0.9714 | 0.7556 | 0.85 | 0 |
+| loan_application | scan 300 dpi | 9 | 45 | 42 | 1 | 3 | 0.9767 | 0.9333 | 0.9545 | 0 |
+| loan_application | scan 150 dpi | 6 | 30 | 24 | 2 | 6 | 0.9231 | 0.8 | 0.8571 | 0 |
+| loan_application | phone photo | 9 | 45 | 38 | 1 | 7 | 0.9744 | 0.8444 | 0.9048 | 0 |
 
 By label language (Form 1 / Form 2):
 
 | doc type | label language | documents | tp | fp | fn | precision | recall | f1 |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| form1 | ru | 28 | 1 557 | 55 | 204 | 0.9659 | 0.8842 | 0.9232 |
+| form1 | ru | 28 | 1 648 | 13 | 113 | 0.9922 | 0.9358 | 0.9632 |
 | form1 | uz_cyrl | 10 | 630 | 6 | 6 | 0.9906 | 0.9906 | 0.9906 |
-| form1 | uz_latn | 42 | 2 447 | 97 | 179 | 0.9619 | 0.9318 | 0.9466 |
-| form2 | ru | 28 | 872 | 22 | 36 | 0.9754 | 0.9604 | 0.9678 |
+| form1 | uz_latn | 42 | 2 539 | 25 | 87 | 0.9902 | 0.9669 | 0.9784 |
+| form2 | ru | 28 | 903 | 1 | 5 | 0.9989 | 0.9945 | 0.9967 |
 | form2 | uz_cyrl | 10 | 328 | 1 | 1 | 0.997 | 0.997 | 0.997 |
-| form2 | uz_latn | 42 | 1 243 | 64 | 136 | 0.951 | 0.9014 | 0.9255 |
+| form2 | uz_latn | 42 | 1 287 | 26 | 92 | 0.9802 | 0.9333 | 0.9562 |
 
 ## Document type and period
 
 | truth type | documents | correct | accuracy | most common error |
 |---|---:|---:|---:|---|
-| bank_statement | 40 | 39 | 0.975 | unknown ×1 |
+| bank_statement | 40 | 40 | 1 | — |
 | form1 | 80 | 80 | 1 | — |
 | form2 | 80 | 80 | 1 | — |
 | loan_application | 40 | 40 | 1 | — |
@@ -88,33 +88,33 @@ Unit = (bundle, rule). Planted = contradictions the generator put into the docum
 
 | rule | planted | fired | tp | fp | fn | precision | recall | f1 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| R01 | 7 | 8 | 7 | 1 | 0 | 0.875 | 1 | 0.9333 |
-| R02 | 0 | 7 | 0 | 7 | 0 | 0 | — | — |
-| R03 | 0 | 7 | 0 | 7 | 0 | 0 | — | — |
-| R04 | 11 | 12 | 9 | 3 | 2 | 0.75 | 0.8182 | 0.7826 |
-| R05 | 6 | 5 | 5 | 0 | 1 | 1 | 0.8333 | 0.9091 |
-| R06 | 11 | 5 | 5 | 0 | 6 | 1 | 0.4545 | 0.625 |
-| R07 | 7 | 6 | 4 | 2 | 3 | 0.6667 | 0.5714 | 0.6154 |
+| R01 | 7 | 7 | 7 | 0 | 0 | 1 | 1 | 1 |
+| R02 | 0 | 6 | 0 | 6 | 0 | 0 | — | — |
+| R03 | 0 | 6 | 0 | 6 | 0 | 0 | — | — |
+| R04 | 11 | 10 | 9 | 1 | 2 | 0.9 | 0.8182 | 0.8571 |
+| R05 | 6 | 6 | 6 | 0 | 0 | 1 | 1 | 1 |
+| R06 | 11 | 11 | 10 | 1 | 1 | 0.9091 | 0.9091 | 0.9091 |
+| R07 | 7 | 9 | 7 | 2 | 0 | 0.7778 | 1 | 0.875 |
 | R08 | 0 | 0 | 0 | 0 | 0 | — | — | — |
 | R09 | 6 | 8 | 6 | 2 | 0 | 0.75 | 1 | 0.8571 |
-| R10 | 5 | 6 | 5 | 1 | 0 | 0.8333 | 1 | 0.9091 |
-| R11 | 0 | 4 | 0 | 4 | 0 | 0 | — | — |
+| R10 | 5 | 5 | 5 | 0 | 0 | 1 | 1 | 1 |
+| R11 | 0 | 2 | 0 | 2 | 0 | 0 | — | — |
 | R12 | 0 | 0 | 0 | 0 | 0 | — | — | — |
-| micro (all rules) | 53 | 68 | 41 | 27 | 12 | 0.6029 | 0.7736 | 0.6777 |
+| micro (all rules) | 53 | 70 | 50 | 20 | 3 | 0.7143 | 0.9434 | 0.813 |
 
 ## Bank statements
 
 | mode | rows | accuracy | macro f1 |
 |---|---:|---:|---:|
-| rules then model (production) | 16 175 | 0.9903 | 0.9597 |
-| rules only | 16 175 | 0.987 | 0.951 |
-| model only | 16 175 | 0.9909 | 0.9616 |
+| rules then model (production) | 16 603 | 0.9904 | 0.96 |
+| rules only | 16 603 | 0.9871 | 0.9515 |
+| model only | 16 603 | 0.991 | 0.9619 |
 
 Most frequent categorisation errors (production mode):
 
 | truth | predicted | rows |
 |---|---|---:|
-| supplier_payment | other | 147 |
+| supplier_payment | other | 150 |
 | payroll_tax | tax | 9 |
 | bank_fee | supplier_payment | 1 |
 
@@ -122,38 +122,38 @@ Recurring payments (group matched by statement rows, IoU ≥ 0.5):
 
 | metric | value |
 |---|---:|
-| tp | 231 |
-| fp | 3 |
-| fn | 10 |
-| precision | 0.9872 |
-| recall | 0.9585 |
-| f1 | 0.9726 |
+| tp | 235 |
+| fp | 4 |
+| fn | 6 |
+| precision | 0.9833 |
+| recall | 0.9751 |
+| f1 | 0.9792 |
 
 Month-end balances:
 
 | metric | value |
 |---|---:|
 | months | 320 |
-| exact | 312 |
-| accuracy | 0.975 |
+| exact | 320 |
+| accuracy | 1 |
 
 ## Latency per document (laptop)
 
 | doc type | path | documents | p50 ms | p95 ms | max ms |
 |---|---|---:|---:|---:|---:|
-| bank_statement | XLSX | 40 | 286 | 491 | 681 |
-| form1 | OCR (scanned PDF) | 37 | 24 771 | 55 057 | 58 753 |
-| form1 | PDF text layer | 43 | 1 017 | 1 686 | 1 700 |
-| form2 | OCR (photo/image) | 10 | 8 954 | 13 937 | 13 937 |
-| form2 | OCR (scanned PDF) | 25 | 12 100 | 24 341 | 30 344 |
-| form2 | PDF text layer | 45 | 661 | 878 | 1 012 |
-| loan_application | OCR (photo/image) | 9 | 10 191 | 12 455 | 12 455 |
-| loan_application | OCR (scanned PDF) | 15 | 13 259 | 15 116 | 15 116 |
-| loan_application | PDF text layer | 16 | 508 | 813 | 813 |
-| tax_declaration | OCR (photo/image) | 3 | 6 320 | 6 829 | 6 829 |
-| tax_declaration | OCR (scanned PDF) | 15 | 8 241 | 11 759 | 11 759 |
-| tax_declaration | PDF text layer | 17 | 390 | 549 | 549 |
-| all documents | all | 275 | 1 011 | 31 348 | 58 753 |
+| bank_statement | XLSX | 40 | 158 | 254 | 304 |
+| form1 | OCR (scanned PDF) | 37 | 15 885 | 32 919 | 35 109 |
+| form1 | PDF text layer | 43 | 671 | 1 212 | 1 521 |
+| form2 | OCR (photo/image) | 10 | 5 790 | 6 904 | 6 904 |
+| form2 | OCR (scanned PDF) | 25 | 7 033 | 16 005 | 16 262 |
+| form2 | PDF text layer | 45 | 344 | 431 | 445 |
+| loan_application | OCR (photo/image) | 9 | 5 871 | 6 558 | 6 558 |
+| loan_application | OCR (scanned PDF) | 15 | 7 777 | 9 200 | 9 200 |
+| loan_application | PDF text layer | 16 | 366 | 782 | 782 |
+| tax_declaration | OCR (photo/image) | 3 | 3 821 | 3 884 | 3 884 |
+| tax_declaration | OCR (scanned PDF) | 15 | 5 132 | 6 246 | 6 246 |
+| tax_declaration | PDF text layer | 17 | 197 | 261 | 261 |
+| all documents | all | 275 | 672 | 19 316 | 35 109 |
 
 | metric | value |
 |---|---|
@@ -161,7 +161,7 @@ Month-end balances:
 | cpu_threads | 12 |
 | parallel_workers | 6 |
 | omp_thread_limit | 1 |
-| wall_clock_s | 384.8 |
+| wall_clock_s | 232.8 |
 | note | laptop, documents processed in parallel; production latency comes from server job timings |
 
 ## Hard cases
@@ -186,7 +186,7 @@ Month-end balances:
 | H16 | password-protected PDF | failed: 'PDF is encrypted' (and nothing invented) | pass | failure cause: The PDF is encrypted (password-protected), so it cannot be read. Upload an unprotected copy. |
 | H17 | empty / all-zero Form 2 | analyzed; only zero/dash cells; nothing invented | pass | non-zero values reported on an all-zero form: 0 |
 | H18 | same file uploaded twice | R12 duplicate (same sha256) | pass | rules fired: R10, R12 |
-| H19 | 640x480 blurred phone photo | failed with cause (resolution, blur score) + whatever text was read | pass | failure cause: Could not analyse reliably: the image is 640×480 px (minimum 900 px on the short side); it is blurred (sharpness 1, minimum 50); text recognition confidence is 38% (minimum 60%). Amounts may be unreadable. Re-upload a sharper scan (≥ 200 dpi) or enter the values manually.; facts 0 |
+| H19 | 640x480 blurred phone photo | failed with cause (resolution, blur score) + whatever text was read | pass | failure cause: Could not analyse reliably: the image is 640×480 px (minimum 900 px on the short side); it is blurred (sharpness 1, minimum 25); text recognition confidence is 38% (minimum 60%). Amounts may be unreadable. Re-upload a sharper scan (≥ 200 dpi) or enter the values manually.; facts 0 |
 | H20 | a Word letter saved as PDF (no figures) | unknown + 'what I could read'; no numbers invented | pass | classified as unknown; facts 0 |
 
 Field extraction on hard-case forms:

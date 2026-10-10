@@ -139,15 +139,18 @@ function argText(a: Record<string, any>) {
             <div v-if="turn.pending" class="ans muted">{{ t('Looking through your records…') }}</div>
             <div v-else-if="turn.error" class="ans"><div class="error-box">{{ turn.error }}</div></div>
             <div v-else-if="turn.answer" class="ans">
-              <div v-if="turn.mode === 'facts_only'" class="row"><span class="pill pill-neutral">{{ t('Language model off') }}</span><span class="muted" style="font-size: 12px">{{ t('These are the records matching your question, without a written answer.') }}</span></div>
-              <p><strong><InlineEvidence :text="turn.answer.direct_answer" /></strong></p>
+              <template v-if="turn.mode === 'facts_only'">
+                <div class="row"><span class="pill pill-neutral">{{ t('LLM is off — matching facts') }}</span></div>
+                <p class="muted" style="font-size: 13px">{{ t('These are the records matching your question, without a written answer.') }}</p>
+              </template>
+              <p v-else><strong><InlineEvidence :text="turn.answer.direct_answer" /></strong></p>
               <div v-if="turn.answer.table?.length" class="scrollbox">
                 <table class="tbl">
                   <thead><tr><th>{{ t('Item') }}</th><th class="r">{{ t('Value') }}</th><th>{{ t('Record') }}</th></tr></thead>
                   <tbody>
                     <tr v-for="(r, k) in turn.answer.table" :key="k">
                       <td><InlineEvidence :text="r.label" /></td>
-                      <td class="r num">
+                      <td class="r num" style="white-space: nowrap">
                         <template v-if="r.fact_key && ev.facts[r.fact_key]">{{ ev.facts[r.fact_key].display }} <span class="muted">{{ ev.facts[r.fact_key].display_unit }}</span></template>
                         <span v-else class="muted">—</span>
                       </td>

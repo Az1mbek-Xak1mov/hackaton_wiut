@@ -50,7 +50,16 @@ def page_image(doc_uuid: UUID, n: int, request: Request, db: Session = Depends(g
     path = storage.abs_path(s.page_or_404(doc, n).image_path)
     if not path.is_file():
         raise NotFoundError("page")
-    return FileResponse(path, media_type="image/png", headers={"Cache-Control": "private, max-age=3600"})
+    # Same pixel size as the PNG (bbox overlay unchanged), ~5-10x smaller for phones on slow links.
+    jpg = path.with_suffix(".jpg")
+    if not jpg.is_file():
+        try:
+            from PIL import Image
+            with Image.open(path) as im:
+                im.convert("L").save(jpg, "JPEG", quality=70, optimize=True)
+        except OSError:
+            return FileResponse(path, media_type="image/png", headers={"Cache-Control": "private, max-age=3600"})
+    return FileResponse(jpg, media_type="image/jpeg", headers={"Cache-Control": "private, max-age=3600"})
 
 
 @router.get("/documents/{doc_uuid}/original")

@@ -39,7 +39,7 @@ defineExpose({ src })
 
 <template>
   <div class="ph">
-    <div v-if="loading" class="ph-msg muted">{{ t('Loading page image…') }}</div>
+    <div v-if="loading" class="ph-msg muted">{{ t('Loading page image… (a scanned page can take a few seconds)') }}</div>
     <div v-else-if="failed || !src" class="ph-msg muted">{{ t('Page image not available.') }}</div>
     <template v-else>
       <svg

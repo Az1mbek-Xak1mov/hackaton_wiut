@@ -60,8 +60,10 @@ const passageParts = computed(() => {
   const x = f.value
   if (!x || !x.passage) return null
   for (const cand of [x.printed, x.display].filter(Boolean) as string[]) {
-    const i = x.passage.indexOf(cand)
-    if (i >= 0) return { before: x.passage.slice(0, i), hit: cand, after: x.passage.slice(i + cand.length) }
+    // match the value only where it is not part of a longer number ("8" must not light up inside "1857")
+    const esc = cand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const m = new RegExp(`(?<![\\d.,])${esc}(?![\\d]|[.,]\\d)`).exec(x.passage)
+    if (m) return { before: x.passage.slice(0, m.index), hit: cand, after: x.passage.slice(m.index + cand.length) }
   }
   return { before: x.passage, hit: '', after: '' }
 })

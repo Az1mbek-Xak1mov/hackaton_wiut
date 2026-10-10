@@ -1,0 +1,165 @@
+{
+ "server": "4 vCPU, no GPU",
+ "server_detail": "4 vCPU, no GPU, 7.8 GiB RAM shared with other services; worker concurrency per WORKER_CONCURRENCY",
+ "measured_at": "2026-10-10T15:48:55+00:00",
+ "source": "production jobs.stage_timings.total (ms in pipeline stages) for finished analyse_document jobs; read-only SQL over ssh",
+ "jobs_finished_between": [
+  "2026-10-10T13:18:34.784104+00:00",
+  "2026-10-10T15:26:47.90179+00:00"
+ ],
+ "n_jobs": 790,
+ "by_doc_type": [
+  {
+   "doc_type": "bank_statement",
+   "path": "XLSX",
+   "documents": 155,
+   "p50_ms": 138,
+   "p95_ms": 321,
+   "max_ms": 2331
+  },
+  {
+   "doc_type": "form1",
+   "path": "OCR (scanned PDF)",
+   "documents": 2,
+   "p50_ms": 13205,
+   "p95_ms": 15216,
+   "max_ms": 15216
+  },
+  {
+   "doc_type": "form1",
+   "path": "PDF text layer",
+   "documents": 306,
+   "p50_ms": 649,
+   "p95_ms": 843,
+   "max_ms": 1542
+  },
+  {
+   "doc_type": "form2",
+   "path": "OCR (photo/image)",
+   "documents": 1,
+   "p50_ms": 6172,
+   "p95_ms": 6172,
+   "max_ms": 6172
+  },
+  {
+   "doc_type": "form2",
+   "path": "OCR (scanned PDF)",
+   "documents": 3,
+   "p50_ms": 10270,
+   "p95_ms": 10428,
+   "max_ms": 10428
+  },
+  {
+   "doc_type": "form2",
+   "path": "PDF text layer",
+   "documents": 308,
+   "p50_ms": 353,
+   "p95_ms": 545,
+   "max_ms": 1350
+  },
+  {
+   "doc_type": "loan_application",
+   "path": "PDF text layer",
+   "documents": 6,
+   "p50_ms": 317,
+   "p95_ms": 353,
+   "max_ms": 353
+  },
+  {
+   "doc_type": "tax_declaration",
+   "path": "PDF text layer",
+   "documents": 4,
+   "p50_ms": 174,
+   "p95_ms": 188,
+   "max_ms": 188
+  },
+  {
+   "doc_type": "unknown",
+   "path": "OCR (photo/image)",
+   "documents": 2,
+   "p50_ms": 3313,
+   "p95_ms": 3368,
+   "max_ms": 3368
+  },
+  {
+   "doc_type": "unknown",
+   "path": "OCR (scanned PDF)",
+   "documents": 1,
+   "p50_ms": 12,
+   "p95_ms": 12,
+   "max_ms": 12
+  },
+  {
+   "doc_type": "unknown",
+   "path": "PDF text layer",
+   "documents": 1,
+   "p50_ms": 124,
+   "p95_ms": 124,
+   "max_ms": 124
+  },
+  {
+   "doc_type": "unknown",
+   "path": "XLSX",
+   "documents": 1,
+   "p50_ms": 70,
+   "p95_ms": 70,
+   "max_ms": 70
+  },
+  {
+   "doc_type": "all documents",
+   "path": "all",
+   "documents": 790,
+   "p50_ms": 371,
+   "p95_ms": 828,
+   "max_ms": 15216
+  }
+ ],
+ "public_uploads_end_to_end": [
+  {
+   "path": "OCR (photo/image)",
+   "measure": "end-to-end (upload accepted -> result ready)",
+   "documents": 2,
+   "p50_ms": 3428,
+   "p95_ms": 6546,
+   "max_ms": 6546
+  },
+  {
+   "path": "OCR (scanned PDF)",
+   "measure": "end-to-end (upload accepted -> result ready)",
+   "documents": 4,
+   "p50_ms": 5173,
+   "p95_ms": 10738,
+   "max_ms": 10738
+  },
+  {
+   "path": "PDF text layer",
+   "measure": "end-to-end (upload accepted -> result ready)",
+   "documents": 3,
+   "p50_ms": 871,
+   "p95_ms": 1849,
+   "max_ms": 1849
+  },
+  {
+   "path": "XLSX",
+   "measure": "end-to-end (upload accepted -> result ready)",
+   "documents": 2,
+   "p50_ms": 528,
+   "p95_ms": 622,
+   "max_ms": 622
+  },
+  {
+   "path": "all",
+   "measure": "end-to-end (upload accepted -> result ready)",
+   "documents": 11,
+   "p50_ms": 1849,
+   "p95_ms": 10738,
+   "max_ms": 10738
+  }
+ ],
+ "jobs_by_owner_kind": {
+  "bank": 775,
+  "owner": 4,
+  "public": 11
+ },
+ "note": "by_doc_type = processing time inside the pipeline stages for every finished document job (seeded bundles are processed in bulk, so their queue wait is not meaningful); public_uploads_end_to_end = uploads to /analyse, including queue wait."
+}
