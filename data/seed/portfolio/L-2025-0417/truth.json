@@ -1,0 +1,11 @@
+{
+ "loan_id": "L-2025-0417",
+ "hero": "hero_zilola",
+ "scenario": "attn",
+ "indicators": [
+  "M01",
+  "M02",
+  "M04",
+  "M05"
+ ]
+}

@@ -1,0 +1,91 @@
+# Production on 159.195.213.245, run by deploy/deploy.sh from /srv/converza/repo:
+#   docker compose -p converza --env-file /srv/converza/.env -f compose.prod.yml up -d
+# Host nginx proxies 127.0.0.1:8050 (api) and 127.0.0.1:8051 (web). See docs/plan/06-DEPLOY.md.
+name: converza
+
+x-app-env: &app-env
+  env_file: [/srv/converza/.env]
+  environment:
+    DATABASE_URL: postgresql+psycopg2://app:${POSTGRES_PASSWORD}@db:5432/app
+    FILES_DIR: /data/files
+    EVAL_RESULTS_DIR: /srv/eval/results
+    WORKER_ENABLED: "false"
+    DEPLOYED_AT: ${DEPLOYED_AT:-}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in /srv/converza/.env}
+      POSTGRES_DB: app
+    volumes: [db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      retries: 20
+    mem_limit: 512m
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-dev}
+        BUILT_AT: ${BUILT_AT:-}
+    image: converza-app:${GIT_SHA:-dev}
+    <<: *app-env
+    ports: ["127.0.0.1:8050:8020"]
+    volumes:
+      - files:/data/files
+      - ./eval:/srv/eval:ro
+    depends_on: { db: { condition: service_healthy } }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8020/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    mem_limit: 1g
+    cpus: 1.5
+    restart: unless-stopped
+
+  worker:
+    image: converza-app:${GIT_SHA:-dev}
+    pull_policy: never
+    command: ["python", "-m", "app.worker"]
+    <<: *app-env
+    volumes:
+      - files:/data/files
+    depends_on: { api: { condition: service_healthy } }   # api runs the migrations first
+    healthcheck:
+      test: ["CMD-SHELL", "test $$(( $$(date +%s) - $$(stat -c %Y /tmp/worker-heartbeat) )) -lt 60"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 20s
+    mem_limit: 2g
+    cpus: 2
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    ports: ["127.0.0.1:8051:80"]
+    mem_limit: 64m
+    restart: unless-stopped
+
+  seed:
+    image: converza-app:${GIT_SHA:-dev}
+    pull_policy: never
+    profiles: [seed]
+    command: ["python", "-m", "app.seed_demo"]
+    <<: *app-env
+    volumes:
+      - files:/data/files
+      - ./data:/srv/data:ro
+      - ./eval:/srv/eval:ro
+    depends_on: { api: { condition: service_healthy } }
+
+volumes:
+  db-data:
+  files:

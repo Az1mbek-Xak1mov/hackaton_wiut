@@ -1,0 +1,41 @@
+{
+ "loan_id": "L-2024-2015",
+ "company": {
+  "name": "Sarbon Poligraf MChJ",
+  "stir": "304182994",
+  "industry": "Printing",
+  "region": "Qashqadaryo"
+ },
+ "scenario": "A_rev_cov",
+ "expected_status_under_disclosed_rules": "attn",
+ "expected_indicators": [
+  "M01",
+  "M04"
+ ],
+ "params": {
+  "trend_pct": -29.9,
+  "coverage": 1.26,
+  "receivables_growth": -0.028,
+  "payables_growth": -0.093,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 34.9
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 54700000,
+  "closing_balance": 44100000,
+  "month_end_balances": {
+   "2026-07": 38075000,
+   "2026-08": 41808000,
+   "2026-09": 44100000
+  }
+ },
+ "statement_rows": 128,
+ "language": "uz_latn",
+ "layout": "mof_grid"
+}

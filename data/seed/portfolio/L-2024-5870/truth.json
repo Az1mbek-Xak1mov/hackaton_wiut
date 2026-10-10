@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-5870",
+ "company": {
+  "name": "Saodat Dori-Darmon MChJ",
+  "stir": "342917912",
+  "industry": "Pharmacy retail",
+  "region": "Andijon"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 5.7,
+  "coverage": 5.78,
+  "receivables_growth": 0.07,
+  "payables_growth": 0.034,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 13.8
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 95700000,
+  "closing_balance": 79700000,
+  "month_end_balances": {
+   "2026-07": 92708000,
+   "2026-08": 79455000,
+   "2026-09": 79700000
+  }
+ },
+ "statement_rows": 169,
+ "language": "ru",
+ "layout": "mof_grid"
+}

@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-2077",
+ "company": {
+  "name": "Sharq Agro Servis MChJ",
+  "stir": "298751513",
+  "industry": "Agricultural services",
+  "region": "Samarqand"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 6.4,
+  "coverage": 4.24,
+  "receivables_growth": -0.006,
+  "payables_growth": -0.078,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 6.3
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 23000000,
+  "closing_balance": 26700000,
+  "month_end_balances": {
+   "2026-07": 21226000,
+   "2026-08": 29816000,
+   "2026-09": 26700000
+  }
+ },
+ "statement_rows": 132,
+ "language": "ru",
+ "layout": "software_export"
+}

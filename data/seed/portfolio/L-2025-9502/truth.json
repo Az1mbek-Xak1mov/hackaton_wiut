@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-9502",
+ "company": {
+  "name": "Tong Qurilish MChJ",
+  "stir": "215835234",
+  "industry": "Construction",
+  "region": "Sirdaryo"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 22.2,
+  "coverage": 5.89,
+  "receivables_growth": 0.06,
+  "payables_growth": 0.005,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 68.5
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 422100000,
+  "closing_balance": 403400000,
+  "month_end_balances": {
+   "2026-07": 392526000,
+   "2026-08": 378954000,
+   "2026-09": 403400000
+  }
+ },
+ "statement_rows": 147,
+ "language": "ru",
+ "layout": "mof_grid"
+}

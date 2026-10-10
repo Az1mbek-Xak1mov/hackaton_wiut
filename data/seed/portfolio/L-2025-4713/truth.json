@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-4713",
+ "company": {
+  "name": "Farg'ona Meva Eksport MChJ",
+  "stir": "258034738",
+  "industry": "Fruit export",
+  "region": "Buxoro"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 16.1,
+  "coverage": 2.27,
+  "receivables_growth": 0.062,
+  "payables_growth": 0.074,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 16.7
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 41200000,
+  "closing_balance": 37900000,
+  "month_end_balances": {
+   "2026-07": 32762000,
+   "2026-08": 48570000,
+   "2026-09": 37900000
+  }
+ },
+ "statement_rows": 142,
+ "language": "ru",
+ "layout": "software_export"
+}

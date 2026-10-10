@@ -1,0 +1,28 @@
+/* Design tokens — copied from design/DESIGN.md. No other colours are allowed in the app. */
+:root {
+  /* ground & surfaces */
+  --bg: #F6F4EF; --surface: #FFFFFF; --surface-2: #FBFAF7;
+  --border: #E3DFD6; --border-row: #EEEBE4; --border-strong: #D8D3C8;
+  --border-hover: #B9B3A6;
+  /* ink */
+  --ink: #1B1A17; --ink-2: #44403A; --ink-muted: #66615A;
+  /* accent */
+  --accent: #0F6E63; --accent-hover: #0B5A51; --accent-tint: #E8F1EF; --accent-border: #8FB5AE;
+  --accent-panel-border: #C9DDD9; --accent-panel-bg: #FBFDFC;
+  /* chart */
+  --series-1: #0F6E63; --series-compare: #A39B8B; --series-compare-mid: #5E9B92;
+  /* status (bg / text / chart mark) */
+  --stable-bg: #E8F1EF; --stable-fg: #0B5A51; --stable-mark: #0F6E63;
+  --watch-bg: #FBEFD9;  --watch-fg: #8A4B06;  --watch-mark: #D9A441;
+  --attn-bg: #FBE5E1;   --attn-fg: #9B2318;   --attn-mark: #C2410C;
+  --neutral-bg: #EFECE5; --neutral-fg: #44403A;
+  --info-bg: #E6ECF7;   --info-fg: #2B4C8C;
+  /* callouts */
+  --note-bg: #FBF7EE; --note-border: #E8D8B5;
+  --highlight: #FFF1B8; --highlight-underline: #D9A441;
+  /* radii */
+  --r-panel: 6px; --r-control: 5px; --r-pill: 4px; --r-chip: 3px; --r-phone-card: 8px;
+
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}

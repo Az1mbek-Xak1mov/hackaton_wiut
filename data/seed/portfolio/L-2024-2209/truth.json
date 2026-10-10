@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-2209",
+ "company": {
+  "name": "Olmaliq Sut XK",
+  "stir": "298553005",
+  "industry": "Dairy",
+  "region": "Qashqadaryo"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -4.2,
+  "coverage": 4.65,
+  "receivables_growth": 0.108,
+  "payables_growth": 0.111,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 18.3
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 88100000,
+  "closing_balance": 85100000,
+  "month_end_balances": {
+   "2026-07": 84574000,
+   "2026-08": 86084000,
+   "2026-09": 85100000
+  }
+ },
+ "statement_rows": 171,
+ "language": "uz_latn",
+ "layout": "typed"
+}

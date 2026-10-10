@@ -1,0 +1,40 @@
+{
+ "loan_id": "L-2024-2518",
+ "company": {
+  "name": "Navro'z Tikuv XK",
+  "stir": "300946090",
+  "industry": "Textile manufacturing",
+  "region": "Tashkent"
+ },
+ "scenario": "W_recv",
+ "expected_status_under_disclosed_rules": "watch",
+ "expected_indicators": [
+  "M02"
+ ],
+ "params": {
+  "trend_pct": -0.7,
+  "coverage": 5.62,
+  "receivables_growth": 0.389,
+  "payables_growth": 0.117,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 25.2
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 225800000,
+  "closing_balance": 141600000,
+  "month_end_balances": {
+   "2026-07": 198456000,
+   "2026-08": 175459000,
+   "2026-09": 141600000
+  }
+ },
+ "statement_rows": 176,
+ "language": "ru",
+ "layout": "typed"
+}

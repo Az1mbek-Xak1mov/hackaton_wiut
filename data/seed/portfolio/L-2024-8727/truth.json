@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-8727",
+ "company": {
+  "name": "Shodlik Non AJ",
+  "stir": "308857468",
+  "industry": "Bakery",
+  "region": "Tashkent region"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -1.9,
+  "coverage": 2.73,
+  "receivables_growth": 0.109,
+  "payables_growth": 0.036,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 11.1
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 29500000,
+  "closing_balance": 30300000,
+  "month_end_balances": {
+   "2026-07": 27020000,
+   "2026-08": 34049000,
+   "2026-09": 30300000
+  }
+ },
+ "statement_rows": 159,
+ "language": "ru",
+ "layout": "software_export"
+}

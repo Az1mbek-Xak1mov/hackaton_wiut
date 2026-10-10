@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-1475",
+ "company": {
+  "name": "Yangi Hayot Dori-Darmon AJ",
+  "stir": "297567027",
+  "industry": "Pharmacy retail",
+  "region": "Buxoro"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 18.6,
+  "coverage": 2.06,
+  "receivables_growth": 0.075,
+  "payables_growth": 0.107,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 17.1
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 41800000,
+  "closing_balance": 35300000,
+  "month_end_balances": {
+   "2026-07": 41047000,
+   "2026-08": 38458000,
+   "2026-09": 35300000
+  }
+ },
+ "statement_rows": 194,
+ "language": "ru",
+ "layout": "software_export"
+}

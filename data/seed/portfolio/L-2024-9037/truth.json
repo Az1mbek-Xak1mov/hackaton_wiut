@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-9037",
+ "company": {
+  "name": "Qo'qon Sut MChJ",
+  "stir": "271935222",
+  "industry": "Dairy",
+  "region": "Navoiy"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 0.9,
+  "coverage": 5.64,
+  "receivables_growth": -0.07,
+  "payables_growth": 0.002,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 12.1
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 65700000,
+  "closing_balance": 68200000,
+  "month_end_balances": {
+   "2026-07": 72932000,
+   "2026-08": 68522000,
+   "2026-09": 68200000
+  }
+ },
+ "statement_rows": 162,
+ "language": "ru",
+ "layout": "typed"
+}

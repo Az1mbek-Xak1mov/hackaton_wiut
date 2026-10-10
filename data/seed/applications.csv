@@ -1,0 +1,7 @@
+id,name,industry,requested_mln,term_months,received,bundle,channel
+APP-2026-0931,Farovon Savdo MChJ,Food distribution,850.0,24,2026-10-06,hero_farovon,branch
+APP-2026-0925,Nurafshon Agro Servis MChJ,Agricultural services,310.0,12,2026-10-01,applications/APP-2026-0925,branch
+APP-2026-0928,Oqtosh Qurilish Materiallari MChJ,Construction,1500.0,36,2026-10-03,applications/APP-2026-0928,branch
+APP-2026-0933,Chirchiq Metall Servis MChJ,Metalworking,960.0,24,2026-10-07,applications/APP-2026-0933,branch
+APP-2026-0934,Samarqand Non Kombinati MChJ,Bakery,420.0,18,2026-10-07,applications/APP-2026-0934,branch
+APP-2026-0936,Buxoro Zardo'zlik MChJ,Textile manufacturing,180.0,12,2026-10-09,applications/APP-2026-0936,branch

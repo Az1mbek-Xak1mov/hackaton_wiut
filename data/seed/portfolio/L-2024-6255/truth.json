@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-6255",
+ "company": {
+  "name": "Ishonch Mehmonxona MChJ",
+  "stir": "200247247",
+  "industry": "Tourism services",
+  "region": "Xorazm"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 12.7,
+  "coverage": 3.98,
+  "receivables_growth": -0.003,
+  "payables_growth": 0.141,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 10.5
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 37300000,
+  "closing_balance": 41800000,
+  "month_end_balances": {
+   "2026-07": 37727000,
+   "2026-08": 34013000,
+   "2026-09": 41800000
+  }
+ },
+ "statement_rows": 166,
+ "language": "uz_latn",
+ "layout": "mof_grid"
+}

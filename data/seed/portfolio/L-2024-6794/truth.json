@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-6794",
+ "company": {
+  "name": "Sarbon Qurilish Materiallari MChJ",
+  "stir": "387397952",
+  "industry": "Construction",
+  "region": "Namangan"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 9.7,
+  "coverage": 5.44,
+  "receivables_growth": 0.05,
+  "payables_growth": -0.098,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 7.9
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 36800000,
+  "closing_balance": 43000000,
+  "month_end_balances": {
+   "2026-07": 37919000,
+   "2026-08": 38670000,
+   "2026-09": 43000000
+  }
+ },
+ "statement_rows": 174,
+ "language": "ru",
+ "layout": "software_export"
+}

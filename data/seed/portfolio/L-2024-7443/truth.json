@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-7443",
+ "company": {
+  "name": "Termiz Oziq-ovqat Savdo MChJ",
+  "stir": "372315655",
+  "industry": "Food distribution",
+  "region": "Navoiy"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 5.4,
+  "coverage": 3.98,
+  "receivables_growth": 0.076,
+  "payables_growth": 0.019,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 180.3
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 813100000,
+  "closing_balance": 717500000,
+  "month_end_balances": {
+   "2026-07": 852503000,
+   "2026-08": 827030000,
+   "2026-09": 717500000
+  }
+ },
+ "statement_rows": 131,
+ "language": "ru",
+ "layout": "typed"
+}

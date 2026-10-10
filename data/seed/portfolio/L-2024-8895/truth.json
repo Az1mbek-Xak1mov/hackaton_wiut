@@ -1,0 +1,40 @@
+{
+ "loan_id": "L-2024-8895",
+ "company": {
+  "name": "Namangan Yog'och AJ",
+  "stir": "375545878",
+  "industry": "Furniture manufacturing",
+  "region": "Qashqadaryo"
+ },
+ "scenario": "W_pay",
+ "expected_status_under_disclosed_rules": "watch",
+ "expected_indicators": [
+  "M03"
+ ],
+ "params": {
+  "trend_pct": 13.5,
+  "coverage": 4.42,
+  "receivables_growth": 0.087,
+  "payables_growth": 0.484,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 20.2
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 99900000,
+  "closing_balance": 89300000,
+  "month_end_balances": {
+   "2026-07": 96396000,
+   "2026-08": 92133000,
+   "2026-09": 89300000
+  }
+ },
+ "statement_rows": 142,
+ "language": "ru",
+ "layout": "mof_grid"
+}

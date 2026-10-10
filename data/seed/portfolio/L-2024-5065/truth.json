@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-5065",
+ "company": {
+  "name": "Olmaliq Non MChJ",
+  "stir": "352356472",
+  "industry": "Bakery",
+  "region": "Samarqand"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 16.5,
+  "coverage": 2.16,
+  "receivables_growth": -0.016,
+  "payables_growth": 0.15,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 53.5
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 131500000,
+  "closing_balance": 115300000,
+  "month_end_balances": {
+   "2026-07": 97280000,
+   "2026-08": 129735000,
+   "2026-09": 115300000
+  }
+ },
+ "statement_rows": 132,
+ "language": "ru",
+ "layout": "mof_grid"
+}

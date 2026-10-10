@@ -1,0 +1,16 @@
+.git
+.venv
+.env
+**/__pycache__
+**/*.pyc
+.pytest_cache
+web
+design
+docs
+data
+eval
+tests
+deploy
+.github
+*.md
+!README.md

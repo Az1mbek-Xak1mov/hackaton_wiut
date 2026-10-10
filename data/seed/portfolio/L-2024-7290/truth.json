@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-7290",
+ "company": {
+  "name": "Chust Qurilish AJ",
+  "stir": "257549811",
+  "industry": "Construction",
+  "region": "Namangan"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 23.0,
+  "coverage": 3.23,
+  "receivables_growth": 0.098,
+  "payables_growth": -0.02,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 55.6
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 152800000,
+  "closing_balance": 179400000,
+  "month_end_balances": {
+   "2026-07": 179305000,
+   "2026-08": 163606000,
+   "2026-09": 179400000
+  }
+ },
+ "statement_rows": 175,
+ "language": "ru",
+ "layout": "mof_grid"
+}

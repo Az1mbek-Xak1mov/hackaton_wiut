@@ -1,0 +1,881 @@
+# Line-code dictionary for the Uzbek NSBU statutory financial statements.
+#   form1 = Buxgalteriya balansi / Бухгалтерский баланс (1-son shakl / Форма №1)
+#   form2 = Moliyaviy natijalar to'g'risidagi hisobot / Отчёт о финансовых результатах (2-son shakl / Форма №2)
+#
+# source: >
+#   MoF order No. 140 of 27.12.2002 "Об утверждении форм финансовой отчетности и правил по их заполнению"
+#   (reg. No. 1209 of 24.01.2003), appendices 1 (Form 1) and 2 (Form 2) as amended by MoF order No. 10 of
+#   23.01.2019 (reg. No. 1209-10 of 15.02.2019). Text: https://lex.uz/docs/771825
+#   Codes, formulas and the RU / UZ-Cyrillic labels were checked against that page on 2026-10-10.
+#   UZ-Latin labels are our transliteration of the official UZ-Cyrillic text; EN labels are ours.
+#   Not every official line is listed: totals whose children are not all listed use `parts`, not `sum_of`.
+#
+# Differences from the design artboards (design/demo-data.json), resolved in favour of this dictionary
+# (docs/plan/02-PIPELINE.md §3: "the dictionary wins"):
+#   - form2 finance costs are line 170 (design said 120; 120 is dividend income)
+#   - form2 profit tax is line 250 (design said 240; 240 is profit before tax)
+#   - form1 total liabilities + equity is line 780 (770 is the total of liabilities, section II)
+#   - form2 line 080 does not exist in the 2019 edition; 040 = 050 + 060 + 070
+# Consumers should look entries up by `slug` (stable meaning), not by code.
+#
+# Schema per entry:
+#   form, code, slug, section, side (asset|equity|liability|pnl), kind (amount|result|total)
+#   labels: {uz_latn: [...], uz_cyrl: [...], ru: [...], en: [...]}   first label = canonical display label
+#   sum_of: exhaustive formula over codes; "-" prefix subtracts.   parent == Σ(children)
+#   parts:  non-exhaustive "of which" children (each child <= parent; not summed)
+#   result lines (kind: result) can be negative; on the 4-column Form 2 a loss is printed in the expense column.
+
+meta:
+  version: 1
+  verification: "codes, formulas, RU and UZ-Cyrillic labels checked against https://lex.uz/docs/771825 (edition of 23.01.2019) on 2026-10-10"
+  unit_default: kUZS
+  checks:
+    - id: balance
+      description: "Total assets equal total equity and liabilities"
+      lhs: ["form1.400"]
+      rhs: ["form1.780"]
+
+entries:
+  # ───────────────────────────── FORM 1 — ASSETS, section I (non-current) ─────────────────────────────
+  - form: form1
+    code: "010"
+    slug: fixed_assets_gross
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Boshlang'ich (qayta tiklash) qiymati", "Asosiy vositalar: boshlang'ich (qayta tiklash) qiymati"]
+      uz_cyrl: ["Бошланғич (қайта тиклаш) қиймати", "Асосий воситалар: бошланғич (қайта тиклаш) қиймати"]
+      ru: ["Первоначальная (восстановительная) стоимость", "Основные средства: первоначальная (восстановительная) стоимость"]
+      en: ["Property, plant and equipment, gross", "Fixed assets at cost"]
+  - form: form1
+    code: "011"
+    slug: fixed_assets_depreciation
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Eskirish summasi", "Eskirish"]
+      uz_cyrl: ["Эскириш суммаси", "Эскириш"]
+      ru: ["Сумма износа", "Износ"]
+      en: ["Accumulated depreciation"]
+  - form: form1
+    code: "012"
+    slug: fixed_assets_net
+    section: assets.non_current
+    side: asset
+    kind: total
+    sum_of: ["010", "-011"]
+    labels:
+      uz_latn: ["Asosiy vositalarning qoldiq (balans) qiymati", "Qoldiq (balans) qiymati"]
+      uz_cyrl: ["Асосий воситаларнинг қолдиқ (баланс) қиймати", "Қолдиқ (баланс) қиймати"]
+      ru: ["Остаточная (балансовая) стоимость основных средств", "Остаточная (балансовая) стоимость"]
+      en: ["Property, plant and equipment, net", "Fixed assets, net"]
+  - form: form1
+    code: "020"
+    slug: intangibles_gross
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Boshlang'ich qiymati", "Nomoddiy aktivlar: boshlang'ich qiymati"]
+      uz_cyrl: ["Бошланғич қиймати", "Номоддий активлар: бошланғич қиймати"]
+      ru: ["Первоначальная стоимость", "Нематериальные активы: первоначальная стоимость"]
+      en: ["Intangible assets, gross"]
+  - form: form1
+    code: "021"
+    slug: intangibles_amortisation
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Amortizatsiya summasi"]
+      uz_cyrl: ["Амортизация суммаси"]
+      ru: ["Сумма амортизации", "Амортизация"]
+      en: ["Accumulated amortisation"]
+  - form: form1
+    code: "022"
+    slug: intangibles_net
+    section: assets.non_current
+    side: asset
+    kind: total
+    sum_of: ["020", "-021"]
+    labels:
+      uz_latn: ["Nomoddiy aktivlarning qoldiq (balans) qiymati", "Qoldiq (balans) qiymati"]
+      uz_cyrl: ["Номоддий активларнинг қолдиқ (баланс) қиймати", "Қолдиқ (баланс) қиймати"]
+      ru: ["Остаточная (балансовая) стоимость нематериальных активов", "Остаточная (балансовая) стоимость"]
+      en: ["Intangible assets, net"]
+  - form: form1
+    code: "030"
+    slug: long_term_investments
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli investitsiyalar, jami"]
+      uz_cyrl: ["Узоқ муддатли инвестициялар, жами"]
+      ru: ["Долгосрочные инвестиции, всего"]
+      en: ["Long-term investments"]
+  - form: form1
+    code: "090"
+    slug: equipment_to_install
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["O'rnatiladigan asbob-uskunalar"]
+      uz_cyrl: ["Ўрнатиладиган асбоб-ускуналар"]
+      ru: ["Оборудование к установке"]
+      en: ["Equipment for installation"]
+  - form: form1
+    code: "100"
+    slug: capital_investments
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Kapital qo'yilmalar"]
+      uz_cyrl: ["Капитал қўйилмалар"]
+      ru: ["Капитальные вложения"]
+      en: ["Capital investments in progress", "Construction in progress"]
+  - form: form1
+    code: "110"
+    slug: long_term_receivables
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli debitorlik qarzlari"]
+      uz_cyrl: ["Узоқ муддатли дебиторлик қарзлари"]
+      ru: ["Долгосрочная дебиторская задолженность"]
+      en: ["Long-term receivables"]
+  - form: form1
+    code: "120"
+    slug: long_term_deferred_expenses
+    section: assets.non_current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli kechiktirilgan xarajatlar"]
+      uz_cyrl: ["Узоқ муддатли кечиктирилган харажатлар"]
+      ru: ["Долгосрочные отсроченные расходы"]
+      en: ["Long-term deferred expenses"]
+  - form: form1
+    code: "130"
+    slug: non_current_assets_total
+    section: assets.non_current
+    side: asset
+    kind: total
+    sum_of: ["012", "022", "030", "090", "100", "110", "120"]
+    labels:
+      uz_latn: ["I bo'lim bo'yicha jami", "Uzoq muddatli aktivlar jami"]
+      uz_cyrl: ["I бўлим бўйича жами", "Узоқ муддатли активлар жами"]
+      ru: ["Итого по разделу I", "Итого долгосрочные активы"]
+      en: ["Total non-current assets"]
+
+  # ───────────────────────────── FORM 1 — ASSETS, section II (current) ─────────────────────────────
+  - form: form1
+    code: "140"
+    slug: inventory_total
+    section: assets.current
+    side: asset
+    kind: total
+    sum_of: ["150", "160", "170", "180"]
+    labels:
+      uz_latn: ["Tovar-moddiy zaxiralari, jami", "Tovar-moddiy zaxiralar"]
+      uz_cyrl: ["Товар-моддий захиралари, жами", "Товар-моддий захиралар"]
+      ru: ["Товарно-материальные запасы, всего", "Товарно-материальные запасы"]
+      en: ["Inventories", "Inventory"]
+  - form: form1
+    code: "150"
+    slug: production_stocks
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Ishlab chiqarish zaxiralari"]
+      uz_cyrl: ["Ишлаб чиқариш захиралари"]
+      ru: ["Производственные запасы"]
+      en: ["Raw materials and supplies"]
+  - form: form1
+    code: "160"
+    slug: work_in_progress
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Tugallanmagan ishlab chiqarish"]
+      uz_cyrl: ["Тугалланмаган ишлаб чиқариш"]
+      ru: ["Незавершенное производство"]
+      en: ["Work in progress"]
+  - form: form1
+    code: "170"
+    slug: finished_goods
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Tayyor mahsulot"]
+      uz_cyrl: ["Тайёр маҳсулот"]
+      ru: ["Готовая продукция"]
+      en: ["Finished goods"]
+  - form: form1
+    code: "180"
+    slug: goods_for_resale
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Tovarlar"]
+      uz_cyrl: ["Товарлар"]
+      ru: ["Товары"]
+      en: ["Goods for resale", "Merchandise"]
+  - form: form1
+    code: "190"
+    slug: prepaid_expenses
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Kelgusi davr xarajatlari"]
+      uz_cyrl: ["Келгуси давр харажатлари"]
+      ru: ["Расходы будущих периодов"]
+      en: ["Prepaid expenses"]
+  - form: form1
+    code: "200"
+    slug: deferred_expenses
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Kechiktirilgan xarajatlar"]
+      uz_cyrl: ["Кечиктирилган харажатлар"]
+      ru: ["Отсроченные расходы"]
+      en: ["Deferred expenses"]
+  - form: form1
+    code: "210"
+    slug: receivables_total
+    section: assets.current
+    side: asset
+    kind: total
+    parts: ["220"]
+    labels:
+      uz_latn: ["Debitorlar, jami", "Debitorlik qarzlari, jami"]
+      uz_cyrl: ["Дебиторлар, жами", "Дебиторлик қарзлари, жами"]
+      ru: ["Дебиторы, всего", "Дебиторская задолженность, всего"]
+      en: ["Receivables, total", "Trade and other receivables", "Accounts receivable"]
+  - form: form1
+    code: "220"
+    slug: trade_receivables
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Xaridor va buyurtmachilarning qarzi", "Xaridorlar va buyurtmachilarning qarzi"]
+      uz_cyrl: ["Харидор ва буюртмачиларнинг қарзи", "Харидорлар ва буюртмачиларнинг қарзи"]
+      ru: ["Задолженность покупателей и заказчиков"]
+      en: ["Trade receivables", "Due from customers"]
+  - form: form1
+    code: "320"
+    slug: cash_total
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Pul mablag'lari, jami", "Pul mablag'lari"]
+      uz_cyrl: ["Пул маблағлари, жами", "Пул маблағлари"]
+      ru: ["Денежные средства, всего", "Денежные средства"]
+      en: ["Cash and cash equivalents", "Cash"]
+  - form: form1
+    code: "370"
+    slug: short_term_investments
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Qisqa muddatli investitsiyalar"]
+      uz_cyrl: ["Қисқа муддатли инвестициялар"]
+      ru: ["Краткосрочные инвестиции"]
+      en: ["Short-term investments"]
+  - form: form1
+    code: "380"
+    slug: other_current_assets
+    section: assets.current
+    side: asset
+    kind: amount
+    labels:
+      uz_latn: ["Boshqa joriy aktivlar"]
+      uz_cyrl: ["Бошқа жорий активлар"]
+      ru: ["Прочие текущие активы"]
+      en: ["Other current assets"]
+  - form: form1
+    code: "390"
+    slug: current_assets_total
+    section: assets.current
+    side: asset
+    kind: total
+    sum_of: ["140", "190", "200", "210", "320", "370", "380"]
+    labels:
+      uz_latn: ["II bo'lim bo'yicha jami", "Joriy aktivlar jami"]
+      uz_cyrl: ["II бўлим бўйича жами", "Жорий активлар жами"]
+      ru: ["Итого по разделу II", "Итого текущие активы"]
+      en: ["Total current assets"]
+  - form: form1
+    code: "400"
+    slug: total_assets
+    section: assets.total
+    side: asset
+    kind: total
+    sum_of: ["130", "390"]
+    labels:
+      uz_latn: ["Balans aktivi bo'yicha jami", "Aktivlar jami"]
+      uz_cyrl: ["Баланс активи бўйича жами", "Активлар жами"]
+      ru: ["Всего по активу баланса", "Итого активы"]
+      en: ["Total assets"]
+
+  # ───────────────────────────── FORM 1 — EQUITY (liabilities side, section I) ─────────────────────────────
+  - form: form1
+    code: "410"
+    slug: charter_capital
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Ustav kapitali"]
+      uz_cyrl: ["Устав капитали"]
+      ru: ["Уставный капитал"]
+      en: ["Share capital", "Charter capital"]
+  - form: form1
+    code: "420"
+    slug: added_capital
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Qo'shilgan kapital"]
+      uz_cyrl: ["Қўшилган капитал"]
+      ru: ["Добавленный капитал"]
+      en: ["Additional paid-in capital"]
+  - form: form1
+    code: "430"
+    slug: reserve_capital
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Rezerv kapitali"]
+      uz_cyrl: ["Резерв капитали"]
+      ru: ["Резервный капитал"]
+      en: ["Reserve capital"]
+  - form: form1
+    code: "440"
+    slug: treasury_shares
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Sotib olingan xususiy aksiyalar"]
+      uz_cyrl: ["Сотиб олинган хусусий акциялар"]
+      ru: ["Выкупленные собственные акции"]
+      en: ["Treasury shares"]
+  - form: form1
+    code: "450"
+    slug: retained_earnings
+    section: equity
+    side: equity
+    kind: result
+    labels:
+      uz_latn: ["Taqsimlanmagan foyda (qoplanmagan zarar)"]
+      uz_cyrl: ["Тақсимланмаган фойда (қопланмаган зарар)"]
+      ru: ["Нераспределенная прибыль (непокрытый убыток)"]
+      en: ["Retained earnings", "Retained earnings (accumulated deficit)"]
+  - form: form1
+    code: "460"
+    slug: targeted_receipts
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Maqsadli tushumlar"]
+      uz_cyrl: ["Мақсадли тушумлар"]
+      ru: ["Целевые поступления"]
+      en: ["Targeted receipts"]
+  - form: form1
+    code: "470"
+    slug: provisions
+    section: equity
+    side: equity
+    kind: amount
+    labels:
+      uz_latn: ["Kelgusi davr xarajatlari va to'lovlari uchun zaxiralar"]
+      uz_cyrl: ["Келгуси давр харажатлари ва тўловлари учун захиралар"]
+      ru: ["Резервы предстоящих расходов и платежей"]
+      en: ["Provisions for future expenses and payments"]
+  - form: form1
+    code: "480"
+    slug: equity_total
+    section: equity
+    side: equity
+    kind: total
+    sum_of: ["410", "420", "430", "-440", "450", "460", "470"]
+    labels:
+      uz_latn: ["I bo'lim bo'yicha jami", "O'z mablag'lari manbalari jami"]
+      uz_cyrl: ["I бўлим бўйича жами", "Ўз маблағлари манбалари жами"]
+      ru: ["Итого по разделу I", "Итого источники собственных средств"]
+      en: ["Total equity"]
+
+  # ───────────────────────────── FORM 1 — LIABILITIES (section II) ─────────────────────────────
+  - form: form1
+    code: "490"
+    slug: long_term_liabilities_total
+    section: liabilities.long_term
+    side: liability
+    kind: total
+    parts: ["570", "580"]
+    labels:
+      uz_latn: ["Uzoq muddatli majburiyatlar, jami"]
+      uz_cyrl: ["Узоқ муддатли мажбуриятлар, жами"]
+      ru: ["Долгосрочные обязательства, всего"]
+      en: ["Non-current liabilities", "Long-term liabilities"]
+  - form: form1
+    code: "570"
+    slug: long_term_bank_loans
+    section: liabilities.long_term
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli bank kreditlari"]
+      uz_cyrl: ["Узоқ муддатли банк кредитлари"]
+      ru: ["Долгосрочные банковские кредиты"]
+      en: ["Long-term bank loans"]
+  - form: form1
+    code: "580"
+    slug: long_term_borrowings
+    section: liabilities.long_term
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli qarzlar"]
+      uz_cyrl: ["Узоқ муддатли қарзлар"]
+      ru: ["Долгосрочные займы"]
+      en: ["Long-term borrowings"]
+  - form: form1
+    code: "600"
+    slug: current_liabilities_total
+    section: liabilities.current
+    side: liability
+    kind: total
+    parts: ["610", "670", "680", "720", "730", "740", "750", "760"]
+    labels:
+      uz_latn: ["Joriy majburiyatlar, jami"]
+      uz_cyrl: ["Жорий мажбуриятлар, жами"]
+      ru: ["Текущие обязательства, всего"]
+      en: ["Current liabilities", "Total current liabilities"]
+  - form: form1
+    code: "610"
+    slug: trade_payables
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Mol yetkazib beruvchilar va pudratchilarga qarz"]
+      uz_cyrl: ["Мол етказиб берувчилар ва пудратчиларга қарз"]
+      ru: ["Задолженность поставщикам и подрядчикам"]
+      en: ["Trade payables", "Accounts payable"]
+  - form: form1
+    code: "670"
+    slug: advances_received
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Olingan bo'naklar"]
+      uz_cyrl: ["Олинган бўнаклар"]
+      ru: ["Полученные авансы"]
+      en: ["Advances received"]
+  - form: form1
+    code: "680"
+    slug: tax_payables
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Budjetga to'lovlar bo'yicha qarz"]
+      uz_cyrl: ["Бюджетга тўловлар бўйича қарз"]
+      ru: ["Задолженность по платежам в бюджет"]
+      en: ["Taxes payable"]
+  - form: form1
+    code: "720"
+    slug: wages_payable
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Mehnatga haq to'lash bo'yicha qarz"]
+      uz_cyrl: ["Меҳнатга ҳақ тўлаш бўйича қарз"]
+      ru: ["Задолженность по оплате труда"]
+      en: ["Wages payable"]
+  - form: form1
+    code: "730"
+    slug: short_term_bank_loans
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Qisqa muddatli bank kreditlari"]
+      uz_cyrl: ["Қисқа муддатли банк кредитлари"]
+      ru: ["Краткосрочные банковские кредиты"]
+      en: ["Short-term bank loans"]
+  - form: form1
+    code: "740"
+    slug: short_term_borrowings
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Qisqa muddatli qarzlar"]
+      uz_cyrl: ["Қисқа муддатли қарзлар"]
+      ru: ["Краткосрочные займы"]
+      en: ["Short-term borrowings"]
+  - form: form1
+    code: "750"
+    slug: current_portion_long_term_debt
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Uzoq muddatli majburiyatlarning joriy qismi"]
+      uz_cyrl: ["Узоқ муддатли мажбуриятларнинг жорий қисми"]
+      ru: ["Текущая часть долгосрочных обязательств"]
+      en: ["Current portion of long-term debt"]
+  - form: form1
+    code: "760"
+    slug: other_payables
+    section: liabilities.current
+    side: liability
+    kind: amount
+    labels:
+      uz_latn: ["Boshqa kreditorlik qarzlari"]
+      uz_cyrl: ["Бошқа кредиторлик қарзлар", "Бошқа кредиторлик қарзлари"]
+      ru: ["Прочие кредиторские задолженности", "Прочая кредиторская задолженность"]
+      en: ["Other payables"]
+  - form: form1
+    code: "770"
+    slug: liabilities_total
+    section: liabilities.total
+    side: liability
+    kind: total
+    sum_of: ["490", "600"]
+    labels:
+      uz_latn: ["II bo'lim bo'yicha jami", "Majburiyatlar jami"]
+      uz_cyrl: ["II бўлим бўйича жами", "Мажбуриятлар жами"]
+      ru: ["Итого по разделу II", "Итого обязательства"]
+      en: ["Total liabilities"]
+  - form: form1
+    code: "780"
+    slug: total_liabilities_equity
+    section: liabilities.grand_total
+    side: liability
+    kind: total
+    sum_of: ["480", "770"]
+    labels:
+      uz_latn: ["Balans passivi bo'yicha jami", "Passivlar jami"]
+      uz_cyrl: ["Баланс пассиви бўйича жами", "Пассивлар жами"]
+      ru: ["Всего по пассиву баланса", "Итого пассивы"]
+      en: ["Total equity and liabilities", "Total liabilities and equity"]
+
+  # ───────────────────────────── FORM 2 — FINANCIAL RESULTS ─────────────────────────────
+  - form: form2
+    code: "010"
+    slug: net_revenue
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Mahsulot (tovar, ish va xizmat)larni sotishdan sof tushum", "Sotishdan sof tushum"]
+      uz_cyrl: ["Маҳсулот (товар, иш ва хизмат) ларни сотишдан соф тушум", "Сотишдан соф тушум"]
+      ru: ["Чистая выручка от реализации продукции (товаров, работ и услуг)", "Чистая выручка от реализации"]
+      en: ["Net revenue", "Revenue", "Net sales"]
+  - form: form2
+    code: "020"
+    slug: cost_of_sales
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Sotilgan mahsulot (tovar, ish va xizmat)larning tannarxi", "Sotilgan mahsulotning tannarxi"]
+      uz_cyrl: ["Сотилган маҳсулот (товар, иш ва хизмат) ларнинг таннархи", "Сотилган маҳсулотнинг таннархи"]
+      ru: ["Себестоимость реализованной продукции (товаров, работ и услуг)", "Себестоимость реализованной продукции"]
+      en: ["Cost of sales", "Cost of goods sold"]
+  - form: form2
+    code: "030"
+    slug: gross_profit
+    section: pnl.operating
+    side: pnl
+    kind: result
+    sum_of: ["010", "-020"]
+    labels:
+      uz_latn: ["Mahsulot (tovar, ish va xizmat)larni sotishning yalpi foydasi (zarari)", "Yalpi foyda"]
+      uz_cyrl: ["Маҳсулот (товар, иш ва хизмат)ларни сотишнинг ялпи фойдаси (зарари)", "Ялпи фойда"]
+      ru: ["Валовая прибыль (убыток) от реализации продукции (товаров, работ и услуг)", "Валовая прибыль"]
+      en: ["Gross profit", "Gross margin"]
+  - form: form2
+    code: "040"
+    slug: period_expenses_total
+    section: pnl.operating
+    side: pnl
+    kind: total
+    sum_of: ["050", "060", "070"]
+    labels:
+      uz_latn: ["Davr xarajatlari, jami", "Davr xarajatlari"]
+      uz_cyrl: ["Давр харажатлари, жами", "Давр харажатлари"]
+      ru: ["Расходы периода, всего", "Расходы периода"]
+      en: ["Operating expenses", "Period expenses"]
+  - form: form2
+    code: "050"
+    slug: selling_expenses
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Sotish xarajatlari"]
+      uz_cyrl: ["Сотиш харажатлари"]
+      ru: ["Расходы по реализации"]
+      en: ["Selling expenses", "Distribution costs"]
+  - form: form2
+    code: "060"
+    slug: administrative_expenses
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Ma'muriy xarajatlar"]
+      uz_cyrl: ["Маъмурий харажатлар"]
+      ru: ["Административные расходы"]
+      en: ["Administrative expenses"]
+  - form: form2
+    code: "070"
+    slug: other_operating_expenses
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Boshqa operatsion xarajatlar"]
+      uz_cyrl: ["Бошқа операцион харажатлар"]
+      ru: ["Прочие операционные расходы"]
+      en: ["Other operating expenses"]
+  - form: form2
+    code: "090"
+    slug: other_operating_income
+    section: pnl.operating
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Asosiy faoliyatning boshqa daromadlari"]
+      uz_cyrl: ["Асосий фаолиятнинг бошқа даромадлари"]
+      ru: ["Прочие доходы от основной деятельности"]
+      en: ["Other operating income"]
+  - form: form2
+    code: "100"
+    slug: operating_profit
+    section: pnl.operating
+    side: pnl
+    kind: result
+    sum_of: ["030", "-040", "090"]
+    labels:
+      uz_latn: ["Asosiy faoliyatning foydasi (zarari)"]
+      uz_cyrl: ["Асосий фаолиятнинг фойдаси (зарари)"]
+      ru: ["Прибыль (убыток) от основной деятельности"]
+      en: ["Operating profit", "Operating income"]
+  - form: form2
+    code: "110"
+    slug: financial_income_total
+    section: pnl.financial
+    side: pnl
+    kind: total
+    sum_of: ["120", "130", "140", "150", "160"]
+    labels:
+      uz_latn: ["Moliyaviy faoliyatning daromadlari, jami", "Moliyaviy faoliyat daromadlari"]
+      uz_cyrl: ["Молиявий фаолиятнинг даромадлари, жами"]
+      ru: ["Доходы от финансовой деятельности, всего"]
+      en: ["Finance income", "Financial income, total"]
+  - form: form2
+    code: "120"
+    slug: dividend_income
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Dividendlar shaklidagi daromadlar"]
+      uz_cyrl: ["Дивидендлар шаклидаги даромадлар"]
+      ru: ["Доходы в виде дивидендов"]
+      en: ["Dividend income"]
+  - form: form2
+    code: "130"
+    slug: interest_income
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Foizlar shaklidagi daromadlar"]
+      uz_cyrl: ["Фоизлар шаклидаги даромадлар"]
+      ru: ["Доходы в виде процентов"]
+      en: ["Interest income"]
+  - form: form2
+    code: "140"
+    slug: finance_lease_income
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Moliyaviy ijaradan daromadlar"]
+      uz_cyrl: ["Молиявий ижарадан даромадлар"]
+      ru: ["Доходы от финансовой аренды"]
+      en: ["Finance lease income"]
+  - form: form2
+    code: "150"
+    slug: fx_gains
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Valyuta kursi farqidan daromadlar"]
+      uz_cyrl: ["Валюта курси фарқидан даромадлар"]
+      ru: ["Доходы от валютных курсовых разниц"]
+      en: ["Foreign exchange gains"]
+  - form: form2
+    code: "160"
+    slug: other_financial_income
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Moliyaviy faoliyatning boshqa daromadlari"]
+      uz_cyrl: ["Молиявий фаолиятнинг бошқа даромадлари"]
+      ru: ["Прочие доходы от финансовой деятельности"]
+      en: ["Other finance income"]
+  - form: form2
+    code: "170"
+    slug: finance_costs_total
+    section: pnl.financial
+    side: pnl
+    kind: total
+    sum_of: ["180", "190", "200", "210"]
+    labels:
+      uz_latn: ["Moliyaviy faoliyat bo'yicha xarajatlar", "Moliyaviy faoliyat bo'yicha xarajatlar, jami"]
+      uz_cyrl: ["Молиявий фаолият бўйича харажатлар"]
+      ru: ["Расходы по финансовой деятельности", "Расходы по финансовой деятельности, всего"]
+      en: ["Finance costs", "Financial expenses"]
+  - form: form2
+    code: "180"
+    slug: interest_expense
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Foizlar shaklidagi xarajatlar"]
+      uz_cyrl: ["Фоизлар шаклидаги харажатлар"]
+      ru: ["Расходы в виде процентов"]
+      en: ["Interest expense"]
+  - form: form2
+    code: "190"
+    slug: finance_lease_interest_expense
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Moliyaviy ijara bo'yicha foizlar shaklidagi xarajatlar"]
+      uz_cyrl: ["Молиявий ижара бўйича фоизлар шаклидаги харажатлар"]
+      ru: ["Расходы в виде процентов по финансовой аренде"]
+      en: ["Finance lease interest expense"]
+  - form: form2
+    code: "200"
+    slug: fx_losses
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Valyuta kursi farqidan zararlar"]
+      uz_cyrl: ["Валюта курси фарқидан зарарлар"]
+      ru: ["Убытки от валютных курсовых разниц"]
+      en: ["Foreign exchange losses"]
+  - form: form2
+    code: "210"
+    slug: other_finance_costs
+    section: pnl.financial
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Moliyaviy faoliyat bo'yicha boshqa xarajatlar"]
+      uz_cyrl: ["Молиявий фаолият бўйича бошқа харажатлар"]
+      ru: ["Прочие расходы по финансовой деятельности"]
+      en: ["Other finance costs"]
+  - form: form2
+    code: "220"
+    slug: profit_general_activity
+    section: pnl.result
+    side: pnl
+    kind: result
+    sum_of: ["100", "110", "-170"]
+    labels:
+      uz_latn: ["Umumxo'jalik faoliyatining foydasi (zarari)"]
+      uz_cyrl: ["Умумхўжалик фаолиятининг фойдаси (зарари)"]
+      ru: ["Прибыль (убыток) от общехозяйственной деятельности"]
+      en: ["Profit from ordinary activities"]
+  - form: form2
+    code: "230"
+    slug: extraordinary_items
+    section: pnl.result
+    side: pnl
+    kind: result
+    labels:
+      uz_latn: ["Favqulodagi foyda va zararlar", "Favqulodda foyda va zararlar"]
+      uz_cyrl: ["Фавқулоддаги фойда ва зарарлар"]
+      ru: ["Чрезвычайные прибыли и убытки"]
+      en: ["Extraordinary gains and losses"]
+  - form: form2
+    code: "240"
+    slug: pre_tax_profit
+    section: pnl.result
+    side: pnl
+    kind: result
+    sum_of: ["220", "230"]
+    labels:
+      uz_latn: ["Foyda solig'ini to'lagunga qadar foyda (zarar)"]
+      uz_cyrl: ["Фойда солиғини тўлагунга қадар фойда (зарар)"]
+      ru: ["Прибыль (убыток) до уплаты налога на прибыль"]
+      en: ["Profit before tax", "Profit before income tax"]
+  - form: form2
+    code: "250"
+    slug: profit_tax
+    section: pnl.result
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Foyda solig'i", "Daromad (foyda) solig'i"]
+      uz_cyrl: ["Фойда солиғи", "Даромад (фойда) солиғи"]
+      ru: ["Налог на прибыль"]
+      en: ["Profit tax", "Income tax expense"]
+  - form: form2
+    code: "260"
+    slug: other_taxes_from_profit
+    section: pnl.result
+    side: pnl
+    kind: amount
+    labels:
+      uz_latn: ["Foydadan boshqa soliqlar va boshqa majburiy to'lovlar"]
+      uz_cyrl: ["Фойдадан бошқа солиқлар ва бошқа мажбурий тўловлар"]
+      ru: ["Прочие налоги и другие обязательные платежи от прибыли"]
+      en: ["Other taxes and levies on profit"]
+  - form: form2
+    code: "270"
+    slug: net_profit
+    section: pnl.result
+    side: pnl
+    kind: result
+    sum_of: ["240", "-250", "-260"]
+    labels:
+      uz_latn: ["Hisobot davrining sof foydasi (zarari)", "Sof foyda"]
+      uz_cyrl: ["Ҳисобот даврининг соф фойдаси (зарари)", "Соф фойда"]
+      ru: ["Чистая прибыль (убыток) отчетного периода", "Чистая прибыль"]
+      en: ["Net profit", "Net income", "Profit for the period", "Profit for the year"]

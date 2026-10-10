@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-4382",
+ "company": {
+  "name": "Chust Meva Eksport MChJ",
+  "stir": "371475974",
+  "industry": "Fruit export",
+  "region": "Qashqadaryo"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -0.6,
+  "coverage": 4.44,
+  "receivables_growth": -0.014,
+  "payables_growth": -0.038,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 66.6
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 281900000,
+  "closing_balance": 295500000,
+  "month_end_balances": {
+   "2026-07": 279022000,
+   "2026-08": 281647000,
+   "2026-09": 295500000
+  }
+ },
+ "statement_rows": 141,
+ "language": "ru",
+ "layout": "mof_grid"
+}

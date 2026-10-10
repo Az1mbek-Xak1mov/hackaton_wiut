@@ -1,0 +1,39 @@
+{
+ "loan_id": "L-2025-0233",
+ "company": {
+  "name": "Jizzax Yog' Zavodi MChJ",
+  "stir": "237259787",
+  "industry": "Oil processing",
+  "region": "Jizzax"
+ },
+ "scenario": "watch",
+ "expected_status_under_disclosed_rules": "watch",
+ "expected_indicators": [
+  "M06"
+ ],
+ "params": {
+  "trend_pct": 0.9,
+  "coverage": 2.1,
+  "receivables_growth": null,
+  "payables_growth": null,
+  "late": {},
+  "late_statement": true,
+  "installment_mln": 62.8
+ },
+ "documents": [
+  "forma1_Q2-2026.pdf",
+  "forma2_Q2-2026.pdf",
+  "vypiska_2026-07_08.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 203500000,
+  "closing_balance": 131900000,
+  "month_end_balances": {
+   "2026-07": 170167000,
+   "2026-08": 131900000
+  }
+ },
+ "statement_rows": 103,
+ "language": "ru",
+ "layout": "typed"
+}

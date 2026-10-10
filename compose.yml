@@ -1,0 +1,27 @@
+# Local development: `docker compose up -d db` (Postgres on 5462); everything in Docker: `--profile full`.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: app
+    ports: ["5462:5432"]
+    volumes: [app-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://app:${POSTGRES_PASSWORD:-app}@db:5432/app
+      WORKER_ENABLED: "true"
+    ports: ["8020:8020"]
+    volumes: [files:/data/files]
+    depends_on: { db: { condition: service_healthy } }
+    profiles: [full]
+volumes:
+  app-db:
+  files:

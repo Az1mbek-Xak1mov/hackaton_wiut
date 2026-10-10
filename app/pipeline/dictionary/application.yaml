@@ -1,0 +1,72 @@
+# Loan-application form fields: label synonyms used by app/pipeline/extract_application.py.
+# The data generator (eval/generator) should print each field as ONE line:
+#     "<label in any language> / <label in another language>: <value>"
+# e.g. "Requested amount / So'ralayotgan summa: 850 000 000 so'm"
+# Amounts may be written in so'm (UZS), "ming so'm" / "тыс. сум" (kUZS) or "mln so'm" / "млн сум".
+# Extracted facts are always in kUZS.
+
+fields:
+  requested_amount:
+    unit: kUZS
+    labels:
+      en: ["Requested amount", "Loan amount requested", "Loan amount"]
+      uz_latn: ["So'ralayotgan summa", "So'ralayotgan kredit summasi", "Kredit summasi"]
+      uz_cyrl: ["Сўралаётган сумма", "Кредит суммаси"]
+      ru: ["Запрашиваемая сумма", "Сумма кредита", "Запрашиваемая сумма кредита"]
+  term_months:
+    unit: count
+    labels:
+      en: ["Term", "Loan term", "Term (months)"]
+      uz_latn: ["Kredit muddati", "Muddati", "Muddat (oy)"]
+      uz_cyrl: ["Кредит муддати", "Муддати"]
+      ru: ["Срок кредита", "Срок", "Срок (мес.)"]
+  rate_pct:
+    unit: pct
+    labels:
+      en: ["Interest rate", "Annual interest rate"]
+      uz_latn: ["Foiz stavkasi", "Yillik foiz stavkasi"]
+      uz_cyrl: ["Фоиз ставкаси"]
+      ru: ["Процентная ставка", "Годовая процентная ставка"]
+  declared_revenue_fy:
+    unit: kUZS
+    labels:
+      en: ["Revenue for the last financial year", "Annual revenue", "Revenue last FY", "Revenue (FY"]
+      uz_latn: ["O'tgan moliya yili uchun tushum", "Yillik tushum", "Sof tushum", "Yillik sotuv hajmi"]
+      uz_cyrl: ["Ўтган молия йили учун тушум", "Йиллик тушум"]
+      ru: ["Выручка за последний финансовый год", "Годовая выручка", "Выручка за"]
+  declared_debts_total:
+    unit: kUZS
+    labels:
+      en: ["Existing loans and debts", "Existing debts", "Existing loans", "Outstanding loans"]
+      uz_latn: ["Mavjud kreditlar va qarzlar", "Mavjud kreditlar", "Amaldagi kreditlar", "Mavjud qarzlar"]
+      uz_cyrl: ["Мавжуд кредитлар ва қарзлар", "Мавжуд кредитлар"]
+      ru: ["Действующие кредиты и займы", "Действующие кредиты", "Текущие кредиты", "Имеющиеся кредиты"]
+    none_words: ["none", "no", "nil", "yo'q", "йўқ", "нет", "отсутствуют", "mavjud emas", "0"]
+  purpose:
+    unit: text
+    labels:
+      en: ["Purpose", "Loan purpose", "Purpose of the loan"]
+      uz_latn: ["Kredit maqsadi", "Maqsadi"]
+      uz_cyrl: ["Кредит мақсади", "Мақсади"]
+      ru: ["Цель кредита", "Цель"]
+  collateral:
+    unit: text
+    labels:
+      en: ["Collateral", "Security offered"]
+      uz_latn: ["Ta'minot", "Garov"]
+      uz_cyrl: ["Таъминот", "Гаров"]
+      ru: ["Обеспечение", "Залог"]
+  applicant_name:
+    unit: text
+    labels:
+      en: ["Applicant", "Company name", "Borrower"]
+      uz_latn: ["Arizachi", "Korxona nomi", "Tashkilot nomi"]
+      uz_cyrl: ["Аризачи", "Корхона номи"]
+      ru: ["Заявитель", "Наименование предприятия", "Наименование организации"]
+  stir:
+    unit: text
+    labels:
+      en: ["TIN", "Taxpayer ID"]
+      uz_latn: ["STIR"]
+      uz_cyrl: ["СТИР"]
+      ru: ["ИНН"]

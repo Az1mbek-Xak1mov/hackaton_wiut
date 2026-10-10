@@ -1,0 +1,155 @@
+{
+ "note": "Synthetic demonstration documents (declared). Ground truth lives in data/seed/*/truth.json.",
+ "files": {
+  "farovon_loan_file.zip": {
+   "source": "data/seed/hero_farovon",
+   "contains": [
+    "Ariza_FarovonSavdo.pdf",
+    "Balans_2025.pdf",
+    "Balans_1H2026.pdf",
+    "Forma2_2025.pdf",
+    "Forma2_1H2026.pdf",
+    "vypiska_2026.xlsx"
+   ]
+  },
+  "navroz_owner_docs.zip": {
+   "source": "data/seed/hero_navroz",
+   "contains": [
+    "bank_vypiska_2026-01_09.xlsx",
+    "Forma2_1yarim_2026.pdf",
+    "Balans_2025_skan.pdf",
+    "schet-faktura_0917.jpg"
+   ]
+  },
+  "zilola_monitoring.zip": {
+   "source": "data/seed/hero_zilola",
+   "contains": [
+    "forma1_Q3-2026.pdf",
+    "forma2_Q3-2026.pdf",
+    "vypiska_2026-07_09.xlsx"
+   ]
+  },
+  "form2_clean.pdf": {
+   "source": "hero_farovon/Forma2_1H2026.pdf",
+   "expected": "form2, text layer, H1-2026"
+  },
+  "form2_scan_150dpi.pdf": {
+   "source": "hero_farovon/Forma2_2025.pdf",
+   "expected": "form2 via OCR, FY2025, 150 dpi, skew 1.8°"
+  },
+  "statement.xlsx": {
+   "source": "hero_zilola/vypiska_2026-07_09.xlsx",
+   "expected": "bank_statement, Jul-Sep 2026, recurring loan:L-2025-0417 (Sep paid 2 days late)"
+  },
+  "photo_invoice.jpg": {
+   "source": "hero_navroz/schet-faktura_0917.jpg",
+   "expected": "quality gate fails: 640x480, blurred"
+  },
+  "photo_form2.jpg": {
+   "source": "hero_farovon/Forma2_1H2026.pdf page 1",
+   "expected": "form2 via OCR from a phone photo"
+  },
+  "english_ifrs.pdf": {
+   "doc_type": "unknown_or_non_statutory",
+   "language": "en",
+   "rows": {
+    "Property, plant and equipment, net": {
+     "cur": 2418600,
+     "prev": 2211300,
+     "page": 1
+    },
+    "Intangible assets": {
+     "cur": 36200,
+     "prev": 41800,
+     "page": 1
+    },
+    "Total non-current assets": {
+     "cur": 2454800,
+     "prev": 2253100,
+     "page": 1
+    },
+    "Inventories": {
+     "cur": 1102450,
+     "prev": 964300,
+     "page": 1
+    },
+    "Trade and other receivables": {
+     "cur": 865120,
+     "prev": 790640,
+     "page": 1
+    },
+    "Cash and cash equivalents": {
+     "cur": 312870,
+     "prev": 255410,
+     "page": 1
+    },
+    "Total current assets": {
+     "cur": 2280440,
+     "prev": 2010350,
+     "page": 1
+    },
+    "Total assets": {
+     "cur": 4735240,
+     "prev": 4263450,
+     "page": 1
+    },
+    "Share capital": {
+     "cur": 800000,
+     "prev": 800000,
+     "page": 1
+    },
+    "Retained earnings": {
+     "cur": 1906540,
+     "prev": 1588210,
+     "page": 1
+    },
+    "Total equity": {
+     "cur": 2706540,
+     "prev": 2388210,
+     "page": 1
+    },
+    "Long-term bank loans": {
+     "cur": 640000,
+     "prev": 820000,
+     "page": 1
+    },
+    "Total non-current liabilities": {
+     "cur": 640000,
+     "prev": 820000,
+     "page": 1
+    },
+    "Trade payables": {
+     "cur": 1004310,
+     "prev": 851960,
+     "page": 1
+    },
+    "Short-term borrowings": {
+     "cur": 210000,
+     "prev": 95000,
+     "page": 1
+    },
+    "Other payables": {
+     "cur": 174390,
+     "prev": 108280,
+     "page": 1
+    },
+    "Total current liabilities": {
+     "cur": 1388700,
+     "prev": 1055240,
+     "page": 1
+    },
+    "Total liabilities": {
+     "cur": 2028700,
+     "prev": 1875240,
+     "page": 1
+    },
+    "Total equity and liabilities": {
+     "cur": 4735240,
+     "prev": 4263450,
+     "page": 1
+    }
+   },
+   "expected": "classified as non-statutory layout; values matched by English label without line codes"
+  }
+ }
+}

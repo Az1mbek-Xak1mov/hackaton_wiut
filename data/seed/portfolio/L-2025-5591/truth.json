@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-5591",
+ "company": {
+  "name": "Marg'ilon Dori-Darmon XK",
+  "stir": "202119785",
+  "industry": "Pharmacy retail",
+  "region": "Qoraqalpog'iston"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 13.2,
+  "coverage": 2.44,
+  "receivables_growth": 0.11,
+  "payables_growth": 0.071,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 13.5
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 29700000,
+  "closing_balance": 33000000,
+  "month_end_balances": {
+   "2026-07": 32268000,
+   "2026-08": 32655000,
+   "2026-09": 33000000
+  }
+ },
+ "statement_rows": 169,
+ "language": "ru",
+ "layout": "software_export"
+}

@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-4510",
+ "company": {
+  "name": "Saodat Mebel XK",
+  "stir": "360306381",
+  "industry": "Furniture manufacturing",
+  "region": "Surxondaryo"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -5.7,
+  "coverage": 4.47,
+  "receivables_growth": -0.013,
+  "payables_growth": 0.084,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 30.3
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 143000000,
+  "closing_balance": 135500000,
+  "month_end_balances": {
+   "2026-07": 135149000,
+   "2026-08": 134603000,
+   "2026-09": 135500000
+  }
+ },
+ "statement_rows": 159,
+ "language": "ru",
+ "layout": "mof_grid"
+}

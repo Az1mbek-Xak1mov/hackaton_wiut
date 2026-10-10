@@ -1,0 +1,26 @@
+{
+ "note": "Synthetic loan book (declared). Amounts in mln UZS. Statuses are computed by the monitoring run from the documents; 'scenario' is the generator's target, kept only in truth files.",
+ "borrowers": 148,
+ "exposure_bn": 86.4,
+ "median_outstanding_mln": 412.0,
+ "largest_outstanding_mln": 4200.0,
+ "scenario_targets": {
+  "attn": {
+   "n": 9,
+   "exposure_bn": 6.2
+  },
+  "watch": {
+   "n": 18,
+   "exposure_bn": 11.4
+  },
+  "stable": {
+   "n": 121,
+   "exposure_bn": 68.8
+  }
+ },
+ "deviations_from_design": {
+  "L-2025-0391": "design trend +4.1%; set to -0.8% so M02 (receivables +25% while revenue <= 0%) is the single indicator",
+  "L-2025-0315": "design coverage 1.2x; set to 1.6x, otherwise M01+M04 => Attention under the disclosed rules",
+  "L-2024-0510": "design coverage 1.6x and late installments caught up in Sep; late payments moved to Apr/May (outside the last 3) and coverage set to 1.4x so exactly one indicator (M04) fires"
+ }
+}

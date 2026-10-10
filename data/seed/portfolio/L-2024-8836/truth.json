@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-8836",
+ "company": {
+  "name": "Zarafshon Polimer MChJ",
+  "stir": "388652287",
+  "industry": "Plastics manufacturing",
+  "region": "Xorazm"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 7.5,
+  "coverage": 5.14,
+  "receivables_growth": 0.075,
+  "payables_growth": 0.128,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 9.4
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 57700000,
+  "closing_balance": 48300000,
+  "month_end_balances": {
+   "2026-07": 48914000,
+   "2026-08": 48776000,
+   "2026-09": 48300000
+  }
+ },
+ "statement_rows": 133,
+ "language": "uz_latn",
+ "layout": "typed"
+}

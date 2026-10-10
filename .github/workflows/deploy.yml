@@ -1,0 +1,50 @@
+name: deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "SHA to deploy (rollback); empty = this commit"
+        required: false
+concurrency:
+  group: production
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run pytest -q
+      - name: honesty check (no design dataset in app code)
+        run: "! grep -rn 'demo-data' web/src app --include=*.ts --include=*.vue --include=*.py"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd web && npm ci && npm run build
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://converza.uz
+    steps:
+      - name: ssh deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: deploy
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 30m
+          script: |
+            set -e
+            cd /srv/converza/repo
+            git fetch -q origin
+            git checkout -q --detach ${{ inputs.sha || github.sha }}
+            bash deploy/deploy.sh ${{ inputs.sha || github.sha }} ${{ github.actor }} ${{ github.run_id }}
+      - name: verify
+        run: |
+          sleep 5
+          test "$(curl -fsS https://converza.uz/api/v1/version | jq -r .git_sha)" = "${{ inputs.sha || github.sha }}"

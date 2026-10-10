@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-7237",
+ "company": {
+  "name": "Olmaliq Yog' Zavodi AJ",
+  "stir": "359665189",
+  "industry": "Oil processing",
+  "region": "Xorazm"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 23.7,
+  "coverage": 5.76,
+  "receivables_growth": -0.026,
+  "payables_growth": 0.0,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 73.2
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 410800000,
+  "closing_balance": 421900000,
+  "month_end_balances": {
+   "2026-07": 424418000,
+   "2026-08": 369989000,
+   "2026-09": 421900000
+  }
+ },
+ "statement_rows": 137,
+ "language": "uz_latn",
+ "layout": "software_export"
+}

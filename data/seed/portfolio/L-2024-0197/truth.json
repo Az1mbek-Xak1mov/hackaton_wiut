@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-0197",
+ "company": {
+  "name": "Buxoro Gilam MChJ",
+  "stir": "390946129",
+  "industry": "Carpet manufacturing",
+  "region": "Buxoro"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 11.2,
+  "coverage": 3.4,
+  "receivables_growth": 0.036,
+  "payables_growth": -0.048,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 75.6
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 267200000,
+  "closing_balance": 257000000,
+  "month_end_balances": {
+   "2026-07": 247647000,
+   "2026-08": 261754000,
+   "2026-09": 257000000
+  }
+ },
+ "statement_rows": 140,
+ "language": "uz_latn",
+ "layout": "software_export"
+}

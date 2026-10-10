@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-6371",
+ "company": {
+  "name": "Oydin Qurilish MChJ",
+  "stir": "301836844",
+  "industry": "Construction",
+  "region": "Tashkent region"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 23.0,
+  "coverage": 3.49,
+  "receivables_growth": -0.076,
+  "payables_growth": 0.007,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 8.4
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 33100000,
+  "closing_balance": 29300000,
+  "month_end_balances": {
+   "2026-07": 31971000,
+   "2026-08": 26869000,
+   "2026-09": 29300000
+  }
+ },
+ "statement_rows": 142,
+ "language": "ru",
+ "layout": "software_export"
+}

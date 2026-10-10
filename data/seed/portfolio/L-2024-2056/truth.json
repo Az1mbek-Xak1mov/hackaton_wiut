@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-2056",
+ "company": {
+  "name": "Omad Yog'och MChJ",
+  "stir": "370310743",
+  "industry": "Furniture manufacturing",
+  "region": "Navoiy"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 0.0,
+  "coverage": 4.88,
+  "receivables_growth": -0.056,
+  "payables_growth": -0.073,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 165.2
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 781400000,
+  "closing_balance": 805400000,
+  "month_end_balances": {
+   "2026-07": 785139000,
+   "2026-08": 773915000,
+   "2026-09": 805400000
+  }
+ },
+ "statement_rows": 151,
+ "language": "ru",
+ "layout": "mof_grid"
+}

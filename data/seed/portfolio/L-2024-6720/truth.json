@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-6720",
+ "company": {
+  "name": "Oydin Avto Ehtiyot MChJ",
+  "stir": "210409560",
+  "industry": "Auto parts retail",
+  "region": "Qoraqalpog'iston"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 18.3,
+  "coverage": 3.09,
+  "receivables_growth": 0.05,
+  "payables_growth": -0.001,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 15.7
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 44800000,
+  "closing_balance": 48500000,
+  "month_end_balances": {
+   "2026-07": 43472000,
+   "2026-08": 41373000,
+   "2026-09": 48500000
+  }
+ },
+ "statement_rows": 149,
+ "language": "ru",
+ "layout": "mof_grid"
+}

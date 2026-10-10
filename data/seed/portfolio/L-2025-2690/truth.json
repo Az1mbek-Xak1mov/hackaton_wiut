@@ -1,0 +1,40 @@
+{
+ "loan_id": "L-2025-2690",
+ "company": {
+  "name": "Lazzat Oziq-ovqat Savdo XK",
+  "stir": "331327338",
+  "industry": "Food distribution",
+  "region": "Xorazm"
+ },
+ "scenario": "W_pay",
+ "expected_status_under_disclosed_rules": "watch",
+ "expected_indicators": [
+  "M03"
+ ],
+ "params": {
+  "trend_pct": -3.2,
+  "coverage": 2.98,
+  "receivables_growth": 0.039,
+  "payables_growth": 0.486,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 13.9
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 51000000,
+  "closing_balance": 41400000,
+  "month_end_balances": {
+   "2026-07": 46320000,
+   "2026-08": 45547000,
+   "2026-09": 41400000
+  }
+ },
+ "statement_rows": 165,
+ "language": "uz_latn",
+ "layout": "software_export"
+}

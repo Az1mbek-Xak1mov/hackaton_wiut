@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-7564",
+ "company": {
+  "name": "Gulshan Polimer XK",
+  "stir": "236105744",
+  "industry": "Plastics manufacturing",
+  "region": "Buxoro"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -2.0,
+  "coverage": 5.86,
+  "receivables_growth": -0.09,
+  "payables_growth": 0.072,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 10.2
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 67200000,
+  "closing_balance": 59800000,
+  "month_end_balances": {
+   "2026-07": 67248000,
+   "2026-08": 62000000,
+   "2026-09": 59800000
+  }
+ },
+ "statement_rows": 154,
+ "language": "ru",
+ "layout": "typed"
+}

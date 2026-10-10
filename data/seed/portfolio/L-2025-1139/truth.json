@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-1139",
+ "company": {
+  "name": "Bekobod Meva-Sabzavot XK",
+  "stir": "397310639",
+  "industry": "Fruit export",
+  "region": "Tashkent region"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 4.4,
+  "coverage": 5.55,
+  "receivables_growth": 0.092,
+  "payables_growth": 0.132,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 13.7
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 71400000,
+  "closing_balance": 76100000,
+  "month_end_balances": {
+   "2026-07": 70057000,
+   "2026-08": 66709000,
+   "2026-09": 76100000
+  }
+ },
+ "statement_rows": 145,
+ "language": "ru",
+ "layout": "software_export"
+}

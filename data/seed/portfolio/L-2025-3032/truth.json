@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-3032",
+ "company": {
+  "name": "Navoiy Farm Savdo MChJ",
+  "stir": "251139996",
+  "industry": "Pharmacy retail",
+  "region": "Namangan"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 8.3,
+  "coverage": 5.07,
+  "receivables_growth": 0.024,
+  "payables_growth": 0.045,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 14.9
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 70300000,
+  "closing_balance": 75600000,
+  "month_end_balances": {
+   "2026-07": 77115000,
+   "2026-08": 81381000,
+   "2026-09": 75600000
+  }
+ },
+ "statement_rows": 192,
+ "language": "uz_latn",
+ "layout": "mof_grid"
+}

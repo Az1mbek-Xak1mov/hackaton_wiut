@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2024-6976",
+ "company": {
+  "name": "Samarqand Farm Savdo MChJ",
+  "stir": "302884292",
+  "industry": "Pharmacy retail",
+  "region": "Farg'ona"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": 10.0,
+  "coverage": 2.06,
+  "receivables_growth": -0.045,
+  "payables_growth": -0.008,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 112.1
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 203500000,
+  "closing_balance": 231100000,
+  "month_end_balances": {
+   "2026-07": 175796000,
+   "2026-08": 161747000,
+   "2026-09": 231100000
+  }
+ },
+ "statement_rows": 165,
+ "language": "uz_latn",
+ "layout": "typed"
+}

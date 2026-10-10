@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-2807",
+ "company": {
+  "name": "Xiva Poligraf AJ",
+  "stir": "200847101",
+  "industry": "Printing",
+  "region": "Qashqadaryo"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -2.3,
+  "coverage": 4.97,
+  "receivables_growth": -0.037,
+  "payables_growth": -0.011,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 23.6
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 116100000,
+  "closing_balance": 117200000,
+  "month_end_balances": {
+   "2026-07": 124840000,
+   "2026-08": 122498000,
+   "2026-09": 117200000
+  }
+ },
+ "statement_rows": 168,
+ "language": "ru",
+ "layout": "typed"
+}

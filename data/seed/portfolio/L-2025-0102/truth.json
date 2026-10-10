@@ -1,0 +1,40 @@
+{
+ "loan_id": "L-2025-0102",
+ "company": {
+  "name": "Nukus Qurilish MChJ",
+  "stir": "252810076",
+  "industry": "Construction",
+  "region": "Qoraqalpog'iston"
+ },
+ "scenario": "watch",
+ "expected_status_under_disclosed_rules": "watch",
+ "expected_indicators": [
+  "M02"
+ ],
+ "params": {
+  "trend_pct": -7.9,
+  "coverage": 1.8,
+  "receivables_growth": 0.38,
+  "payables_growth": 0.022,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 116.0
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 247600000,
+  "closing_balance": 208800000,
+  "month_end_balances": {
+   "2026-07": 218185000,
+   "2026-08": 224033000,
+   "2026-09": 208800000
+  }
+ },
+ "statement_rows": 148,
+ "language": "uz_latn",
+ "layout": "mof_grid"
+}

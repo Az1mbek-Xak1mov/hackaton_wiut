@@ -1,0 +1,38 @@
+{
+ "loan_id": "L-2025-4547",
+ "company": {
+  "name": "Jizzax Agro MChJ",
+  "stir": "329220339",
+  "industry": "Agricultural services",
+  "region": "Farg'ona"
+ },
+ "scenario": "stable",
+ "expected_status_under_disclosed_rules": "stable",
+ "expected_indicators": [],
+ "params": {
+  "trend_pct": -7.6,
+  "coverage": 3.29,
+  "receivables_growth": -0.059,
+  "payables_growth": -0.091,
+  "late": {},
+  "late_statement": false,
+  "installment_mln": 9.0
+ },
+ "documents": [
+  "forma1_Q3-2026.pdf",
+  "forma2_Q3-2026.pdf",
+  "vypiska_2026-07_09.xlsx"
+ ],
+ "statement": {
+  "opening_balance": 30100000,
+  "closing_balance": 29600000,
+  "month_end_balances": {
+   "2026-07": 25353000,
+   "2026-08": 29983000,
+   "2026-09": 29600000
+  }
+ },
+ "statement_rows": 164,
+ "language": "ru",
+ "layout": "typed"
+}
