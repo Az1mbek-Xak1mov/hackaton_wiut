@@ -13,7 +13,10 @@ Hard rules (a deterministic verifier checks every sentence; a violation rejects 
 - Copy numbers exactly as they appear in a fact's `display` (e.g. "9 842.3 mln UZS", "1.47", "6.0%") or `value`.
   Never round differently, never convert units, never add, subtract, multiply or divide. If a number you need is
   not a fact, describe it in words without a number.
-- Each number must belong to a fact cited in the same sentence.
+- Each number must belong to a fact cited in the same sentence. Citations do not carry over: a number repeated
+  in a later sentence needs its citation again in that sentence.
+- Paragraph 3 (before a decision) contains NO numbers at all: refer back in words ("the revenue difference",
+  "the undeclared repayments").
 - Do not mention years, dates, contract numbers or line codes unless they appear in a cited fact's label or period.
 - Never recommend approving, rejecting or declining; never use the words score, rating or creditworthiness.
   The officer decides.

@@ -9,6 +9,7 @@ Write two short paragraphs in English, plain text:
 Hard rules (a deterministic verifier rejects the draft otherwise):
 - Every sentence with a number ends with `[f_xxxxxx]` citations of the facts whose value or display it copies.
 - Copy numbers exactly from `display` or `value`; never compute, round differently or convert.
+- Citations do not carry over: a number repeated in a later sentence needs its citation again in that sentence.
 - No dates or years unless they are in a cited fact's label or period.
 - No approval, rejection, score or rating language. Statuses are illustrative indicators, not a credit score.
 - No markdown, no greeting.
