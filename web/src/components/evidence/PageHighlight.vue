@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toRef } from 'vue'
 import { useAuthedImage } from '@/composables/useAuthedImage'
+import { t } from '@/i18n'
 
 const props = defineProps<{
   url: string | null
@@ -38,8 +39,8 @@ defineExpose({ src })
 
 <template>
   <div class="ph">
-    <div v-if="loading" class="ph-msg muted">Loading page image…</div>
-    <div v-else-if="failed || !src" class="ph-msg muted">Page image not available.</div>
+    <div v-if="loading" class="ph-msg muted">{{ t('Loading page image…') }}</div>
+    <div v-else-if="failed || !src" class="ph-msg muted">{{ t('Page image not available.') }}</div>
     <template v-else>
       <svg
         v-if="canOverlay"
@@ -54,8 +55,8 @@ defineExpose({ src })
       </svg>
       <img v-else :src="src" :alt="alt" class="ph-img" />
       <div class="ph-bar">
-        <span class="muted">{{ canOverlay ? 'Highlighted: the cell the value was read from' : 'Location on the page was not recorded' }}</span>
-        <button v-if="canOverlay" type="button" class="linkbtn" @click="whole = !whole">{{ whole ? 'Zoom to value' : 'Show whole page' }}</button>
+        <span class="muted">{{ canOverlay ? t('Highlighted: the cell the value was read from') : t('Location on the page was not recorded') }}</span>
+        <button v-if="canOverlay" type="button" class="linkbtn" @click="whole = !whole">{{ whole ? t('Zoom to value') : t('Show whole page') }}</button>
       </div>
     </template>
   </div>

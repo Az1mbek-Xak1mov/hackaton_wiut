@@ -1,12 +1,17 @@
 """Job worker: polls the Postgres `jobs` table (FOR UPDATE SKIP LOCKED), runs WORKER_CONCURRENCY jobs at a time.
 
-Run as its own process in production: `python -m app.worker`. The loop never dies: every iteration is wrapped
-and logged. A heartbeat file feeds the compose healthcheck.
+Run as its own process in production: `python -m app.worker`. Jobs run in a pool of child PROCESSES, not
+threads: pdfium (pypdfium2) and Tesseract are not thread-safe, and two parses in one process fail with
+"PdfiumError: Failed to load page". The loop never dies: every iteration is wrapped and logged. A heartbeat
+file feeds the compose healthcheck.
 """
 import asyncio
 import logging
+import multiprocessing as mp
 import signal
 import time
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
 from pathlib import Path
 
 from app.core.config import settings
@@ -24,6 +29,15 @@ def _claim() -> int | None:
         return claim_next(db)
 
 
+def _child_init() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+
+def _run_in_child(job_id: int) -> None:
+    from app.modules.jobs.runner import run_job
+    run_job(job_id)
+
+
 def _housekeeping() -> None:
     from app.modules.documents.service import DocumentService
     from app.modules.jobs.service import requeue_stale
@@ -39,6 +53,13 @@ class Worker:
         self._task: asyncio.Task | None = None
         self._stop = asyncio.Event()
         self._running: set[asyncio.Task] = set()
+        self._pool: ProcessPoolExecutor | None = None
+
+    def _get_pool(self) -> ProcessPoolExecutor:
+        if self._pool is None:
+            self._pool = ProcessPoolExecutor(max_workers=self.concurrency, mp_context=mp.get_context("spawn"),
+                                             initializer=_child_init)
+        return self._pool
 
     def start(self) -> None:
         self._task = asyncio.create_task(self.loop())
@@ -49,11 +70,21 @@ class Worker:
             await self._task
         if self._running:
             await asyncio.gather(*self._running, return_exceptions=True)
+        self.shutdown()
+
+    def shutdown(self) -> None:
+        if self._pool is not None:
+            self._pool.shutdown(wait=True, cancel_futures=True)
+            self._pool = None
 
     async def _run(self, job_id: int) -> None:
-        from app.modules.jobs.runner import run_job
+        loop = asyncio.get_running_loop()
         try:
-            await asyncio.to_thread(run_job, job_id)
+            await loop.run_in_executor(self._get_pool(), _run_in_child, job_id)
+        except BrokenProcessPool:
+            # a child died (e.g. OOM): the job's lock goes stale and requeue_stale retries it
+            logger.exception("worker process died while running job %s; restarting the pool", job_id)
+            self._pool = None
         except Exception:
             logger.exception("job %s crashed outside the runner", job_id)
 
@@ -103,6 +134,7 @@ async def main() -> None:
     await worker.loop()
     if worker._running:
         await asyncio.gather(*worker._running, return_exceptions=True)
+    worker.shutdown()
 
 
 if __name__ == "__main__":

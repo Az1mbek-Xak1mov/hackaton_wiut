@@ -139,7 +139,7 @@ Status: **Stable** = none triggered in the last 2 periods · **Watch** = exactly
 | Quick ratio | (F1 390 − F1 140) / F1 600 |
 | Net margin | F2 270 / F2 010 |
 | Debt to equity | (F1 490 + F1 600) / F1 equity total |
-| Est. DSCR (new loan) | ((F2 270 + F2 120) / months_in_period) / requested installment |
+| Est. DSCR (new loan) | ((F2 270 + F2 170) / months_in_period) / requested installment — 170 = finance costs (Σ 180–210; 180 = interest expense), per `app/pipeline/dictionary/forms.yaml` (120 is dividend income) |
 | Est. DSCR (incl. undeclared) | same ÷ (installment + detected undeclared monthly) |
 | Receivable days | F1 receivables / F2 010 × days_in_period |
 | Installment vs revenue | installment / avg monthly sales_receipt inflows |

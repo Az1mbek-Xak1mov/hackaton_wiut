@@ -254,9 +254,42 @@ def _other_langs(lang: str) -> str | None:
     return "+".join(alt) if alt else None
 
 
+@lru_cache(maxsize=1)
+def _vocabulary() -> frozenset[str]:
+    from app.pipeline.dictionary import application_fields, load_forms
+    from app.pipeline.rows import norm_text
+    words: set[str] = set()
+    for e in load_forms():
+        for lab in e.all_labels():
+            words.update(w for w in norm_text(lab).split() if len(w) >= 4)
+    for f in application_fields()["fields"].values():
+        for labs in f["labels"].values():
+            for lab in labs:
+                words.update(w for w in norm_text(lab).split() if len(w) >= 4)
+    words.update({"итого", "всего", "баланс", "актив", "пассив", "отчет", "jami", "balans", "hisobot", "shakl",
+                  "форма", "период", "davri", "сумма", "summa", "выписка", "счет", "hisob", "жами", "ҳисобот"})
+    return frozenset(words)
+
+
+def vocab_hit_rate(words: list[Word]) -> float:
+    """Share of recognised words (≥ 4 letters) that are known statutory-form / application vocabulary."""
+    from app.pipeline.rows import norm_text
+    toks = [t for w in words for t in norm_text(w.text).split() if len(t) >= 4 and not t.isdigit()]
+    if len(toks) < 15:
+        return 1.0  # too little text to judge (photo of a receipt, a stamp…)
+    vocab = _vocabulary()
+    return sum(1 for t in toks if t in vocab) / len(toks)
+
+
+class OcrUnavailable(RuntimeError):
+    """Tesseract is not installed (e.g. a CI runner): the document gets a failure cause, not a crash."""
+
+
 def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6, retry_below: float = 85.0) -> OcrPage:
     """OCR one page. Retries once with the other script's languages, and once upside down after a quarter
     turn, when recognition confidence is poor — OSD script / orientation guesses are unreliable on noisy scans."""
+    if not available_langs():
+        raise OcrUnavailable("tesseract is not installed")
     t0 = time.perf_counter()
     gray = to_gray(img)
     # small images (phone photos, low-dpi scans): upscale so text is ~30 px high for Tesseract
@@ -280,7 +313,8 @@ def ocr_image(img: Image.Image, *, lang: str | None = None, psm: int = 6, retry_
     gray, proc, skew = _prepare(gray)
     lang = lang or langs_for(script)
     words, conf = _tesseract(proc, lang, psm)
-    if conf is None or conf < retry_below:
+    # wrong script (OSD guessed Latin for a Russian form, …): very few words are known form vocabulary
+    if conf is None or conf < min(retry_below, 70.0) or (conf < retry_below and vocab_hit_rate(words) < 0.5):
         alt = _other_langs(lang)
         if alt:
             w2, c2 = _tesseract(proc, alt, psm)

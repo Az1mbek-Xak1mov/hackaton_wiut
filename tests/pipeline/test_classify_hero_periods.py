@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 from app.pipeline.classify import period_labels  # noqa: E402
 from app.pipeline.extract_forms import extract_forms  # noqa: E402
+from app.pipeline.ocr import available_langs  # noqa: E402
 from app.pipeline.parse import parse_document  # noqa: E402
 
 
@@ -34,6 +35,9 @@ CASES = _cases()
 @pytest.mark.skipif(not CASES, reason="hero bundles not generated (python -m eval.generator)")
 @pytest.mark.parametrize("path,truth", CASES)
 def test_hero_period_and_values(tmp_path, path, truth):
+    scanned_variant = bool((truth.get("variant") or {}).get("scan")) or path.suffix.lower() in (".jpg", ".png")
+    if scanned_variant and not available_langs():
+        pytest.skip("tesseract not installed")
     doc = parse_document(str(path), "", tmp_path, filename=path.name)
     typ = truth["doc_type"]
     assert doc.doc_type == typ

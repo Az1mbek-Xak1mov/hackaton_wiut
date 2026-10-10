@@ -26,7 +26,13 @@ onMounted(async () => {
 
 const distBar = computed(() => (s.value?.status_distribution || []).filter((d) => d.n > 0))
 const MARK: Record<string, string> = { stable: 'var(--stable-mark)', watch: 'var(--watch-mark)', attn: 'var(--attn-mark)' }
-const TAG: Record<string, string> = { application: 'var(--info-fg)', borrower: 'var(--attn-fg)' }
+function tagColor(q: PortfolioSummary['queue'][number]) {
+  if (q.kind === 'application') return 'var(--info-fg)'
+  return q.severity === 'attn' ? 'var(--attn-fg)' : q.severity === 'watch' ? 'var(--watch-fg)' : 'var(--ink-2)'
+}
+const QUEUE_SHOWN = 7
+const showAllQueue = ref(false)
+const queueRows = computed(() => (showAllQueue.value ? s.value?.queue || [] : (s.value?.queue || []).slice(0, QUEUE_SHOWN)))
 
 function queueLink(q: PortfolioSummary['queue'][number]) {
   return q.kind === 'application' ? `/bank/applications/${q.ref}` : `/bank/borrowers/${q.ref}`
@@ -91,10 +97,10 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
         <section class="panel" aria-label="Needs attention today">
           <div class="panel-head" style="padding: 14px 16px 10px">
             <h2>Needs attention today</h2>
-            <span class="ctx">Ranked by severity, then exposure · {{ s.queue.length }} items</span>
+            <span class="ctx">Ranked by severity, then exposure · {{ queueRows.length }} of {{ s.queue.length }} items</span>
           </div>
-          <div v-for="(q, i) in s.queue" :key="i" class="q">
-            <span class="tag" :style="{ color: TAG[q.kind] }">{{ q.kind === 'application' ? 'Application' : 'Borrower' }}</span>
+          <div v-for="(q, i) in queueRows" :key="i" class="q">
+            <span class="tag" :style="{ color: tagColor(q) }">{{ q.kind === 'application' ? 'Application' : 'Borrower' }}</span>
             <div style="min-width: 0">
               <RouterLink :to="queueLink(q)" style="font-weight: 600; text-decoration: none; color: var(--ink)">{{ q.name }}</RouterLink>
               <span class="pill" :class="severityPillClass(q.severity)" style="margin-left: 6px">{{ queuePillLabel(q.severity) }}</span>
@@ -103,6 +109,9 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
             <RouterLink :to="queueLink(q)" class="btn btn-sm">{{ q.action || 'Open' }}</RouterLink>
           </div>
           <div v-if="!s.queue.length" class="empty" style="border-top: 1px solid var(--border-row)">Nothing needs attention today.</div>
+          <div v-else-if="s.queue.length > QUEUE_SHOWN" style="padding: 10px 16px; border-top: 1px solid var(--border-row)">
+            <button type="button" class="linkbtn" @click="showAllQueue = !showAllQueue">{{ showAllQueue ? 'Show the first 7' : `Show all ${s.queue.length} items →` }}</button>
+          </div>
         </section>
 
         <div class="stack" style="gap: 16px">
@@ -137,6 +146,7 @@ const nextApp = computed(() => apps.value.find((a) => a.status === 'in_review' |
               :labels="s.trend!.map((t) => fmtDate(t.as_of, { short: true }))"
               :a="s.trend!.map((t) => t.watch_plus_attn)"
               a-name="Watch + Attention"
+              a-color="var(--watch-mark)"
               :summary="`Borrowers under Watch or Attention by run: ${s.trend!.map((t) => `${fmtDate(t.as_of)} ${t.watch_plus_attn}`).join(', ')}.`"
             />
           </section>

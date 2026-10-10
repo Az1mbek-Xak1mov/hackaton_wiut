@@ -11,7 +11,7 @@ from app.pipeline.rules.periods import month_end, months_between, parse_period
 from app.pipeline.statements.categorise import CATEGORY_LABELS, Categoriser
 from app.pipeline.statements.recurring import detect_recurring
 from app.pipeline.statements.text import (
-    ACCOUNT_RE, MFO_RE, STIR_LABELLED_RE, STIR_RE, cell_text, norm, parse_amount, parse_date,
+    ACCOUNT_RE, MFO_RE, STIR_LABELLED_RE, STIR_RE, cell_text, norm, parse_amount, parse_date, uz_cyr_to_lat,
 )
 from app.pipeline.types import FactDraft, ParsedDoc, TxnDraft, XlsxSheet
 
@@ -119,6 +119,7 @@ def _scan_balances(rows: list[list]) -> tuple[float | None, float | None]:
     opening = closing = None
     for r in rows:
         t = norm(_row_text(r))
+        t = f"{t} || {uz_cyr_to_lat(t)}" if uz_cyr_to_lat(t) != t else t
         if not t:
             continue
         if opening is None and _OPENING.search(t):
@@ -171,7 +172,8 @@ def parse_transactions(doc: ParsedDoc, own_stir: str | None, categoriser: Catego
         if d is None:
             continue
         text_all = norm(_row_text(row))
-        if _TOTALS.search(text_all) and not cell_text(_cell(row, cols, "purpose")):
+        if (_TOTALS.search(text_all) or _TOTALS.search(uz_cyr_to_lat(text_all))) and \
+                not cell_text(_cell(row, cols, "purpose")):
             continue
         cur = norm(cell_text(_cell(row, cols, "currency"))) if "currency" in cols else ""
         money_text = " ".join(norm(cell_text(_cell(row, cols, r))) for r in ("debit", "credit", "amount") if r in cols)

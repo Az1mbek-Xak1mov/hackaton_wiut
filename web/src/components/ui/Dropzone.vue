@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const props = withDefaults(
-  defineProps<{ accept?: string; multiple?: boolean; disabled?: boolean; title?: string; hint?: string; compact?: boolean }>(),
+  defineProps<{ accept?: string; multiple?: boolean; disabled?: boolean; title?: string; hint?: string; compact?: boolean; button?: string }>(),
   { accept: '.pdf,.xlsx,.jpg,.jpeg,.png', multiple: false, title: 'Drop a file here', hint: 'PDF · XLSX · JPG · PNG · up to 20 MB' },
 )
 const emit = defineEmits<{ (e: 'files', files: File[]): void }>()
@@ -34,7 +34,7 @@ function onPick(e: Event) {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" class="muted"><path d="M12 16V4M6 10l6-6 6 6M4 20h16" /></svg>
     <div style="font-weight: 500">{{ title }}</div>
     <div class="muted" style="font-size: 12px">{{ hint }}</div>
-    <label :for="inputId" class="btn btn-primary" :class="{ 'btn-sm': compact }" :aria-disabled="disabled" @click="disabled && $event.preventDefault()">Choose file{{ multiple ? 's' : '' }}</label>
+    <label :for="inputId" class="btn btn-primary" :class="{ 'btn-sm': compact }" :aria-disabled="disabled" @click="disabled && $event.preventDefault()">{{ button || (multiple ? 'Choose files' : 'Choose file') }}</label>
     <input :id="inputId" ref="input" type="file" class="sr-only" :accept="accept" :multiple="multiple" :disabled="disabled" @change="onPick" />
   </div>
 </template>

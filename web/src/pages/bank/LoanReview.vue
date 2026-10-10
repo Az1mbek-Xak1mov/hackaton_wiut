@@ -280,13 +280,13 @@ async function submitDecision() {
             </div>
             <div v-if="data.ratios.length" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px">
               <div v-for="r in data.ratios" :key="r.label" class="ratio" :class="{ flag: !!r.flag }">
-                <span class="eyebrow">{{ r.label }}<template v-if="r.period"> · {{ r.period }}</template></span>
+                <span class="eyebrow">{{ r.label }}</span>
                 <span class="v num">
                   <template v-if="r.fact_keys && r.fact_keys.length === 2"><EvidenceChip :fact-key="r.fact_keys[0]" /> <span class="muted" style="font-size: 13px; font-weight: 400">→</span> <EvidenceChip :fact-key="r.fact_keys[1]" /></template>
                   <EvidenceChip v-else-if="r.fact_key" :fact-key="r.fact_key" :text="r.value_display" />
                   <template v-else>{{ r.value_display }}</template>
                 </span>
-                <span class="muted" style="font-size: 12px"><InlineEvidence :text="r.note" /></span>
+                <span class="muted" style="font-size: 12px"><InlineEvidence :text="r.note" /><template v-if="r.period"> · {{ r.period }}</template></span>
               </div>
             </div>
             <div v-else class="muted">n/a — ratios need both Форма 1 and Форма 2.</div>
@@ -298,7 +298,10 @@ async function submitDecision() {
                 <div class="eyebrow">Preliminary repayment-capacity indicator</div>
                 <div style="font-size: 16px; font-weight: 600; margin-top: 4px">{{ data.indicator.label }}</div>
               </div>
-              <div class="muted" style="font-size: 12px; max-width: 360px">{{ data.indicator.disclaimer }}<template v-if="data.indicator.rule"> {{ data.indicator.rule }}</template></div>
+              <div class="muted" style="font-size: 12px; max-width: 360px">
+                <div>{{ data.indicator.disclaimer }}</div>
+                <div v-if="data.indicator.rule" style="margin-top: 4px">{{ data.indicator.rule }}</div>
+              </div>
             </div>
             <div v-if="data.indicator && (data.indicator.supports.length || data.indicator.weighs_against.length)" style="padding: 12px 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; border-bottom: 1px solid var(--border-row)">
               <div>

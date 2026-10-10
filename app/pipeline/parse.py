@@ -133,7 +133,14 @@ def _filename_hint(doc: ParsedDoc, filename: str) -> None:
 
 def parse_document(path: str, mime: str = "", out_dir: str | Path = ".", *, max_ocr_pages: int = 10,
                    deadline=None, filename: str = "") -> ParsedDoc:
-    doc = _parse_document(path, mime, out_dir, max_ocr_pages=max_ocr_pages, deadline=deadline)
+    from app.pipeline.ocr import OcrUnavailable
+    try:
+        doc = _parse_document(path, mime, out_dir, max_ocr_pages=max_ocr_pages, deadline=deadline)
+    except OcrUnavailable:
+        doc = ParsedDoc(kind="pdf_scan" if sniff_kind(path, mime) == "pdf" else "image",
+                        failure_cause="This document needs text recognition (OCR), which is not available on this "
+                                      "server. Upload a PDF with a text layer or an XLSX file.",
+                        type_reason="Scanned document; OCR unavailable.")
     if doc.failure_cause:
         _filename_hint(doc, filename or Path(path).name)
     return doc

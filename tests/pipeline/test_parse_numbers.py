@@ -52,3 +52,10 @@ def test_rows_and_norm_text():
     assert [len(r.words) for r in rows] == [2, 1]
     assert norm_text("Итого по разделу II (стр. 140 + 190)") == "итого по разделу ii"
     assert norm_text("Bo‘yicha  JAMI") == "bo'yicha jami"
+
+
+def test_typed_layout_digit_runs_parse():
+    """'typed' layout prints values without thousands separators."""
+    from app.pipeline.numbers import is_numeric_token
+    assert parse_number("9842316") == 9842316 and is_numeric_token("9842316")
+    assert parse_number("(1234)") == -1234

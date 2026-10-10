@@ -9,6 +9,7 @@ const props = defineProps<{
   b?: (number | null)[]
   aName: string
   bName?: string
+  aColor?: string
   aDisplay?: (string | null)[]
   bDisplay?: (string | null)[]
   summary: string
@@ -51,7 +52,7 @@ const last = computed(() => bars.value.length - 1)
 <template>
   <div>
     <div class="legend" aria-hidden="true">
-      <span><i style="background: var(--series-1)"></i>{{ aName }}</span>
+      <span><i :style="{ background: aColor || 'var(--series-1)' }"></i>{{ aName }}</span>
       <span v-if="b"><i style="background: var(--series-compare)"></i>{{ bName }}</span>
     </div>
     <svg :viewBox="`0 0 ${W} ${H}`" width="100%" role="img" :aria-label="summary">
@@ -66,7 +67,7 @@ const last = computed(() => bars.value.length - 1)
         <text :x="L - 6" :y="T + 4">{{ fmtAxis(max) }}</text>
       </g>
       <g v-for="(g, i) in bars" :key="g.lab">
-        <rect v-if="g.a != null" :x="g.ax" :y="y(Math.max(0, g.a))" :width="barW" :height="Math.max(0, B - y(Math.max(0, g.a)))" rx="3" fill="var(--series-1)" />
+        <rect v-if="g.a != null" :x="g.ax" :y="y(Math.max(0, g.a))" :width="barW" :height="Math.max(0, B - y(Math.max(0, g.a)))" rx="3" :fill="aColor || 'var(--series-1)'" />
         <rect v-if="b && g.b != null" :x="g.bx" :y="y(Math.max(0, g.b))" :width="barW" :height="Math.max(0, B - y(Math.max(0, g.b)))" rx="3" fill="var(--series-compare)" />
         <text v-if="i === last && g.a != null" :x="g.ax + barW / 2" :y="y(Math.max(0, g.a)) - 6" font-size="11" fill="var(--ink)" text-anchor="middle">{{ g.aLabel }}</text>
         <text v-if="i === last && b && g.b != null" :x="g.bx + barW / 2" :y="y(Math.max(0, g.b)) - 6" font-size="11" fill="var(--ink)" text-anchor="middle">{{ g.bLabel }}</text>

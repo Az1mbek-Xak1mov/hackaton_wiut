@@ -19,9 +19,10 @@ COPY alembic.ini .
 COPY app app
 COPY data/seed /srv/data/seed
 RUN mkdir -p /data/files
-# build metadata last, so a new commit does not invalidate the apt/uv layers
+# build metadata (and OMP_THREAD_LIMIT=1: one OCR thread per worker process) last, so a new commit
+# does not invalidate the apt/uv layers
 ARG GIT_SHA=dev
 ARG BUILT_AT=""
-ENV GIT_SHA=${GIT_SHA} BUILT_AT=${BUILT_AT}
+ENV GIT_SHA=${GIT_SHA} BUILT_AT=${BUILT_AT} OMP_THREAD_LIMIT=1
 EXPOSE 8020
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8020 --workers 2"]

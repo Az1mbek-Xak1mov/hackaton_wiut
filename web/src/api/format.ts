@@ -1,14 +1,13 @@
 // Presentation helpers only: labels, dates, pill classes. No figure is computed here.
 import type { DocStatus, Fact, MonStatus, Severity } from './types'
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+import { lang, monthName, t } from '@/i18n'
 
 export function fmtDate(iso: string | null | undefined, opts: { short?: boolean } = {}): string {
   if (!iso) return '—'
   const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?/.exec(iso)
   if (!m) return iso
   const [, y, mo, d] = m
-  const mon = MONTHS[Number(mo) - 1] || mo
+  const mon = monthName(Number(mo) - 1) || mo
   if (!d) return `${mon} ${y}`
   return opts.short ? `${d} ${mon}` : `${d} ${mon} ${y}`
 }
@@ -17,7 +16,7 @@ export function fmtTime(iso: string | null | undefined): string {
   if (!iso) return ''
   const dt = new Date(iso)
   if (Number.isNaN(dt.getTime())) return iso
-  return dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+  return dt.toLocaleTimeString(lang.value === 'en' ? 'en-GB' : lang.value === 'ru' ? 'ru-RU' : 'uz-Latn-UZ', { hour: '2-digit', minute: '2-digit' })
 }
 
 export function fmtDateTime(iso: string | null | undefined): string {
@@ -25,7 +24,7 @@ export function fmtDateTime(iso: string | null | undefined): string {
   const dt = new Date(iso)
   if (Number.isNaN(dt.getTime())) return iso
   const d = String(dt.getDate()).padStart(2, '0')
-  return `${d} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}, ${fmtTime(iso)}`
+  return `${d} ${monthName(dt.getMonth())} ${dt.getFullYear()}, ${fmtTime(iso)}`
 }
 
 export function fmtPeriod(start: string | null | undefined, end: string | null | undefined): string {
@@ -73,9 +72,25 @@ export const DOC_TYPE_LABEL: Record<string, string> = {
   unknown: 'Not a recognised statutory form',
 }
 
-export function docTypeLabel(t: string | null | undefined): string {
-  if (!t) return 'Unknown'
-  return DOC_TYPE_LABEL[t] || t
+const DOC_TYPE_SHORT: Record<string, string> = {
+  form1: 'Balance sheet (Форма 1)',
+  form2: 'Income statement (Форма 2)',
+  bank_statement: 'Bank statement',
+  loan_application: 'Loan application form',
+  tax_declaration: 'Tax declaration',
+  invoice: 'Invoice',
+  sales_ledger: 'Sales ledger',
+  unknown: 'Document',
+}
+
+export function docTypeShort(dt: string | null | undefined): string {
+  if (!dt) return t('Document')
+  return DOC_TYPE_SHORT[dt] ? t(DOC_TYPE_SHORT[dt]) : dt
+}
+
+export function docTypeLabel(dt: string | null | undefined): string {
+  if (!dt) return t('Unknown')
+  return DOC_TYPE_LABEL[dt] ? t(DOC_TYPE_LABEL[dt]) : dt
 }
 
 export const LANG_LABEL: Record<string, string> = {
@@ -88,7 +103,7 @@ export const LANG_LABEL: Record<string, string> = {
 
 export function langLabel(l: string | null | undefined): string {
   if (!l) return '—'
-  return LANG_LABEL[l] || l
+  return LANG_LABEL[l] ? t(LANG_LABEL[l]) : l
 }
 
 export function fileBadge(filename: string | null | undefined, mime?: string): string {
@@ -104,18 +119,18 @@ export function docStatusPill(s: DocStatus | string): { cls: string; label: stri
   switch (s) {
     case 'analyzed':
     case 'processed':
-      return { cls: 'pill-stable', label: s === 'processed' ? 'Processed' : 'Analyzed' }
+      return { cls: 'pill-stable', label: s === 'processed' ? t('Processed') : t('Analyzed') }
     case 'clarification':
     case 'needs clarification':
-      return { cls: 'pill-watch', label: 'Needs clarification' }
+      return { cls: 'pill-watch', label: t('Needs clarification') }
     case 'failed':
-      return { cls: 'pill-attn', label: 'Could not analyze' }
+      return { cls: 'pill-attn', label: t('Could not analyze') }
     case 'missing':
-      return { cls: 'pill-neutral', label: 'Missing' }
+      return { cls: 'pill-neutral', label: t('Missing') }
     case 'queued':
-      return { cls: 'pill-info', label: 'Queued' }
+      return { cls: 'pill-info', label: t('Queued') }
     case 'processing':
-      return { cls: 'pill-info', label: 'Processing' }
+      return { cls: 'pill-info', label: t('Processing') }
     default:
       return { cls: 'pill-neutral', label: s }
   }
@@ -140,7 +155,7 @@ export const STATUS_LABEL: Record<string, string> = { stable: 'Stable', watch: '
 
 export function statusLabel(s: string | null | undefined): string {
   if (!s) return '—'
-  return STATUS_LABEL[s] || s
+  return STATUS_LABEL[s] ? t(STATUS_LABEL[s]) : s
 }
 
 /** Confidence may arrive as 0–1 or 0–100. */
@@ -154,7 +169,7 @@ export function confPill(c: number | null | undefined): { cls: string; label: st
   if (p == null) return null
   if (p >= 95) return { cls: 'pill-stable', label: `${p}%` }
   if (p >= 80) return { cls: 'pill-neutral', label: `${p}%` }
-  return { cls: 'pill-watch', label: `${p}% · needs clarification` }
+  return { cls: 'pill-watch', label: t('{p}% · needs clarification', { p }) }
 }
 
 export const METHOD_LABEL: Record<string, string> = {
@@ -169,7 +184,7 @@ export const METHOD_LABEL: Record<string, string> = {
 
 export function methodLabel(m: string | null | undefined): string {
   if (!m) return ''
-  return METHOD_LABEL[m] || m
+  return METHOD_LABEL[m] ? t(METHOD_LABEL[m]) : m
 }
 
 export function factTitle(f: Fact): string {
@@ -181,10 +196,10 @@ export function factTitle(f: Fact): string {
 export function factWhere(f: Fact): string {
   const parts: string[] = []
   if (f.document) parts.push(f.document.filename)
-  if (f.document?.doc_type) parts.push(docTypeLabel(f.document.doc_type).replace(/ \(recognised only\)/, ''))
-  if (f.page_n) parts.push(`page ${f.page_n}`)
-  if (f.line_code) parts.push(`line ${f.line_code}`)
-  if (!parts.length && f.kind === 'computed') parts.push('Computed from other facts')
+  if (f.document?.doc_type) parts.push(docTypeShort(f.document.doc_type))
+  if (f.page_n) parts.push(t('page {n}', { n: f.page_n }))
+  if (f.line_code) parts.push(t('line {code}', { code: f.line_code }))
+  if (!parts.length && f.kind === 'computed') parts.push(t('Computed from other facts'))
   return parts.join(' · ')
 }
 
@@ -204,7 +219,7 @@ export const CATEGORY_LABEL: Record<string, string> = {
 }
 
 export function categoryLabel(c: string): string {
-  return CATEGORY_LABEL[c] || c
+  return CATEGORY_LABEL[c] ? t(CATEGORY_LABEL[c]) : c
 }
 
 export const STAGES = ['classify', 'parse', 'ocr', 'extract', 'normalise', 'reconcile', 'ratios', 'narrative'] as const
@@ -225,7 +240,7 @@ export const STAGE_LABEL: Record<string, string> = {
 
 export function stageLabel(s: string | null | undefined): string {
   if (!s) return ''
-  return STAGE_LABEL[s] || s
+  return STAGE_LABEL[s] ? t(STAGE_LABEL[s]) : s
 }
 
 export function hasUnit(display: string | null | undefined): boolean {

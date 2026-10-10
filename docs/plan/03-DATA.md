@@ -18,10 +18,23 @@ All data is **synthetic and declared**. No real borrower data is used.
 
 | Bundle | Pinned inputs | Expected pipeline output |
 |---|---|---|
-| `hero_farovon` (APP-2026-0931) | F2 010 FY2025 = 9 842 316 kUZS, H1 = 5 316 400; F1 390/600/140/400 as in demo-data; statement Jan–Aug 2026 with a recurring 18.5 mln repayment on the 20th from contract 2024-1177 (8 payments); application declares revenue 10 400.0 mln (diff 557.7 → 5.7%) and no debts; tax declaration absent; F1 FY2025 as a 150-dpi scan | findings R06 attn, R07 watch, R10 neutral; DSCR 1.47 → 1.04; current ratio 1.48 |
-| `hero_navroz` (owner) | statement Jan–Sep 2026 (2 418 txns), F2 H1 2026, F1 2025 scan with 3 low-confidence cells, a 640×480 blurred invoice JPG | owner overview figures; JPG → failed with cause; 3 clarification cards |
-| `hero_zilola` (L-2025-0417) | Q2/Q3 F2 with revenue 1 790 → 1 289; statement Jul–Sep with the late 15 Sep installment paid 17 Sep; chain customer receipts falling | M01 + M02 triggered, M04 1.4×, M05 → Attention |
-| `portfolio_*` ×148 | loan book CSV (declared synthetic) + Q3 F1/F2 + Jul–Sep statement per borrower; scenario mix targeted at roughly 121/18/9 | statuses **computed** by monitoring; the UI shows whatever the run produces |
+| `hero_farovon` (APP-2026-0931) | F2 010 FY2025 = 9 842 316 kUZS, H1 2026 = 5 316 428 (prior H1 4 790 115); F1 390/600/140/400/490 as in demo-data; statement Jan–Aug 2026 (1 946 rows, inflows 7 300 912 000) with a recurring 18.5 mln repayment on the 20th to contract 2024-1177 (8 payments); application declares revenue 10 400 mln (diff 557.7 → 5.7%) and no debts; tax declaration absent; F1 FY2025 as a 150-dpi scan | findings exactly R06 attn, R07 watch, R10 neutral; DSCR 1.47 → 1.04; current ratio 1.48; quick ratio 0.75; D/E 0.85; receivable days 31 (line 220) |
+| `hero_navroz` (owner) | statement Jan–Sep 2026 (2 418 rows; month-end cash and Sep waterfall as in demo-data), F2 H1 2026 (prior-year tax cell blank), F1 2025 200-dpi scan with a stamp over values, a 640×480 blurred invoice JPG | owner cash figures; JPG → failed with cause; low-confidence cells → clarification |
+| `hero_zilola` (L-2025-0417) | Q2 **and** Q3 2026 F1/F2 (statutory columns: F1 vs 31.12.2025, F2 vs the same quarter of 2025); revenue Q2 1 790 → Q3 1 289; statement Jul–Sep with the 15 Sep installment paid 17 Sep; chain customer receipts falling | M01 + M02 + M04 (1.4×) + M05 → Attention |
+| `portfolio/<loan_id>` ×148 | `loan_book.csv` (declared synthetic) + Q2 and Q3 F1/F2 + Jul–Sep statement per borrower (late uploaders: Q1 and Q2 + Jul–Aug); scenario mix targets 121/18/9 with exposure 68.8/11.4/6.2 bn (total 86.4 bn, median 412.0, largest 4 200.0) | statuses **computed** by monitoring; the UI shows whatever the run produces |
+
+### Recorded deviations from `design/demo-data.json`
+
+| Item | Design | Generated | Why |
+|---|---|---|---|
+| Line codes | finance costs "120", profit tax "240", L+E total "770" | 170/180, 250, 780 | the official templates in `app/pipeline/dictionary/forms.yaml` win (02 §3) |
+| L-2025-0391 Oltin Vodiy Konserva | revenue +4.1%, receivables +36%, Watch | revenue −0.8%, receivables +36% | M02 requires revenue ≤ 0%; otherwise no indicator fires and the computed status would be Stable |
+| L-2025-0315 Chimgan Tur Servis | revenue −19.5%, coverage 1.2×, Watch | coverage 1.6× | M01 + M04 would make it Attention under the disclosed rules |
+| L-2024-0510 Farg'ona Taxi Park | coverage 1.6×, late installments caught up in Sep, Watch | coverage 1.4×; the late installments are in Apr/May | M05 (late within the last 3) would make it Attention; M04 alone gives Watch |
+| Navro'z Jul–Sep revenue | monthly revenue Apr–Sep shown as figures | not printed in any document: only F2 H1 2026 + the cash statement exist | Jul–Sep revenue can only be an **estimate from cash** (the design already marks Jul–Sep "estimate"); the UI must label it so |
+| R04 on monitoring bundles | — | not applicable | quarterly F2 covers a standalone quarter while the F1 prior column is 31.12.2025, so ΔRE in one F1 ≠ the quarter's net profit by construction; R04 applies to loan files (FY / H1 cumulative forms) only |
+| Quarterly comparison | "vs previous quarter" columns | statutory columns; quarter-over-quarter = current columns of the Q2 and Q3 documents | statutory convention agreed with the parser (D1) |
+| Other named borrowers | — | outstanding, trend and coverage as in demo-data; loan dates solved from original/outstanding | the loan book is a declared synthetic input |
 
 ## Ground-truth format: `data/synth/<split>/<bundle_id>/truth.json`
 

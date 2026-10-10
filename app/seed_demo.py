@@ -39,6 +39,7 @@ logger = logging.getLogger("app.seed_demo")
 
 DOC_SUFFIXES = {".pdf", ".xlsx", ".jpg", ".jpeg", ".png"}
 EARLIER_QUARTER_AS_OF = date(2026, 7, 10)   # Q2 statements are due by the 10th of the following month
+EARLIER_MARK = "Q2-2026"
 WAIT_LIMIT_S = 60 * 60
 
 
@@ -243,14 +244,16 @@ def main(argv: list[str] | None = None) -> None:
     with open(root / "applications.csv", encoding="utf-8") as fh:
         app_rows = {r["id"]: r for r in csv.DictReader(fh)}
 
-    # 1. Zilola's earlier quarter, then a monitoring run as of that quarter (Zilola only): a real history point
+    # 1. Zilola's earlier quarter (Q2 forms + the Apr–Jun statement), then a monitoring run as of that quarter
+    #    for Zilola only — the one borrower with a complete earlier quarter — so her history is a real run
     zilola_dir = root / "hero_zilola"
     zilola_stir = _truth(zilola_dir)["company"]["stir"]
     with get_db_context() as db:
         zilola_bid = BorrowerService(db).by_stir(zilola_stir).id
     hist = zilola_dir / "history"
-    if hist.is_dir():
-        upload_borrower_files(zilola_bid, _files(hist))
+    earlier = [f for f in _files(zilola_dir) if EARLIER_MARK in f.name] + (_files(hist) if hist.is_dir() else [])
+    if earlier:
+        upload_borrower_files(zilola_bid, earlier)
         if not a.no_wait and not _run_exists(EARLIER_QUARTER_AS_OF):
             wait_for_documents("Zilola Q2", Document.borrower_id == zilola_bid)
             run_monitoring(EARLIER_QUARTER_AS_OF, [zilola_bid], "earlier-quarter monitoring (Zilola)")

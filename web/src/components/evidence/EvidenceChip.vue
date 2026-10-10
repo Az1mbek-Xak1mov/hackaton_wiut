@@ -2,6 +2,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { useEvidence } from '@/stores/evidence'
 import { factTitle } from '@/api/format'
+import { t } from '@/i18n'
 
 const props = defineProps<{ factKey: string; text?: string; long?: boolean; compact?: boolean }>()
 const ev = useEvidence()
@@ -22,11 +23,11 @@ const label = computed(() => {
     if (f.line_code) return f.line_code
     return '↗'
   }
-  if (!f) return missing.value ? 'source unavailable' : '…'
+  if (!f) return missing.value ? t('source unavailable') : '…'
   if (props.long) return `${f.label} · ${f.display}${f.display_unit ? ' ' + f.display_unit : ''}`
   return f.display
 })
-const title = computed(() => (fact.value ? `${factTitle(fact.value)} — click to see where it came from` : props.factKey))
+const title = computed(() => (fact.value ? `${factTitle(fact.value)} — ${t('click to see where it came from')}` : props.factKey))
 </script>
 
 <template>

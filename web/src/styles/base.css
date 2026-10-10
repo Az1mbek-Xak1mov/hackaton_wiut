@@ -183,11 +183,16 @@ textarea.input { height: auto; padding: 8px 10px; resize: vertical; }
 
 @media (max-width: 720px) {
   .issue { grid-template-columns: 1fr; }
+  .issue > .pill, .q > .btn, .q > a.btn { justify-self: start; }
+  .issue > .row { justify-content: flex-start !important; }
   .q { grid-template-columns: 1fr; gap: 6px; }
 }
+.mobile-only { display: none; }
+@media (max-width: 720px) { .mobile-only { display: block; } }
 
 /* Narrative */
 .narrative { display: flex; flex-direction: column; gap: 10px; }
 .narrative p { text-wrap: pretty; }
 .bullets { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
 .rule-tag { display: inline-flex; padding: 0 4px; border-radius: var(--r-chip); background: var(--neutral-bg); color: var(--ink-2); font-size: 11px; font-weight: 600; line-height: 1.5; vertical-align: baseline; }
+.linkbtn.more { font-size: 12px; margin-left: 2px; }

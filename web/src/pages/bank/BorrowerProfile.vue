@@ -62,7 +62,11 @@ const loanCells = computed(() => {
   const col = pick(l, 'collateral')
   if (col && (typeof col === 'string' || Object.keys(col).length)) cells.push({ label: 'Collateral', main: typeof col === 'string' ? col : col.description || col.type || col.name || 'Recorded', sub: typeof col === 'object' && (col.valuation_display || col.valuation) ? `Valued ${col.valuation_display || col.valuation}${col.valuation_display ? '' : ' mln'}${col.valued_at ? ` (${col.valued_at})` : ''}` : undefined })
   const cov = pick(l, 'coverage_display')
-  if (cov) cells.push({ label: 'Cash coverage of next installment', main: cov, sub: pick(l, 'coverage_threshold_display') ? `threshold ${pick(l, 'coverage_threshold_display')}` : undefined, warn: !!pick(l, 'coverage_below_threshold') })
+  const m04 = data.value?.status?.indicators?.M04
+  if (cov) {
+    const thr = m04?.threshold_display ?? (m04?.threshold != null ? `${m04.threshold}×` : pick(l, 'coverage_threshold_display'))
+    cells.push({ label: 'Cash coverage of next installment', main: cov, sub: thr ? `threshold ${thr}` : undefined, warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
+  }
   return cells
 })
 
@@ -88,7 +92,18 @@ const paidCount = computed(() => repayments.value.filter((r) => r.paid_on).lengt
 
 // Quarterly series arrive as fact keys (one per period) so every bar is traceable.
 const q = computed(() => data.value?.quarterly || null)
-const qLabels = computed<string[]>(() => (Array.isArray(q.value?.quarters) ? q.value!.quarters : Array.isArray(q.value?.periods) ? q.value!.periods : []))
+const qLabelsAll = computed<string[]>(() => (Array.isArray(q.value?.quarters) ? q.value!.quarters : Array.isArray(q.value?.periods) ? q.value!.periods : []))
+const keepIdx = computed(() =>
+  qLabelsAll.value.map((_, i) => i).filter((i) => ['revenue', 'opex'].some((n) => rawSeries(n)[i] != null)),
+)
+function rawSeries(name: string): unknown[] {
+  const arr = q.value?.[name]
+  return Array.isArray(arr) ? arr : []
+}
+function pickIdx<T>(arr: T[]): T[] {
+  return keepIdx.value.map((i) => arr[i])
+}
+const qLabels = computed<string[]>(() => pickIdx(qLabelsAll.value))
 function seriesKeys(name: string): (string | null)[] {
   const arr = q.value?.[name]
   return Array.isArray(arr) && arr.every((x: unknown) => x == null || typeof x === 'string') ? (arr.map((x: string | null | undefined) => x ?? null) as (string | null)[]) : []
@@ -109,12 +124,12 @@ function seriesDisplay(name: string): (string | null)[] | undefined {
   if (!keys.length) return q.value?.[`${name}_display`] as (string | null)[] | undefined
   return keys.map((k) => (k ? (data.value?.facts?.[k]?.display ?? null) : null)) as (string | null)[]
 }
-const qRevenue = computed(() => seriesValues('revenue'))
-const qOpexRaw = computed(() => seriesValues('opex'))
+const qRevenue = computed(() => pickIdx(seriesValues('revenue')))
+const qOpexRaw = computed(() => pickIdx(seriesValues('opex')))
 const qOpex = computed(() => (qOpexRaw.value.some((v) => v != null) ? qOpexRaw.value : undefined))
-const qCoverage = computed(() => seriesValues('coverage'))
+const qCoverage = computed(() => pickIdx(seriesValues('coverage')))
 const qThreshold = computed<number | null>(() => (typeof q.value?.coverage_threshold === 'number' ? q.value!.coverage_threshold : null))
-const qChipKeys = computed(() => [...seriesKeys('revenue'), ...seriesKeys('opex')].filter(Boolean) as string[])
+const qChipKeys = computed(() => [...pickIdx(seriesKeys('revenue')), ...pickIdx(seriesKeys('opex'))].filter(Boolean) as string[])
 
 const showOutcome = ref(false)
 const outcome = ref('')
@@ -168,6 +183,7 @@ const statusHistory = computed(() => {
             <span class="pill" :class="severityPillClass(data.status.current)">{{ statusLabel(data.status.current) }}<template v-if="data.status.since"> · since {{ fmtDate(data.status.since) }}</template></span>
             <span v-if="statusHistory" class="muted">previously {{ statusHistory }}</span>
           </div>
+          <p v-if="data.status.reason" class="reason"><span class="eyebrow">Why</span> {{ data.status.reason }}</p>
           <p class="meta">
             <template v-if="b.industry">{{ b.industry }}</template><template v-if="b.region"> · {{ b.region }}</template><template v-if="b.stir"> · STIR <span class="num">{{ b.stir }}</span></template><template v-if="b.since"> · operating since {{ b.since }}</template><template v-if="b.employees"> · {{ b.employees }} employees</template>
           </p>
@@ -220,9 +236,9 @@ const statusHistory = computed(() => {
                 :b="qOpex"
                 a-name="Revenue"
                 b-name="Operating expenses"
-                :a-display="seriesDisplay('revenue')"
-                :b-display="seriesDisplay('opex')"
-                :summary="`Quarterly revenue: ${qLabels.map((l, i) => `${l} ${seriesDisplay('revenue')?.[i] ?? 'n/a'}`).join(', ')} million UZS.`"
+                :a-display="pickIdx(seriesDisplay('revenue') || [])"
+                :b-display="pickIdx(seriesDisplay('opex') || [])"
+                :summary="`Quarterly revenue: ${qLabels.map((l, i) => `${l} ${pickIdx(seriesDisplay('revenue') || [])[i] ?? 'n/a'}`).join(', ')} million UZS.`"
               />
             </div>
             <div v-if="qChipKeys.length" class="row" style="padding: 0 14px 10px; gap: 6px">
@@ -238,7 +254,7 @@ const statusHistory = computed(() => {
                 <LineChart
                   :labels="qLabels"
                   :values="qCoverage"
-                  :display="q?.coverage_display"
+                  :display="q?.coverage_display ? pickIdx(q.coverage_display) : undefined"
                   :threshold="qThreshold"
                   suffix="×"
                   :summary="`Cash coverage at quarter end: ${qLabels.map((l, i) => `${l} ${q?.coverage_display?.[i] ?? qCoverage[i] ?? 'n/a'}`).join(', ')}.`"
@@ -306,6 +322,7 @@ const statusHistory = computed(() => {
 </template>
 
 <style scoped>
+.reason { margin-top: 4px; font-size: 13px; color: var(--ink-2); }
 .strip { display: grid; gap: 3px; }
 .strip span { height: 10px; border-radius: 2px; }
 .ok { background: var(--stable-mark); }
