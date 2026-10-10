@@ -53,6 +53,23 @@ const running = computed(() => {
   return j.status === 'queued' || j.status === 'running'
 })
 
+// A sample is fetched from /samples and sent through the same upload as a visitor's own file.
+const sampleBusy = ref('')
+async function trySample(href: string) {
+  uploadErr.value = ''
+  sampleBusy.value = href
+  try {
+    const res = await fetch(href)
+    if (!res.ok) throw new Error(t('The sample could not be loaded. Please try again.'))
+    const blob = await res.blob()
+    await upload([new File([blob], href.split('/').pop() || 'sample', { type: blob.type })])
+  } catch (e) {
+    uploadErr.value = errMessage(e)
+  } finally {
+    sampleBusy.value = ''
+  }
+}
+
 async function upload(files: File[]) {
   const f = files[0]
   if (!f) return
@@ -405,8 +422,9 @@ const finished = computed(() => !!doc.value && !running.value && doc.value.statu
               </tbody>
             </table>
           </div>
-          <div class="row" style="padding: 10px 14px 14px">
-            <a v-for="s in SINGLES" :key="s.href" :href="s.href" download class="chip round">{{ t(s.label) }}</a>
+          <div style="padding: 10px 14px 4px; font-size: 13px">{{ t('Click a sample to analyse it now. It goes through exactly the same steps as your own file.') }}</div>
+          <div class="row" style="padding: 6px 14px 14px">
+            <button v-for="s in SINGLES" :key="s.href" type="button" class="chip round" :disabled="!!sampleBusy || uploading" @click="trySample(s.href)">{{ sampleBusy === s.href ? t('Loading…') : t(s.label) }}</button>
           </div>
         </section>
 
@@ -464,7 +482,7 @@ const finished = computed(() => !!doc.value && !running.value && doc.value.statu
             <p>{{ doc.failure_cause || t('No cause was recorded.') }}</p>
             <div class="row">
               <button type="button" class="btn btn-sm btn-primary" @click="reset">{{ t('Re-upload a clearer file') }}</button>
-              <a class="btn btn-sm" href="/samples/form2_scan_150dpi.pdf" download>{{ t('Try a sample scan') }}</a>
+              <button type="button" class="btn btn-sm" @click="reset(); trySample('/samples/form2_scan_150dpi.pdf')">{{ t('Try a sample scan') }}</button>
             </div>
             <p class="muted" style="font-size: 12px">{{ t('What could still be read from it is listed below.') }}</p>
           </div>

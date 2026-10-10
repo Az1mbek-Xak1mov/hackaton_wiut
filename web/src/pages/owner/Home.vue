@@ -8,6 +8,7 @@ import { ownerApi, useApp } from '@/stores/app'
 import Dropzone from '@/components/ui/Dropzone.vue'
 import DocChecklist from '@/components/owner/DocChecklist.vue'
 import StepLine from '@/components/owner/StepLine.vue'
+import Landing from '@/components/owner/Landing.vue'
 import { t } from '@/i18n'
 
 const auth = useAuth()
@@ -206,21 +207,8 @@ const next = computed<{ step: number; attention: boolean; title: string; text: s
 </script>
 
 <template>
-  <!-- Logged-out visitors: a plain landing -->
-  <div v-if="!auth.loggedIn" class="page landing">
-    <div class="stack" style="gap: 10px; max-width: 720px">
-      <div class="eyebrow">{{ t('MKBANK · SME lending') }}</div>
-      <h1 class="hero">{{ t('Your financial documents, read and checked — every number traceable to its page.') }}</h1>
-      <p class="muted" style="font-size: 15px">
-        {{ t('Upload your bank statements and Форма 1 / Форма 2. Converza extracts the figures, shows where each one came from, answers questions about your cash, and lets you apply for a loan with the analysed documents attached.') }}
-      </p>
-      <div class="row" style="margin-top: 6px">
-        <RouterLink to="/register" class="btn btn-primary">{{ t('Register your business') }}</RouterLink>
-        <RouterLink to="/login" class="btn">{{ t('Sign in') }}</RouterLink>
-        <RouterLink to="/analyse">{{ t('Analyse a document without an account →') }}</RouterLink>
-      </div>
-    </div>
-  </div>
+  <!-- Logged-out visitors: the landing -->
+  <Landing v-if="!auth.loggedIn" />
 
   <!-- Logged-in owner: what to do now → documents → apply → my applications -->
   <div v-else class="page">
