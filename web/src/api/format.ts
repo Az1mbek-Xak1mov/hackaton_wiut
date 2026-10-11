@@ -362,3 +362,31 @@ export function ownerDocStatus(d: { status: string; failure_cause?: string; doc_
       return { cls: 'pill-neutral', label: d.status, explain: '' }
   }
 }
+
+// One plain-language line per reconciliation / monitoring rule, shown under an issue's title
+// (for readers who are not credit specialists). Keyed by rule id; wording only, no numbers.
+const PLAIN_RULE: Record<string, string> = {
+  R01: 'The totals on the balance sheet do not add up — maybe a reading mistake or a typo in the form.',
+  R02: 'Some lines on the balance sheet do not add up to their subtotal — maybe a reading mistake or a typo in the form.',
+  R03: 'Some lines on the income statement do not add up to their subtotal — maybe a reading mistake or a typo in the form.',
+  R04: "The year's profit does not match how much the owners' equity changed; dividends or corrections can explain it.",
+  R05: 'The money that came into the bank account is very different from the sales the business reported.',
+  R06: 'The bank statement shows loan payments the business did not mention.',
+  R07: 'Two documents give different numbers for the same thing.',
+  R08: 'The documents do not cover all the months the bank needs to see.',
+  R09: 'The documents carry different tax numbers (STIR), so they may belong to different businesses.',
+  R10: 'The bank needs this document and it was not uploaded.',
+  R11: "Sales in the half-year are far from half of last year's sales — worth asking why.",
+  R12: 'The same document was uploaded twice, or two copies give different numbers.',
+  M01: 'Sales fell compared with the previous period.',
+  M02: 'Customers owe the business more while sales are not growing.',
+  M03: 'The business owes its suppliers much more than before.',
+  M04: 'The money on the account may not be enough for the next loan payment.',
+  M05: 'One of the last 3 loan payments was made late.',
+  M06: 'The business sent its latest statements late.',
+}
+
+export function plainRule(ruleId: string | null | undefined): string {
+  const s = ruleId ? PLAIN_RULE[ruleId] : undefined
+  return s ? t(s) : ''
+}

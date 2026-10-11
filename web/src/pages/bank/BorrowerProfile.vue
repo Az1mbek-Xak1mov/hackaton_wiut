@@ -67,7 +67,7 @@ function pick(o: Record<string, any>, ...keys: string[]) {
 
 const loanCells = computed(() => {
   const l = loan.value
-  const cells: { label: string; main: string; sub?: string; warn?: boolean }[] = []
+  const cells: { label: string; main: string; sub?: string; help?: string; warn?: boolean }[] = []
   const id = pick(l, 'loan_id', 'contract_no', 'id')
   const type = pick(l, 'type')
   if (id || type) cells.push({ label: t('Loan'), main: [id, type].filter(Boolean).join(' · '), sub: [pick(l, 'disbursed_on') ? t('Disbursed {d}', { d: fmtDate(pick(l, 'disbursed_on')) }) : null, pick(l, 'purpose')].filter(Boolean).join(' · ') })
@@ -89,7 +89,7 @@ const loanCells = computed(() => {
   if (cov) {
     const thr = m04?.threshold_display ?? (m04?.threshold != null ? `${m04.threshold}×` : pick(l, 'coverage_threshold_display'))
     const covMain = cov === 'n/a' ? t('Not available yet: needs a bank statement') : cov
-    cells.push({ label: t('Cash vs next payment'), main: covMain, sub: thr ? t('month-end cash ÷ next payment · warning below {v}', { v: thr }) : t('month-end cash ÷ next payment'), warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
+    cells.push({ label: t('Cash vs next payment'), main: covMain, sub: thr ? t('month-end cash ÷ next payment · warning below {v}', { v: thr }) : t('month-end cash ÷ next payment'), help: t('How many monthly payments the money on the account could cover. Below 1.5 is a warning.'), warn: !!(m04?.triggered ?? pick(l, 'coverage_below_threshold')) })
   }
   return cells
 })
@@ -228,6 +228,7 @@ const statusHistory = computed(() => {
             <div class="eyebrow">{{ c.label }}</div>
             <div class="num" style="font-size: 16px; font-weight: 500" :style="c.warn ? { color: 'var(--attn-fg)' } : undefined">{{ c.main }}</div>
             <div v-if="c.sub" class="muted">{{ c.sub }}</div>
+            <div v-if="c.help" class="muted" style="font-size: 12px; font-style: italic; max-width: 240px">{{ c.help }}</div>
           </div>
         </div>
         <div v-if="stripCells.length">
@@ -240,6 +241,19 @@ const statusHistory = computed(() => {
           </div>
         </div>
       </section>
+
+      <details class="howto">
+        <summary>{{ t('How we watch this loan') }}</summary>
+        <ul>
+          <li>{{ t('After the loan is paid out, the business uploads its new statements every quarter (or the bank receives them).') }}</li>
+          <li>{{ t('Converza reads them automatically and compares them with the previous quarter.') }}</li>
+          <li>{{ t('It checks simple published warning rules. By default: sales fall by 15% or more; money customers owe grows by 25% or more while sales do not grow; money owed to suppliers grows by 40% or more; cash on the account covers less than 1.5 times the next payment; one of the last 3 loan payments was late; statements arrive more than 10 days late.') }}</li>
+          <li>{{ t('Each warning shows the numbers behind it, and every number links to the page it came from.') }}</li>
+          <li>{{ t('The status Stable / Watch / Attention comes only from these rules. There is no credit score.') }}</li>
+          <li>{{ t('The thresholds are illustrative; calibration against bank history is pilot month 1.') }}</li>
+          <li>{{ t('The bank officer reviews each warning and records a conclusion. Converza never decides.') }}</li>
+        </ul>
+      </details>
 
       <div class="twopane">
         <div class="main-col">
@@ -416,4 +430,7 @@ const statusHistory = computed(() => {
 .dot.attn { background: var(--attn-mark); }
 .dot.today { background: var(--ink); }
 .conn { width: 2px; flex: 1; background: var(--border-row); }
+.howto { border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--note-bg); padding: 8px 14px; font-size: 13px; }
+.howto summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.howto ul { margin: 8px 0 2px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
 </style>

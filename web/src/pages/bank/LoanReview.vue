@@ -225,7 +225,7 @@ async function submitDecision() {
 
       <section class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px" :aria-label="t('Request summary')">
         <p class="summary-line">
-          {{ t('{name} asks for {amount} mln UZS', { name: data.applicant.name, amount: data.request.amount_display && data.request.amount_display !== 'n/a' ? data.request.amount_display : '—' }) }}<template v-if="data.request.term_months"> {{ t('over {term}', { term: tn(data.request.term_months, '{n} month', '{n} months') }) }}</template>.
+          {{ t('{name} asks for {amount} mln UZS', { name: data.applicant.name, amount: data.request.amount_display && data.request.amount_display !== 'n/a' ? data.request.amount_display : '—' }) }}<template v-if="data.request.term_months">{{ ' ' + t('over {term}', { term: tn(data.request.term_months, '{n} month', '{n} months') }) }}</template>.
           {{ tn(docsReceived, '{n} document received', '{n} documents received') }}<template v-if="docsMissing">, {{ tn(docsMissing, '{n} required document missing', '{n} required documents missing') }}</template>.
           <template v-if="data.application.status === 'processing'">{{ t('Documents are still being read.') }}</template>
           <template v-else-if="openIssues.length">{{ tn(openIssues.length, '{n} issue to check before you decide.', '{n} issues to check before you decide.') }}</template>
@@ -250,6 +250,17 @@ async function submitDecision() {
           </div>
         </div>
       </section>
+
+      <details class="howto">
+        <summary>{{ t('How to read this page') }}</summary>
+        <ul>
+          <li>{{ t('The business asks the bank for a loan; the line above says how much, for how long and what for.') }}</li>
+          <li>{{ t('"Issues" are places where the documents do not agree with each other, or where a required document is missing.') }}</li>
+          <li>{{ t('"Figures" are numbers Converza read from the forms. Click any number to see the exact place on the page it came from.') }}</li>
+          <li>{{ t('"Reading confidence" shows how sure Converza is that it read a number correctly.') }}</li>
+          <li>{{ t('The bank officer marks each issue as resolved or not relevant, then records a decision. Converza never approves or declines.') }}</li>
+        </ul>
+      </details>
 
       <nav class="tabs" :aria-label="t('Application sections')">
         <a href="#issues">{{ t('Issues') }} · {{ data.issues.length }}</a>
@@ -277,6 +288,7 @@ async function submitDecision() {
             <div class="panel-head" style="padding: 12px 14px 8px">
               <h2>{{ t('Extracted figures') }}</h2>
               <span class="ctx">{{ t('mln UZS · click a figure to see where it came from') }}</span>
+              <span class="ctx" style="flex-basis: 100%">{{ t('Numbers read from the balance sheet (Form 1) and income statement (Form 2). Net revenue = sales; Net profit = what is left after all costs.') }}</span>
             </div>
             <div class="scrollbox">
               <table class="tbl" style="min-width: 560px">
@@ -469,4 +481,7 @@ async function submitDecision() {
 <style scoped>
 .summary-line { font-size: 14px; line-height: 1.5; max-width: 860px; }
 .help { font-size: 11.5px; }
+.howto { border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--note-bg); padding: 8px 14px; font-size: 13px; }
+.howto summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.howto ul { margin: 8px 0 2px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
 </style>

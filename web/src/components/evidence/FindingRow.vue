@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { Finding } from '@/api/types'
 import { api, errMessage } from '@/api/client'
-import { fmtDate, severityPillClass } from '@/api/format'
+import { fmtDate, plainRule, severityPillClass } from '@/api/format'
 import InlineEvidence from './InlineEvidence'
 import { t } from '@/i18n'
 
@@ -39,6 +39,7 @@ async function save(state: 'open' | 'resolved' | 'dismissed') {
     <span class="pill" :class="severityPillClass(finding.severity)">{{ finding.label }}</span>
     <div style="min-width: 0">
       <div style="font-weight: 500">{{ finding.title }}</div>
+      <div v-if="plainRule(finding.rule_id)" class="muted" style="font-size: 12px; font-style: italic">{{ plainRule(finding.rule_id) }}</div>
       <div class="muted"><InlineEvidence :text="finding.detail" :keys="finding.evidence" :max-trailing="2" /></div>
       <div v-if="finding.state !== 'open'" class="muted" style="font-size: 12px; margin-top: 4px">
         <span class="pill pill-neutral">{{ finding.state === 'resolved' ? t('Resolved by officer') : t('Dismissed by officer') }}</span>
