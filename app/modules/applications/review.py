@@ -161,6 +161,14 @@ def build_review(db: Session, app: Application) -> dict:
     amount = float(app.requested_amount) if app.requested_amount is not None else None
     installment = annuity_installment(amount, app.term_months, float(app.rate_pct) if app.rate_pct else None)
     inst_fact = next((f for f in computed if "installment" in f.field and f.unit in ("kUZS", "UZS")), None)
+    # the uploaded loan form wins in the ratios; say so when it disagrees with the request entered online
+    form_amt = next((f for f in doc_facts if f.field == "application.requested_amount"), None)
+    form_term = next((f for f in doc_facts if f.field == "application.term_months"), None)
+    request_mismatch = None
+    if form_amt is not None and amount and abs(float(form_amt.value) - amount) > 0.01 * amount:
+        request_mismatch = {"form_amount_display": kuzs_to_mln(float(form_amt.value)),
+                            "form_term_months": int(form_term.value) if form_term is not None else None,
+                            "form_amount_key": form_amt.key}
 
     # ---- documents
     present = present_required(docs_list)
@@ -188,6 +196,7 @@ def build_review(db: Session, app: Application) -> dict:
                     "installment_display": (all_facts[inst_fact.key]["display"] if inst_fact else
                                             (kuzs_to_mln(installment) if installment is not None else "n/a")),
                     "installment_key": inst_fact.key if inst_fact else None,
+                    "mismatch": request_mismatch,
                     "purpose": app.purpose, "collateral": app.collateral},
         "columns": [{"key": c["key"], "label": c["label"]} for c in columns],
         "issues": [_finding_out(f) for f in findings if f.severity in ("attn", "watch", "neutral")],

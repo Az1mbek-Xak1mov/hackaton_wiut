@@ -1294,5 +1294,6 @@ const ru: Record<string, string> = {
   "The thresholds are illustrative; calibration against bank history is pilot month 1.": "Пороги условные; калибровка по истории банка — первый месяц пилота.",
   "The bank officer reviews each warning and records a conclusion. Converza never decides.": "Сотрудник банка рассматривает каждое предупреждение и записывает заключение. Converza никогда не принимает решений.",
   "How many monthly payments the money on the account could cover. Below 1.5 is a warning.": "Сколько ежемесячных платежей могут покрыть деньги на счёте. Ниже 1,5 — предупреждение.",
+  "Note: the uploaded loan application form asks for {a} mln UZS{term}, not the amount entered online. The repayment and ratios below use the form.": "Внимание: в загруженной форме заявки указано {a} млн сумов{term}, а не сумма, введённая онлайн. Платёж и коэффициенты ниже рассчитаны по форме.",
 }
 export default ru

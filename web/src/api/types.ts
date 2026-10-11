@@ -340,6 +340,7 @@ export interface ApplicationReview {
     rate_pct?: number | null
     installment_display: string
     installment_key?: string | null
+    mismatch?: { form_amount_display: string; form_term_months: number | null; form_amount_key: string } | null
     purpose: string
     collateral: string
   }

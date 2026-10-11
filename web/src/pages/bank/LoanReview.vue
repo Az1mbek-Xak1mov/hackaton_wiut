@@ -231,6 +231,7 @@ async function submitDecision() {
           <template v-else-if="openIssues.length">{{ tn(openIssues.length, '{n} issue to check before you decide.', '{n} issues to check before you decide.') }}</template>
           <template v-else>{{ t('The automatic checks found no open issue.') }}</template>
         </p>
+          <div v-if="data.request.mismatch" class="mismatch">{{ t('Note: the uploaded loan application form asks for {a} mln UZS{term}, not the amount entered online. The repayment and ratios below use the form.', { a: data.request.mismatch.form_amount_display, term: data.request.mismatch.form_term_months ? ' ' + t('over {term}', { term: tn(data.request.mismatch.form_term_months, '{n} month', '{n} months') }) : '' }) }}</div>
         <div class="kv">
           <div><div class="eyebrow">{{ t('Requested') }}</div><div class="num" style="font-size: 18px; font-weight: 500">{{ data.request.amount_display || '—' }} <span v-if="data.request.amount_display && !hasUnit(data.request.amount_display)" class="muted" style="font-size: 12px; font-weight: 400">{{ t('mln UZS') }}</span></div></div>
           <div><div class="eyebrow">{{ t('Term & repayment') }}</div><div style="font-size: 14px">{{ data.request.term_months ? tn(data.request.term_months, '{n} month', '{n} months') : '—' }}</div><div v-if="data.request.installment_display" class="muted num">{{ t('{amount} mln / month', { amount: data.request.installment_display }) }}</div></div>
@@ -484,4 +485,5 @@ async function submitDecision() {
 .howto { border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--note-bg); padding: 8px 14px; font-size: 13px; }
 .howto summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 .howto ul { margin: 8px 0 2px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.5; }
+.mismatch { margin-top: 6px; font-size: 13px; color: var(--watch-fg); }
 </style>
