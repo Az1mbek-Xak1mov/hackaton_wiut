@@ -64,7 +64,7 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
 
     <section class="block">
       <h2>{{ t('How it works') }}</h2>
-      <ol class="steps">
+      <ol class="how">
         <li>
           <span class="n">1</span>
           <div><b>{{ t('The business uploads its documents') }}</b><p>{{ t('On converza.uz. A checklist shows which documents the bank needs and which are already there.') }}</p></div>
@@ -127,20 +127,21 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
 </template>
 
 <style scoped>
-.landing { padding-top: 24px; display: flex; flex-direction: column; gap: 32px; max-width: 880px; }
+.landing { padding-top: 32px; display: flex; flex-direction: column; gap: 40px; max-width: 960px; }
 .hero-block { display: flex; flex-direction: column; gap: 12px; }
-.hero { font-size: 32px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; }
+.hero { font-size: 36px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; }
 .lead { font-size: 16px; line-height: 1.55; color: var(--ink-2); max-width: 720px; }
 .cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 6px; }
 .officer { font-size: 14px; margin-left: 6px; }
 .block h2 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
 .block ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
-.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.steps li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
-.steps .n { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
-.steps b { font-size: 14.5px; }
-.steps p { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin-top: 2px; }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.how { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.how li { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 2px solid var(--accent); }
+.how .n { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+.how b { font-size: 15px; display: block; margin-bottom: 4px; }
+.how p { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin: 0; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.two > div { border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; background: var(--surface); }
 .measured { max-width: 760px; }
 .measured .val { font-weight: 600; white-space: nowrap; }
 .measured .note { font-size: 12px; }
@@ -149,7 +150,7 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
   .landing { padding-top: 8px; gap: 24px; }
   .hero { font-size: 24px; }
   .lead { font-size: 15px; }
-  .two { grid-template-columns: 1fr; }
+  .two, .how { grid-template-columns: 1fr; }
   .measured .note { display: none; }
   .officer { margin-left: 0; }
 }
