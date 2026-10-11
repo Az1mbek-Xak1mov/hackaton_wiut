@@ -3,6 +3,7 @@ from app.core.base_model import Base  # noqa: F401
 from app.modules.applications.models import Application, ApplicationDocument, Decision  # noqa: F401
 from app.modules.audit.models import AuditLog  # noqa: F401
 from app.modules.borrowers.models import Borrower, Loan, Repayment  # noqa: F401
+from app.modules.budget.models import BudgetAdvice, BudgetLine  # noqa: F401
 from app.modules.cfo.models import CfoMessage, CfoThread  # noqa: F401
 from app.modules.documents.models import Document, Page  # noqa: F401
 from app.modules.extraction.models import Fact  # noqa: F401

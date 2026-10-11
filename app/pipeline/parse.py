@@ -233,6 +233,13 @@ def _parse_document(path: str, mime: str = "", out_dir: str | Path = ".", *, max
         text = sheet_text(doc.sheets, max_rows=_title_rows(doc.sheets))  # title + header only: purpose texts mention invoices
         doc.doc_type, doc.type_confidence, doc.type_reason = cls.classify_text(
             text, xlsx_header_score=xlsx_header_score(doc.sheets), kind="xlsx")
+        if doc.doc_type not in ("form1", "form2") and xlsx_header_score(doc.sheets) < 3.0:
+            from app.pipeline.cashflow import find_cashflow_table
+            cf = find_cashflow_table(doc.sheets)
+            if cf is not None:
+                doc.doc_type, doc.type_confidence = "cash_flow", 0.9
+                doc.type_reason = (f"Recognised as {cls.TYPE_LABELS['cash_flow']}: a month column with money-in and "
+                                   f"money-out columns on sheet {cf['sheet']}.")
         doc.text_layer = True
         doc.language = cls.detect_language(text)
         doc.period_start, doc.period_end = cls.detect_period(text, doc.doc_type)

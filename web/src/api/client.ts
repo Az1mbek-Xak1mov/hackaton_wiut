@@ -261,6 +261,11 @@ export const api = {
   ownerApplications: () => request<{ items: OwnerApplication[] } | OwnerApplication[]>('/owner/applications'),
   ownerApply: (payload: { requested_amount_mln: number; term_months: number; purpose: string; document_uuids: string[] }) =>
     request<OwnerApplication>('/owner/applications', { method: 'POST', body: payload }),
+  ownerBudget: () => request<any>('/owner/budget'),
+  ownerBudgetSave: (lines: { month: string; category?: string; planned_income: number | null; planned_spending: number | null }[]) =>
+    request<any>('/owner/budget', { method: 'PUT', body: { lines } }),
+  ownerAdvice: () => request<any>('/owner/advice'),
+  ownerAdviceRun: () => request<any>('/owner/advice', { method: 'POST' }),
   cfoAsk: (question: string) => request<CfoResponse>('/cfo/messages', { method: 'POST', body: { question } }),
   cfoHistory: () =>
     request<CfoHistoryItem[] | { business?: OwnerBusiness; messages?: CfoHistoryItem[]; items?: CfoHistoryItem[]; facts?: Record<string, Fact> }>('/cfo/messages'),

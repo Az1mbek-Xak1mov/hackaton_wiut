@@ -263,6 +263,11 @@ def handle_analyse_document(db: Session, job: Job, st: Stages):
         extract_application = pipeline_fn("app.pipeline.extract_application", "extract_application")
         facts, _ = persist_facts(db, extract_application(parsed), document=doc)
         summary["fields"] = len(facts)
+    elif parsed.doc_type == "cash_flow":
+        st.start("extract", 65)
+        extract_cashflow = pipeline_fn("app.pipeline.cashflow", "extract_cashflow")
+        facts, _ = persist_facts(db, extract_cashflow(parsed), document=doc)
+        summary["fields"] = len(facts)
     elif parsed.doc_type == "bank_statement":
         st.start("normalise", 65)
         normalise_statement = pipeline_fn("app.pipeline.statements", "normalise_statement")

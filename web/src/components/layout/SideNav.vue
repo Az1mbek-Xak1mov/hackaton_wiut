@@ -22,15 +22,15 @@ const items = computed<Item[]>(() => {
       { to: '/bank/borrowers', label: t('Borrowers'), icon: 'bank', count: app.counts.borrowers, match: (p, q) => p.startsWith('/bank/borrowers') && q.status !== 'attn' },
       { to: '/bank/borrowers?status=attn', label: t('Alerts'), icon: 'alert', count: app.counts.alerts, match: (p, q) => p === '/bank/borrowers' && q.status === 'attn' },
       { to: '/analyse', label: t('Analyse a document'), icon: 'search', match: (p) => p === '/analyse' },
-      { to: '/metrics', label: t('Evaluation metrics'), icon: 'chart', match: (p) => p === '/metrics' },
     ]
   }
   return [
     { to: '/', label: t('My business'), icon: 'grid', match: (p) => p === '/' },
+    { to: '/apply', label: t('Apply for credit'), icon: 'file', match: (p) => p === '/apply' },
     { to: '/upload', label: t('Upload & analyze'), icon: 'upload', match: (p) => p === '/upload' },
     { to: '/cfo', label: t('AI CFO'), icon: 'chat', match: (p) => p === '/cfo' },
+    { to: '/budget', label: t('Budget & advice'), icon: 'grid', match: (p) => p === '/budget' },
     { to: '/analyse', label: t('Analyse a document'), icon: 'search', match: (p) => p === '/analyse' },
-    { to: '/metrics', label: t('Evaluation metrics'), icon: 'chart', match: (p) => p === '/metrics' },
   ]
 })
 </script>

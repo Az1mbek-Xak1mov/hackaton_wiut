@@ -14,6 +14,7 @@ from app.modules.borrowers.service import BorrowerService
 from app.modules.documents.models import Document
 from app.modules.documents.service import DocumentService
 from app.modules.jobs.schemas import JobOut
+from app.modules.owner.service import owner_dashboard
 
 router = APIRouter(prefix="/api/v1/owner", tags=["owner"])
 
@@ -62,6 +63,14 @@ def owner_add_documents(application_uuid: UUID, data: OwnerAddDocuments, db: Ses
 def owner_checklist(db: Session = Depends(get_db), user=Depends(require_scope(Scope.OWNER_FILES))):
     """The documents the bank needs, each ticked when an uploaded document of that type is present (rule R10 logic)."""
     return ApplicationService(db).owner_checklist(user)
+
+
+@router.get("/dashboard")
+def owner_dash(db: Session = Depends(get_db), user=Depends(require_scope(Scope.OWNER_FILES))):
+    """The business's own figures from its uploaded documents: monthly money in / out, revenue and profit,
+    ratios and cash on hand. Every value is a stored fact with its source document."""
+    b = BorrowerService(db).owner_borrower(user)
+    return {"business": _business(b)} | owner_dashboard(db, b)
 
 
 @router.get("/files")

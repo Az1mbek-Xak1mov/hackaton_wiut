@@ -14,6 +14,7 @@ TYPE_LABELS = {
     "tax_declaration": "tax declaration",
     "invoice": "invoice",
     "sales_ledger": "sales ledger",
+    "cash_flow": "cash-flow table",
     "unknown": "unknown document",
 }
 

@@ -24,6 +24,8 @@ const ownerRoutes: RouteRecordRaw[] = [
   { path: '/register', component: () => import('@/pages/Register.vue'), meta: { public: true, bare: true, title: 'Register' } },
   { path: '/upload', component: () => import('@/pages/owner/Upload.vue'), meta: { auth: true, title: 'Upload & analyze' } },
   { path: '/cfo', component: () => import('@/pages/owner/AICFO.vue'), meta: { auth: true, title: 'AI CFO' } },
+  { path: '/budget', component: () => import('@/pages/owner/Budget.vue'), meta: { auth: true, title: 'Budget & advice' } },
+  { path: '/apply', component: () => import('@/pages/owner/Apply.vue'), meta: { auth: true, title: 'Apply for credit' } },
   { path: '/owner/upload', redirect: '/upload' },
   { path: '/owner/cfo', redirect: '/cfo' },
   { path: '/owner', redirect: '/' },
@@ -41,6 +43,7 @@ const bankRoutes: RouteRecordRaw[] = [
   { path: '/register', redirect: '/login' },
   { path: '/upload', redirect: '/bank' },
   { path: '/cfo', redirect: '/bank' },
+  { path: '/apply', redirect: '/bank' },
   { path: '/owner/:rest(.*)*', redirect: '/bank' }, // owner screens live on converza.uz
 ]
 

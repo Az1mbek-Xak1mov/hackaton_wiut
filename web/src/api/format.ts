@@ -69,6 +69,7 @@ export const DOC_TYPE_LABEL: Record<string, string> = {
   tax_declaration: 'Tax declaration (recognised only)',
   invoice: 'Invoice (recognised only)',
   sales_ledger: 'Sales ledger (recognised only)',
+  cash_flow: 'Cash-flow table',
   unknown: 'Not a recognised statutory form',
 }
 
@@ -319,6 +320,7 @@ const OWNER_DOC_TYPE: Record<string, string> = {
   tax_declaration: 'Tax declaration',
   invoice: 'Invoice (kept on file, not required)',
   sales_ledger: 'Sales ledger (kept on file, not required)',
+  cash_flow: 'Cash-flow table',
   unknown: 'Not recognised as a required document',
 }
 
