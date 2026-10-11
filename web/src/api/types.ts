@@ -431,6 +431,23 @@ export interface OwnerApplication {
   missing_documents?: { key: string; title: string }[]
   /** Latest decision recorded by a bank officer; the system never fills it. */
   decision?: { outcome: 'recommend' | 'decline' | 'request_info' | string; message: string; decided_at: string | null } | null
+  /** Cash now (latest month-end balance fact) + loan amount, added on the backend. Null after a decline. */
+  balance_after?: OwnerBalanceAfter | null
+}
+
+export interface OwnerBalanceAfter {
+  available: boolean
+  reason?: 'no_bank_statement' | 'no_amount' | string
+  unit?: string
+  as_of_month?: string
+  cash_now_kuzs?: number
+  loan_kuzs?: number
+  cash_after_kuzs?: number
+  cash_now_display?: string
+  loan_display?: string
+  cash_after_display?: string
+  formula?: string
+  cash_fact?: { key: string; page_n: number | null; document: { uuid: string; filename: string; doc_type: string } | null } | null
 }
 
 export interface OwnerChecklistItem {

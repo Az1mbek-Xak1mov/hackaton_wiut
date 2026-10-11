@@ -64,7 +64,7 @@ onBeforeUnmount(() => {
 const analysed = computed(() => files.value.filter((f) => f.status === 'analyzed' || f.status === 'clarification'))
 // ----- what to do now -----
 const reading = computed(() => files.value.some((f) => f.status === 'queued' || f.status === 'processing'))
-const next = computed<{ step: number; attention: boolean; title: string; text: string; href?: string; cta?: string }>(() => {
+const next = computed<{ step: number; attention: boolean; tone?: 'ok' | 'no'; title: string; text: string; href?: string; cta?: string }>(() => {
   const cl = app.ownerChecklist
   const waiting = apps.value.find((a) => a.action_needed)
   if (waiting)
@@ -79,8 +79,12 @@ const next = computed<{ step: number; attention: boolean; title: string; text: s
       return { step: 2, attention: false, title: t('{a} of {b} documents provided', { a: cl.present, b: cl.total }), text: t('You can send the application now, but the bank will ask for the missing documents before it decides. Adding them first saves time.'), href: '/apply#documents', cta: t('Go to the application form') }
     return { step: 2, attention: false, title: t('Your documents are ready: send your application'), text: t('Enter the amount, term and purpose on the application page. Your analysed documents are attached automatically.'), href: '/apply#documents', cta: t('Go to the application form') }
   }
+  if (latest.decision?.outcome === 'recommend')
+    return { step: 4, attention: false, tone: 'ok', title: t('The bank officer recommended approval of {n}', { n: latest.number }), text: t('Amount {a} mln UZS. See the message from the bank and your balance after the loan.', { a: latest.requested_display ?? '—' }), href: '/apply', cta: t('See the decision') }
+  if (latest.decision?.outcome === 'decline')
+    return { step: 4, attention: false, tone: 'no', title: t('The bank declined application {n}', { n: latest.number }), text: t('See the reason from the bank and what you can do next.'), href: '/apply', cta: t('See the decision') }
   if (latest.status === 'decided')
-    return { step: 4, attention: false, title: t('The bank recorded a decision on {n}', { n: latest.number }), text: t('See the decision and the message from the bank on the application page.'), href: '/apply#my-applications', cta: t('See the decision') }
+    return { step: 4, attention: false, title: t('The bank recorded a decision on {n}', { n: latest.number }), text: t('See the decision and the message from the bank on the application page.'), href: '/apply', cta: t('See the decision') }
   return { step: 3, attention: false, title: t('Application {n} is with the bank', { n: latest.number }), text: t('A bank officer is reviewing it. You do not need to do anything now; the decision will appear on the application page.') }
 })
 </script>
@@ -103,7 +107,7 @@ const next = computed<{ step: number; attention: boolean; title: string; text: s
     </div>
     <div v-if="loadErr" class="error-box">{{ loadErr }}</div>
 
-    <section class="panel next" :class="{ attention: next.attention }" :aria-label="t('What to do now')">
+    <section class="panel next" :class="[{ attention: next.attention }, next.tone]" :aria-label="t('What to do now')">
       <div class="next-row">
         <div>
           <div class="eyebrow">{{ t('What to do now') }}</div>
@@ -112,7 +116,7 @@ const next = computed<{ step: number; attention: boolean; title: string; text: s
         </div>
         <RouterLink v-if="next.href" :to="next.href" class="btn" :class="{ 'btn-primary': !next.attention }">{{ next.cta }}</RouterLink>
       </div>
-      <StepLine :current="next.step" :attention="next.attention" />
+      <StepLine :current="next.step" :attention="next.attention" :outcome="apps[0]?.decision?.outcome" />
     </section>
 
     <div class="twopane" style="gap: 20px">
@@ -129,6 +133,10 @@ const next = computed<{ step: number; attention: boolean; title: string; text: s
 <style scoped>
 .next { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-left: 3px solid var(--accent); }
 .next.attention { border-left-color: var(--watch-fg); }
+.next.ok { border-left-color: var(--stable-fg); background: var(--stable-bg); }
+.next.no { border-left-color: var(--attn-fg); background: var(--attn-bg); }
+.next.ok .next-title { color: var(--stable-fg); }
+.next.no .next-title { color: var(--attn-fg); }
 .next-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .next-title { font-size: 16px; font-weight: 600; }
 .next-text { font-size: 13px; margin-top: 2px; max-width: 640px; }

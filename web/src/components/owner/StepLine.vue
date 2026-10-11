@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // The four steps of a loan application, with the current one marked. `current` is 1–4; `attention` marks it amber.
+// `outcome` (the officer's recorded decision) colours step 4 once it is reached: recommend green, decline red.
 import { t } from '@/i18n'
 
-withDefaults(defineProps<{ current: number; attention?: boolean; details?: boolean }>(), { attention: false, details: false })
+withDefaults(defineProps<{ current: number; attention?: boolean; details?: boolean; outcome?: string | null }>(), { attention: false, details: false, outcome: null })
 
 const STEPS = [
   { title: 'Upload documents', sub: 'Reports and statements from the list' },
@@ -17,7 +18,7 @@ const STEPS = [
     <li
       v-for="(s, i) in STEPS"
       :key="s.title"
-      :class="{ done: i + 1 < current, now: i + 1 === current, attn: attention && i + 1 === current }"
+      :class="{ done: i + 1 < current, now: i + 1 === current, attn: attention && i + 1 === current, ok: i === 3 && current === 4 && outcome === 'recommend', no: i === 3 && current === 4 && outcome === 'decline' }"
       :aria-current="i + 1 === current ? 'step' : undefined"
     >
       <span class="n">{{ i + 1 }}</span>
@@ -39,6 +40,12 @@ const STEPS = [
 li.done .n { background: var(--stable-bg); color: var(--stable-fg); }
 li.now .n { background: var(--accent); color: var(--surface); }
 li.attn .n { background: var(--watch-bg); color: var(--watch-fg); }
+.stepline li.ok { border-top-color: var(--stable-fg); }
+li.ok .n { background: var(--stable-fg); color: var(--surface); }
+li.ok .title { color: var(--stable-fg); }
+.stepline li.no { border-top-color: var(--attn-fg); }
+li.no .n { background: var(--attn-fg); color: var(--surface); }
+li.no .title { color: var(--attn-fg); }
 .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .title { font-weight: 500; }
 li.now .title { font-weight: 600; }

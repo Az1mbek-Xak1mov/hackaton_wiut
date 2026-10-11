@@ -104,3 +104,46 @@ def owner_dashboard(db: Session, borrower: Borrower) -> dict:
                 "form2": bool(period_rows), "ratios": any(r["fact"] for r in ratios)},
         "facts": ser.by_key(chosen),
     }
+
+
+def _to_kuzs(value: float, unit: str) -> float | None:
+    if unit == "kUZS":
+        return value
+    if unit == "UZS":
+        return value / 1000.0
+    return None
+
+
+def latest_cash_fact(db: Session, borrower: Borrower) -> Fact | None:
+    """The latest month-end account balance from the owner's bank statements (same choice as the dashboard)."""
+    docs = db.scalars(select(Document.id).where(Document.borrower_id == borrower.id,
+                                                Document.owner_kind != "public")).all()
+    facts = list(db.scalars(select(Fact).where(Fact.document_id.in_(list(docs) or [-1]),
+                                               Fact.field.startswith("statement.balance_end."))).all())
+    by_month: dict[str, list[Fact]] = {}
+    for f in facts:
+        ym = f.field[len("statement.balance_end."):]
+        if len(ym) == 7 and ym[:4].isdigit() and _to_kuzs(float(f.value), f.unit) is not None:
+            by_month.setdefault(ym, []).append(f)
+    return _best(by_month[max(by_month)]) if by_month else None
+
+
+def balance_after_loan(cash: Fact | None, loan_kuzs: float | None, serialized_cash: dict | None) -> dict:
+    """Cash on the account now + the requested loan amount = the balance once the money arrives.
+
+    Plain addition in Python of two recorded numbers: the month-end balance fact (with its document and
+    page) and the amount on the application. No repayment schedule: the bank's rate is not known here.
+    """
+    from app.core.formatting import kuzs_to_mln
+    if cash is None or loan_kuzs is None:
+        return {"available": False, "reason": "no_bank_statement" if cash is None else "no_amount"}
+    now = _to_kuzs(float(cash.value), cash.unit)
+    loan = float(loan_kuzs)
+    after = now + loan
+    ym = cash.field[len("statement.balance_end."):]
+    return {"available": True, "unit": "mln UZS", "as_of_month": ym,
+            "cash_now_kuzs": now, "loan_kuzs": loan, "cash_after_kuzs": after,
+            "cash_now_display": kuzs_to_mln(now), "loan_display": kuzs_to_mln(loan),
+            "cash_after_display": kuzs_to_mln(after),
+            "formula": "cash_after = cash_now (month-end balance, bank statement) + loan amount (application)",
+            "cash_fact": serialized_cash}

@@ -8,6 +8,8 @@ import { ownerApi, useApp } from '@/stores/app'
 import Dropzone from '@/components/ui/Dropzone.vue'
 import DocChecklist from '@/components/owner/DocChecklist.vue'
 import StepLine from '@/components/owner/StepLine.vue'
+import DecisionPanel from '@/components/owner/DecisionPanel.vue'
+import BalanceAfter from '@/components/owner/BalanceAfter.vue'
 import { t } from '@/i18n'
 
 const auth = useAuth()
@@ -165,9 +167,11 @@ const REQUIRED_TITLE: Record<string, string> = {
 }
 const reqTitle = (m: { key: string; title: string }) => (REQUIRED_TITLE[m.key] ? t(REQUIRED_TITLE[m.key]) : m.title)
 
+// the most recent application, if a bank officer has recorded a decision on it: shown first, in full
+const decided = computed(() => (apps.value[0]?.decision ? apps.value[0] : null))
 const stepNow = computed(() => {
   const latest = apps.value[0]
-  if (latest) return latest.status === 'decided' ? 4 : 3
+  if (latest) return latest.step || (latest.status === 'decided' ? 4 : 3)
   return files.value.length ? 2 : 1
 })
 
@@ -201,8 +205,11 @@ async function addDocs(a: OwnerApplication) {
     </div>
     <div v-if="loadErr" class="error-box">{{ loadErr }}</div>
 
+    <DecisionPanel v-if="decided" :application="decided" :req-title="reqTitle" @add-documents="addDocs(decided)" />
+    <div v-if="decided && decided.uuid && addMsg[decided.uuid]" :class="addMsg[decided.uuid].ok ? 'note' : 'error-box'">{{ addMsg[decided.uuid].text }}</div>
+
     <section class="panel" style="padding: 14px 16px" :aria-label="t('Application steps')">
-      <StepLine :current="stepNow" :attention="!!apps.find((a) => a.action_needed)" />
+      <StepLine :current="stepNow" :attention="!!apps.find((a) => a.action_needed)" :outcome="apps[0]?.decision?.outcome" />
     </section>
 
     <form class="stack" style="gap: 16px" @submit.prevent="apply">
@@ -267,7 +274,7 @@ async function addDocs(a: OwnerApplication) {
           </div>
           <span class="pill" :class="appPill(a).cls">{{ appPill(a).label }}</span>
         </div>
-        <StepLine :current="a.step || (a.status === 'decided' ? 4 : 3)" :attention="!!a.action_needed" />
+        <StepLine :current="a.step || (a.status === 'decided' ? 4 : 3)" :attention="!!a.action_needed" :outcome="a.decision?.outcome" />
         <p v-if="appPill(a).explain" class="muted" style="font-size: 12.5px">{{ appPill(a).explain }}</p>
 
         <div v-if="a.decision" class="decision" :class="outcome(a.decision.outcome).cls">
@@ -279,6 +286,9 @@ async function addDocs(a: OwnerApplication) {
           <div class="eyebrow" style="margin-top: 4px">{{ t('Message from the bank') }}</div>
           <p class="msg">{{ a.decision.message }}</p>
         </div>
+
+        <BalanceAfter v-if="a.balance_after && (!a.decision || a.decision.outcome === 'request_info')" :data="a.balance_after" preview />
+        <BalanceAfter v-else-if="a.balance_after && a.decision?.outcome === 'recommend' && a !== decided" :data="a.balance_after" />
 
         <div v-if="a.can_add_documents && a.missing_documents && a.missing_documents.length" class="missing">
           <div class="eyebrow">{{ t('The bank does not have these yet') }}</div>

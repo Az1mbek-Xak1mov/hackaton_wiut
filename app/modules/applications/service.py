@@ -238,6 +238,10 @@ class ApplicationService:
         borrower = BorrowerService(self.db).owner_borrower(user)
         apps = self.db.scalars(select(Application).where(Application.borrower_id == borrower.id)
                                .order_by(Application.id.desc())).all()
+        from app.modules.extraction.service import FactSerializer
+        from app.modules.owner.service import balance_after_loan, latest_cash_fact
+        cash = latest_cash_fact(self.db, borrower)
+        cash_ser = FactSerializer(self.db).one(cash) if cash is not None else None
         out = []
         for a in apps:
             docs = linked_documents(self.db, a)
@@ -260,7 +264,11 @@ class ApplicationService:
                         # written by the officer (H5); the system never fills it
                         "decision": ({"outcome": dec.outcome, "message": dec.reasoning,
                                       "decided_at": dec.created_at.isoformat() if dec.created_at else None}
-                                     if dec is not None else None)})
+                                     if dec is not None else None),
+                        # cash now + loan amount, added in Python; shown as a preview while not yet decided
+                        "balance_after": (balance_after_loan(cash, float(a.requested_amount)
+                                                             if a.requested_amount is not None else None, cash_ser)
+                                          if dec is None or dec.outcome != "decline" else None)})
         return out
 
     def owner_checklist(self, user) -> dict:
