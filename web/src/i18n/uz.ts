@@ -1180,5 +1180,18 @@ const uz: Record<string, string> = {
   "built from the same figures and issues": "o'sha raqamlar va muammolardan tuzilgan",
   "no credits left": "kredit qolmadi",
   "key rejected": "kalit rad etildi",
+  "Form 2 recognised": "2-shakl aniqlandi",
+  "Line 010 · Revenue": "010-qator · Tushum",
+  "Line 270 · Net profit": "270-qator · Sof foyda",
+  "Checked against bank statement ✓": "Bank ko'chirmasi bilan solishtirildi ✓",
+  "1 issue found → page 1": "1 ta muammo topildi → 1-sahifa",
+  "Bank officer decides": "Qarorni kredit mutaxassisi qabul qiladi",
+  "from: page 1, line 010": "manba: 1-sahifa, 010-qator",
+  "Every figure linked to its page.": "Har bir raqam o'z sahifasiga bog'langan.",
+  "Problems found before you start reading.": "Muammolar siz o'qishni boshlashdan oldin topiladi.",
+  "You decide.": "Qarorni siz qabul qilasiz.",
+  "Upload once.": "Bir marta yuklang.",
+  "See your figures.": "Ko'rsatkichlaringizni ko'ring.",
+  "Apply for credit.": "Kreditga ariza bering.",
 }
 export default uz

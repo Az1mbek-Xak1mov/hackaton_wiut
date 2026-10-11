@@ -6,6 +6,7 @@ import { useApp } from '@/stores/app'
 import { ApiError, errMessage } from '@/api/client'
 import { OTHER_SURFACE_URL, surface } from '@/surface'
 import Icon from '@/components/ui/Icon.vue'
+import HeroScene from '@/components/HeroScene.vue'
 import { t } from '@/i18n'
 
 const auth = useAuth()
@@ -34,6 +35,10 @@ const BULLETS = bank
       'See your key figures, each linked to the page it was read from',
       'Apply for an SME loan at MKBANK with your documents attached',
     ]
+
+const TAGLINES = bank
+  ? ['Every figure linked to its page.', 'Problems found before you start reading.', 'You decide.']
+  : ['Upload once.', 'See your figures.', 'Apply for credit.']
 
 const demoBusy = ref(false)
 async function tryDemo() {
@@ -84,6 +89,12 @@ async function submit() {
       <ul class="points">
         <li v-for="b in BULLETS" :key="b"><Icon name="check" :size="14" class="tick" />{{ t(b) }}</li>
       </ul>
+      <div class="show">
+        <ul class="taglines">
+          <li v-for="l in TAGLINES" :key="l">{{ t(l) }}</li>
+        </ul>
+        <HeroScene compact class="show-scene" />
+      </div>
       <p v-if="!bank" class="aside">
         <RouterLink to="/analyse">{{ t('Analyse a document without an account') }}</RouterLink>
         <span class="muted"> · {{ t('no sign-up, deleted after 24 hours') }}</span>
@@ -135,6 +146,9 @@ async function submit() {
 .points li { display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: start; }
 .tick { color: var(--accent); margin-top: 3px; }
 .aside { font-size: 13px; margin-top: 6px; }
+.show { margin-top: 10px; background: var(--accent-hover); color: var(--surface); border-radius: var(--r-phone-card); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+.taglines { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 15px; font-weight: 600; line-height: 1.35; }
+.show-scene { align-self: center; }
 .card { padding: 22px 22px 18px; display: flex; flex-direction: column; gap: 14px; }
 .card h1 { font-size: 18px; font-weight: 600; }
 .field { display: flex; flex-direction: column; gap: 5px; }
@@ -156,5 +170,7 @@ async function submit() {
   .intro { padding-top: 0; }
   .brand { font-size: 24px; }
   .lead { font-size: 15px; }
+  .show-scene { display: none; }
+  .show { padding: 14px 16px; }
 }
 </style>

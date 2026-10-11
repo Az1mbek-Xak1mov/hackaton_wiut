@@ -1216,5 +1216,18 @@ const ru: Record<string, string> = {
   "built from the same figures and issues": "построена из тех же цифр и проблем",
   "no credits left": "кредиты закончились",
   "key rejected": "ключ отклонён",
+  "Form 2 recognised": "Распознана Форма 2",
+  "Line 010 · Revenue": "Строка 010 · Выручка",
+  "Line 270 · Net profit": "Строка 270 · Чистая прибыль",
+  "Checked against bank statement ✓": "Сверено с банковской выпиской ✓",
+  "1 issue found → page 1": "Найдена 1 проблема → стр. 1",
+  "Bank officer decides": "Решение принимает кредитный специалист",
+  "from: page 1, line 010": "источник: стр. 1, строка 010",
+  "Every figure linked to its page.": "Каждая цифра связана со своей страницей.",
+  "Problems found before you start reading.": "Проблемы найдены до того, как вы начнёте читать.",
+  "You decide.": "Решаете вы.",
+  "Upload once.": "Загрузите один раз.",
+  "See your figures.": "Смотрите свои показатели.",
+  "Apply for credit.": "Подайте заявку на кредит.",
 }
 export default ru

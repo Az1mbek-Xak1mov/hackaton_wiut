@@ -1,7 +1,26 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { api } from '@/api/client'
 import { t } from '@/i18n'
+import HeroScene from '@/components/HeroScene.vue'
+
+// Gentle fade-in of sections as they scroll into view (skipped when reduced motion is requested).
+const root = ref<HTMLElement | null>(null)
+let io: IntersectionObserver | null = null
+onMounted(() => {
+  const els = root.value?.querySelectorAll<HTMLElement>('.reveal') ?? []
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  if (reduce || typeof IntersectionObserver === 'undefined') {
+    els.forEach((el) => el.classList.add('in'))
+    return
+  }
+  io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io?.unobserve(e.target) } }),
+    { threshold: 0.12 },
+  )
+  els.forEach((el) => io!.observe(el))
+})
+onBeforeUnmount(() => io?.disconnect())
 
 // Every number on this page is read from the evaluation result file served by /metrics/eval; none is typed in here.
 const ev = ref<Record<string, any> | null>(null)
@@ -48,8 +67,9 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
 </script>
 
 <template>
-  <div class="page landing">
-    <section class="hero-block">
+  <div ref="root" class="page landing">
+    <section class="hero-band">
+      <div class="hero-block">
       <div class="eyebrow">{{ t('For MKBANK SME lending · pilot prototype') }}</div>
       <h1 class="hero">{{ t('Loan documents in. Checked figures out.') }}</h1>
       <p class="lead">
@@ -60,27 +80,29 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
         <RouterLink to="/register" class="btn">{{ t('I run a business: register') }}</RouterLink>
         <a href="https://app.converza.uz" class="officer">{{ t('I am a bank officer → app.converza.uz') }}</a>
       </div>
+      </div>
+      <HeroScene class="hero-scene" />
     </section>
 
-    <section class="block">
+    <section class="block reveal">
       <h2>{{ t('How it works') }}</h2>
       <ol class="how">
         <li>
-          <span class="n">1</span>
+          <div class="step-top"><span class="n">1</span><svg class="pic" viewBox="0 0 40 40" aria-hidden="true"><path d="M10 5h14l7 7v23H10z" /><path d="M24 5v7h7" /><path d="M20.5 30V18M15.5 23l5-5 5 5" /></svg></div>
           <div><b>{{ t('The business uploads its documents') }}</b><p>{{ t('On converza.uz. A checklist shows which documents the bank needs and which are already there.') }}</p></div>
         </li>
         <li>
-          <span class="n">2</span>
+          <div class="step-top"><span class="n">2</span><svg class="pic" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 5h14l6 6v12" /><path d="M8 5v30h12" /><path d="M12 14h9M12 19h11M12 24h6" /><circle cx="27" cy="29" r="5.5" /><path d="M31 33l4 4" /></svg></div>
           <div><b>{{ t('Converza reads and checks them') }}</b><p>{{ t('Every figure is taken from the page, the forms are checked against each other and against the bank statement, and anything that does not add up becomes an issue with its source.') }}</p></div>
         </li>
         <li>
-          <span class="n">3</span>
+          <div class="step-top"><span class="n">3</span><svg class="pic" viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="8" width="28" height="24" rx="2" /><path d="M6 15h28" /><path d="M13 23l4 4 9-9" /></svg></div>
           <div><b>{{ t('A bank officer decides') }}</b><p>{{ t('On app.converza.uz the officer sees the checked file, clicks any number to see the page it came from, and records a decision. The business sees the answer and the bank’s message.') }}</p></div>
         </li>
       </ol>
     </section>
 
-    <section class="block two">
+    <section class="block two reveal">
       <div>
         <h2>{{ t('For the business') }}</h2>
         <ul>
@@ -99,7 +121,7 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
       </div>
     </section>
 
-    <section class="block">
+    <section class="block reveal">
       <h2>{{ t('Measured, not claimed') }}</h2>
       <p v-if="!ev" class="muted">{{ t('Loading the latest evaluation…') }}</p>
       <table v-else class="tbl measured">
@@ -114,7 +136,7 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
       <p v-if="ev" class="muted small">{{ dataset }} <RouterLink to="/metrics">{{ t('All results and known failures →') }}</RouterLink></p>
     </section>
 
-    <section class="block">
+    <section class="block reveal">
       <h2>{{ t('What Converza does not do') }}</h2>
       <ul>
         <li>{{ t('It never approves or rejects a loan. Only a bank officer records a decision, with the reasoning and the evidence they opened.') }}</li>
@@ -127,12 +149,22 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
 </template>
 
 <style scoped>
-.landing { padding-top: 32px; display: flex; flex-direction: column; gap: 40px; max-width: 960px; }
-.hero-block { display: flex; flex-direction: column; gap: 12px; }
-.hero { font-size: 36px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; }
-.lead { font-size: 16px; line-height: 1.55; color: var(--ink-2); max-width: 720px; }
+.landing { padding-top: 24px; display: flex; flex-direction: column; gap: 40px; max-width: 1120px; }
+.hero-band { background: var(--accent-hover); color: var(--surface); border-radius: var(--r-phone-card); padding: 40px 36px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 32px; align-items: center; overflow: hidden; }
+.hero-block { display: flex; flex-direction: column; gap: 14px; }
+.hero-band .eyebrow { color: var(--accent-panel-border); }
+.hero { font-size: 36px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; color: var(--surface); }
+.lead { font-size: 15.5px; line-height: 1.55; color: var(--accent-tint); max-width: 620px; }
 .cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 6px; }
-.officer { font-size: 14px; margin-left: 6px; }
+.hero-band .btn-primary { background: var(--surface); color: var(--accent-hover); border-color: var(--surface); }
+.hero-band .btn-primary:hover { background: var(--accent-tint); }
+.hero-band .btn:not(.btn-primary) { background: transparent; color: var(--surface); border-color: var(--accent-border); }
+.hero-band .btn:not(.btn-primary):hover { background: var(--accent); }
+.officer { font-size: 14px; margin-left: 6px; color: var(--surface); text-decoration: underline; text-underline-offset: 3px; }
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+.step-top { display: flex; align-items: center; justify-content: space-between; }
+.pic { width: 36px; height: 36px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .block h2 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
 .block ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
 .how { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -148,6 +180,10 @@ const dataset = computed(() => (ev.value ? t('{n} synthetic documents in {b} loa
 .small { font-size: 12.5px; margin-top: 8px; }
 @media (max-width: 720px) {
   .landing { padding-top: 8px; gap: 24px; }
+  .hero-band { grid-template-columns: 1fr; padding: 24px 18px; gap: 24px; }
+  .hero-scene { margin: 0 auto; }
+  .hero-block { min-width: 0; }
+  .hero { overflow-wrap: anywhere; }
   .hero { font-size: 24px; }
   .lead { font-size: 15px; }
   .two, .how { grid-template-columns: 1fr; }
