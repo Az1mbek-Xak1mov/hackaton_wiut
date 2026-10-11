@@ -395,20 +395,34 @@ class BudgetService:
                               for k in it["fact_keys"] if k in cfo.facts]} for it in items]
         messages = [{"role": "system", "content": prompts.load("advice")},
                     {"role": "user", "content": redact(json.dumps({"findings": payload}, ensure_ascii=False))}]
-        res = complete(self.db, "advice", messages, json_schema=ADVICE_SCHEMA)
-        data = parse_json(res.text) or {}
-        by_id = {str(x.get("id")): str(x.get("text") or "") for x in data.get("items") or [] if isinstance(x, dict)}
         any_ok = False
-        for it in items:
-            text = by_id.get(it["id"], "").strip()
-            if not text:
-                continue
-            allowed = {k: cfo.facts[k] for k in it["fact_keys"] if k in cfo.facts}
-            report = verify(text, allowed)
-            if report.get("ok"):
-                it["text"], it["explained"] = text, True
-                any_ok = True
-            else:
-                it["verifier_rejected"] = [u.get("text") for u in report.get("unmatched", [])][:5] + \
-                    report.get("forbidden", [])[:3] + report.get("unknown_ids", [])[:3]
+        for attempt in range(2):
+            res = complete(self.db, "advice", messages, json_schema=ADVICE_SCHEMA)
+            data = parse_json(res.text) or {}
+            by_id = {str(x.get("id")): str(x.get("text") or "") for x in data.get("items") or [] if isinstance(x, dict)}
+            rejected = []
+            for it in items:
+                if it.get("explained"):
+                    continue
+                text = by_id.get(it["id"], "").strip()
+                if not text:
+                    continue
+                allowed = {k: cfo.facts[k] for k in it["fact_keys"] if k in cfo.facts}
+                report = verify(text, allowed)
+                if report.get("ok"):
+                    it["text"], it["explained"] = text, True
+                    it.pop("verifier_rejected", None)
+                    any_ok = True
+                else:
+                    it["verifier_rejected"] = [u.get("text") for u in report.get("unmatched", [])][:5] + \
+                        report.get("forbidden", [])[:3] + report.get("unknown_ids", [])[:3]
+                    rejected.append(f'{it["id"]}: {", ".join(map(str, it["verifier_rejected"]))}')
+            if not rejected:
+                break
+            # one retry: tell the model which numbers the verifier could not match to a cited fact
+            messages = messages + [{"role": "assistant", "content": res.text},
+                                   {"role": "user", "content": "The verifier rejected these numbers because the sentence "
+                                    "containing them did not cite the matching fact id, or the value was not copied "
+                                    "exactly from `display`: " + "; ".join(rejected) + ". Rewrite only those findings. "
+                                    "Every sentence that has a number must end with the fact ids in brackets."}]
         return any_ok
