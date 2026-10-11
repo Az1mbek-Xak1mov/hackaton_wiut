@@ -1207,5 +1207,14 @@ const ru: Record<string, string> = {
   "Loan repayments take a large share of spending": "Погашение кредитов — большая доля расходов",
   "For information": "Для сведения",
   "Cash-flow table": "Таблица движения денег",
+  "AI summary is switched off. All figures, checks and ratios above are still computed from the documents.": "ИИ-сводка выключена. Все цифры, проверки и коэффициенты выше по-прежнему рассчитаны по документам.",
+  "AI summary is off: no AI key is configured. All figures, checks and ratios above are still computed from the documents.": "ИИ-сводка недоступна: ключ ИИ не настроен. Все цифры, проверки и коэффициенты выше по-прежнему рассчитаны по документам.",
+  "AI summary is off: the AI service rejected the API key. All figures, checks and ratios above are still computed from the documents.": "ИИ-сводка недоступна: сервис ИИ отклонил API-ключ. Все цифры, проверки и коэффициенты выше по-прежнему рассчитаны по документам.",
+  "AI summary is off: the AI service has no credits left (API key quota used up). All figures, checks and ratios above are still computed from the documents.": "ИИ-сводка недоступна: у сервиса ИИ закончились кредиты (лимит API-ключа исчерпан). Все цифры, проверки и коэффициенты выше по-прежнему рассчитаны по документам.",
+  "AI summary is unavailable: the AI service did not answer. All figures, checks and ratios above are still computed from the documents.": "ИИ-сводка недоступна: сервис ИИ не ответил. Все цифры, проверки и коэффициенты выше по-прежнему рассчитаны по документам.",
+  "Matching records are still listed for each question.": "Подходящие записи по-прежнему показываются для каждого вопроса.",
+  "built from the same figures and issues": "построена из тех же цифр и проблем",
+  "no credits left": "кредиты закончились",
+  "key rejected": "ключ отклонён",
 }
 export default ru

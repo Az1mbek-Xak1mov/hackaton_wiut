@@ -89,6 +89,8 @@ export interface VersionInfo {
   llm_provider: string
   llm_enabled: boolean
   llm_configured?: boolean
+  llm_status?: 'ok' | 'off' | 'no_key' | 'no_credits' | 'error'
+  llm_status_text?: string
   demo_login?: boolean
 }
 
@@ -151,7 +153,7 @@ export interface AnalyseResult {
     stirs: string[]
     text_excerpt: string
   } | null
-  description: { text: string; mode: 'llm' | 'none' } | null
+  description: { text: string; mode: 'llm' | 'none'; llm_status?: string | null; llm_status_text?: string } | null
   partial?: boolean
 }
 
@@ -301,6 +303,8 @@ export interface Narrative {
   attempts: number
   verified?: boolean
   rejected?: RejectedDraft[]
+  llm_status?: string | null
+  llm_status_text?: string
 }
 
 export interface ReviewDocument {
@@ -404,6 +408,8 @@ export interface LlmSettings {
   provider: string
   model: string
   configured?: boolean
+  status?: 'ok' | 'off' | 'no_key' | 'no_credits' | 'error'
+  status_text?: string
 }
 
 export interface OwnerApplication {
@@ -455,6 +461,8 @@ export interface CfoAnswer {
   table: { label: string; fact_key: string | null }[]
   cant_see: string | null
   next_steps: string[]
+  llm_status?: string | null
+  llm_status_text?: string
 }
 
 export interface ToolTraceItem {

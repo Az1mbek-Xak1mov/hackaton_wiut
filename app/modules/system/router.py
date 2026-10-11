@@ -20,10 +20,16 @@ def version(db: Session = Depends(get_db)):
         enabled = llm_enabled(db)
     except Exception:  # DB not migrated yet: still answer
         enabled = False
+    from app.modules.llm.provider import status as llm_status
+    try:
+        st = llm_status(db)
+    except Exception:
+        st = llm_status(None)
     return {"git_sha": settings.GIT_SHA, "built_at": settings.BUILT_AT,
             "deployed_at": settings.DEPLOYED_AT or _STARTED_AT,
             "llm_provider": settings.LLM_PROVIDER, "llm_enabled": enabled,
-            "llm_configured": llm_configured(), "demo_login": settings.DEMO_LOGIN_ENABLED}
+            "llm_configured": llm_configured(), "llm_status": st["code"], "llm_status_text": st["text"],
+            "demo_login": settings.DEMO_LOGIN_ENABLED}
 
 
 def latest_eval_result() -> dict:

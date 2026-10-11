@@ -1171,5 +1171,14 @@ const uz: Record<string, string> = {
   "Cash has fallen three months in a row": "Pul qoldig'i uch oy ketma-ket kamaydi",
   "More money went out than came in": "Kirgandan ko'ra ko'proq pul chiqdi",
   "Cash-flow table": "Pul oqimi jadvali",
+  "AI summary is switched off. All figures, checks and ratios above are still computed from the documents.": "AI xulosasi o'chirilgan. Yuqoridagi barcha raqamlar, tekshiruvlar va koeffitsientlar baribir hujjatlardan hisoblanadi.",
+  "AI summary is off: no AI key is configured. All figures, checks and ratios above are still computed from the documents.": "AI xulosasi mavjud emas: AI kaliti sozlanmagan. Yuqoridagi barcha raqamlar, tekshiruvlar va koeffitsientlar baribir hujjatlardan hisoblanadi.",
+  "AI summary is off: the AI service rejected the API key. All figures, checks and ratios above are still computed from the documents.": "AI xulosasi mavjud emas: AI xizmati API kalitini rad etdi. Yuqoridagi barcha raqamlar, tekshiruvlar va koeffitsientlar baribir hujjatlardan hisoblanadi.",
+  "AI summary is off: the AI service has no credits left (API key quota used up). All figures, checks and ratios above are still computed from the documents.": "AI xulosasi mavjud emas: AI xizmatida kredit qolmadi (API kaliti limiti tugagan). Yuqoridagi barcha raqamlar, tekshiruvlar va koeffitsientlar baribir hujjatlardan hisoblanadi.",
+  "AI summary is unavailable: the AI service did not answer. All figures, checks and ratios above are still computed from the documents.": "AI xulosasi mavjud emas: AI xizmati javob bermadi. Yuqoridagi barcha raqamlar, tekshiruvlar va koeffitsientlar baribir hujjatlardan hisoblanadi.",
+  "Matching records are still listed for each question.": "Har bir savol uchun mos yozuvlar baribir ko'rsatiladi.",
+  "built from the same figures and issues": "o'sha raqamlar va muammolardan tuzilgan",
+  "no credits left": "kredit qolmadi",
+  "key rejected": "kalit rad etildi",
 }
 export default uz

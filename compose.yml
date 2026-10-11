@@ -1,4 +1,25 @@
-# Local development: `docker compose up -d db` (Postgres on 5462); everything in Docker: `--profile full`.
+# Whole app, zero setup:   docker compose up --build
+#   owner app  http://localhost:8080        bank app  http://app.localhost:8080
+#   No .env and no API key needed. AI summaries turn on with: OPENAI_API_KEY=sk-... docker compose up --build
+# Developers: `docker compose up -d db` still starts only Postgres (localhost:5462).
+# Everything here is LOCAL ONLY (dev JWT secret, demo sign-in on). Production: compose.prod.yml + deploy/.
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql+psycopg2://app:${POSTGRES_PASSWORD:-app}@db:5432/app
+  FILES_DIR: /data/files
+  EVAL_RESULTS_DIR: /srv/eval/results
+  JWT_SECRET: ${JWT_SECRET:-local-only-dev-secret-not-for-production-0000}
+  DEMO_LOGIN_ENABLED: ${DEMO_LOGIN_ENABLED:-true}
+  SEED_OWNER_PASSWORD: ${SEED_OWNER_PASSWORD:-converza-local}
+  SEED_OFFICER_PASSWORD: ${SEED_OFFICER_PASSWORD:-converza-local}
+  SEED_DEMO: "true"
+  # openai with an empty key behaves exactly like `none`: the app reports the LLM as unavailable
+  LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+  LLM_MODEL: ${LLM_MODEL:-gpt-4.1-mini}
+  LLM_BASE_URL: ${LLM_BASE_URL:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
 services:
   db:
     image: postgres:16-alpine
@@ -6,22 +27,54 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
       POSTGRES_DB: app
-    ports: ["5462:5432"]
+    ports: ["127.0.0.1:${DB_PORT:-5462}:5432"]
     volumes: [app-db:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U app -d app"]
       interval: 5s
       retries: 10
-  api:
+
+  api:   # API + in-process worker; the image CMD runs `alembic upgrade head` first
     build: .
-    env_file: .env
+    image: converza-app:local
     environment:
-      DATABASE_URL: postgresql+psycopg2://app:${POSTGRES_PASSWORD:-app}@db:5432/app
+      <<: *app-env
       WORKER_ENABLED: "true"
-    ports: ["8020:8020"]
-    volumes: [files:/data/files]
+    ports: ["127.0.0.1:${API_PORT:-8020}:8020"]
+    volumes:
+      - files:/data/files
+      - ./eval:/srv/eval:ro
     depends_on: { db: { condition: service_healthy } }
-    profiles: [full]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8020/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  web:   # the Vue build served by nginx; /api is proxied to the api service (web/nginx.local.conf)
+    build: ./web
+    image: converza-web:local
+    ports: ["${WEB_PORT:-8080}:80"]
+    volumes: [./web/nginx.local.conf:/etc/nginx/conf.d/default.conf:ro]
+    depends_on: { api: { condition: service_started } }
+
+  seed:  # one-shot: pushes data/seed through the real pipeline once; later `up`s skip it
+    image: converza-app:local
+    pull_policy: never
+    command:
+      - sh
+      - -c
+      - >-
+        if [ -f /data/files/.demo-seeded ]; then echo "demo data already seeded; skipping";
+        else python -m app.seed_demo && touch /data/files/.demo-seeded; fi
+    environment:
+      <<: *app-env
+      WORKER_ENABLED: "false"
+    volumes: [files:/data/files]
+    depends_on: { api: { condition: service_healthy } }
+    restart: "no"
+
 volumes:
   app-db:
   files:

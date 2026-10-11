@@ -35,6 +35,68 @@ class LLMError(RuntimeError):
     """The provider call failed (network, HTTP error, malformed reply)."""
 
 
+class LLMNoCredits(LLMUnavailable):
+    """The provider refused the call because the API key has no credits / quota left (OpenAI 429
+    `insufficient_quota`, Anthropic "credit balance is too low"). Callers fall back like for LLMUnavailable."""
+
+
+class LLMBadKey(LLMUnavailable):
+    """The provider rejected the API key (HTTP 401 `invalid_api_key` / authentication_error)."""
+
+
+# ---- plain status of the AI service ---------------------------------------------------------------------------
+# A no-credits / bad-key answer is remembered for FAILURE_TTL_S so the pipeline does not call a provider that will
+# refuse every request; any other failure is remembered (for the status line) but does not block further calls.
+FAILURE_TTL_S = 300
+_TAIL = " All figures, checks and ratios above are still computed from the documents."
+STATUS_TEXT = {
+    "ok": "",
+    "off": "AI summary is switched off." + _TAIL,
+    "no_key": "AI summary is off: no AI key is configured." + _TAIL,
+    "bad_key": "AI summary is off: the AI service rejected the API key." + _TAIL,
+    "no_credits": "AI summary is off: the AI service has no credits left (API key quota used up)." + _TAIL,
+    "error": "AI summary is unavailable: the AI service did not answer." + _TAIL,
+}
+_failure: dict | None = None    # {"code": "no_credits"|"no_key"|"error", "text": str, "at": monotonic seconds}
+
+
+def _remember(code: str, detail: str = "", text_key: str | None = None) -> None:
+    global _failure
+    _failure = {"code": code, "text": STATUS_TEXT[text_key or code], "detail": detail[:300], "at": time.monotonic()}
+
+
+def reset_status() -> None:
+    """Forget a remembered provider failure (tests; a key/credit top-up is picked up after FAILURE_TTL_S anyway)."""
+    global _failure
+    _failure = None
+
+
+def _recent_failure() -> dict | None:
+    if _failure is None or time.monotonic() - _failure["at"] > FAILURE_TTL_S:
+        return None
+    return _failure
+
+
+def _blocked() -> dict | None:
+    f = _recent_failure()
+    return f if f and f["code"] in ("no_credits", "no_key") else None
+
+
+def classify_failure(status_code: int | None, code: str | None, body: str) -> type[LLMUnavailable] | None:
+    """Map a provider refusal to LLMNoCredits / LLMBadKey; None = an ordinary error."""
+    low = (body or "").lower()
+    code = (code or "").lower()
+    if code == "insufficient_quota" or "insufficient_quota" in low or "credit balance is too low" in low \
+            or "exceeded your current quota" in low or "billing" in low and status_code in (400, 402, 403, 429):
+        return LLMNoCredits
+    if status_code == 402:
+        return LLMNoCredits
+    if status_code == 401 or code in ("invalid_api_key", "authentication_error") or "invalid_api_key" in low \
+            or "authentication_error" in low or "invalid x-api-key" in low:
+        return LLMBadKey
+    return None
+
+
 @dataclass
 class ToolCall:
     id: str
@@ -88,6 +150,9 @@ class OpenAICompatibleProvider:
         try:
             resp = self._client.chat.completions.create(**kwargs)
         except Exception as exc:
+            kind = classify_failure(getattr(exc, "status_code", None), getattr(exc, "code", None), str(exc))
+            if kind is not None:
+                raise kind(f"{self.name}: {str(exc)[:300]}") from exc
             raise LLMError(f"{self.name}: {exc.__class__.__name__}: {str(exc)[:300]}") from exc
         msg = resp.choices[0].message
         calls = []
@@ -155,6 +220,9 @@ class AnthropicProvider:
         except httpx.HTTPError as exc:
             raise LLMError(f"anthropic: unreachable ({exc.__class__.__name__})") from exc
         if resp.status_code >= 400:
+            kind = classify_failure(resp.status_code, None, resp.text)
+            if kind is not None:
+                raise kind(f"anthropic: HTTP {resp.status_code}: {resp.text[:300]}")
             raise LLMError(f"anthropic: HTTP {resp.status_code}: {resp.text[:300]}")
         data = resp.json()
         text_parts, calls = [], []
@@ -180,6 +248,7 @@ def set_provider_override(provider: Provider | None) -> None:
     """Tests (and scripts) inject a provider; production resolves it from settings."""
     global _override
     _override = provider
+    reset_status()
 
 
 def configured() -> bool:
@@ -196,8 +265,29 @@ def configured() -> bool:
 
 
 def available(db: Session) -> bool:
-    """The runtime switch is on AND a provider is configured (or injected)."""
-    return configured() and llm_enabled(db)
+    """The runtime switch is on AND a provider is configured (or injected) AND the provider has not just refused
+    the key (no credits / invalid key) within FAILURE_TTL_S."""
+    return configured() and llm_enabled(db) and _blocked() is None
+
+
+def status(db: Session | None = None) -> dict:
+    """{code: ok|off|no_key|no_credits|error, text}: the plain reason an AI summary is (not) shown."""
+    def out(code: str, text_key: str | None = None) -> dict:
+        return {"code": code, "text": STATUS_TEXT[text_key or code]}
+    if _override is None and settings.LLM_PROVIDER == "none":
+        return out("off")
+    if db is not None:
+        try:
+            if not llm_enabled(db):
+                return out("off")
+        except Exception:   # DB not migrated yet
+            pass
+    if not configured():
+        return out("no_key")
+    f = _recent_failure()
+    if f is not None:
+        return {"code": f["code"], "text": f["text"]}
+    return out("ok")
 
 
 def get_provider() -> Provider:
@@ -217,6 +307,9 @@ def complete(db: Session, purpose: str, messages: list[dict], tools: list[dict] 
              json_schema: dict | None = None, *, application_id: int | None = None,
              document_id: int | None = None) -> LLMResult:
     """Calls the configured provider and logs the call (tokens, latency, ok) in the caller's session."""
+    blocked = _blocked()
+    if blocked is not None and configured() and llm_enabled(db):
+        raise (LLMNoCredits if blocked["code"] == "no_credits" else LLMBadKey)(blocked["detail"] or blocked["text"])
     if not available(db):
         raise LLMUnavailable("LLM is off or not configured")
     provider = get_provider()
@@ -230,10 +323,19 @@ def complete(db: Session, purpose: str, messages: list[dict], tools: list[dict] 
         row.latency_ms = int((time.perf_counter() - t0) * 1000)
         db.add(row)
         db.flush()
+        if isinstance(exc, LLMNoCredits):
+            _remember("no_credits", str(exc))
+            logger.warning("LLM provider has no credits left; AI text is off for %ss: %s", FAILURE_TTL_S, exc)
+        elif isinstance(exc, LLMBadKey):
+            _remember("no_key", str(exc), text_key="bad_key")
+            logger.warning("LLM provider rejected the API key; AI text is off for %ss: %s", FAILURE_TTL_S, exc)
+        elif not isinstance(exc, LLMUnavailable):
+            _remember("error", str(exc))
         if isinstance(exc, (LLMError, LLMUnavailable)):
             raise
         raise LLMError(f"{provider.name}: {exc.__class__.__name__}: {exc}") from exc
     row.ok = True
+    reset_status()
     row.latency_ms = int((time.perf_counter() - t0) * 1000)
     row.prompt_tokens = int(result.usage.get("prompt_tokens") or 0)
     row.completion_tokens = int(result.usage.get("completion_tokens") or 0)

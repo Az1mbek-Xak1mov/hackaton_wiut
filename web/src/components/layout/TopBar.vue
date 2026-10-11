@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/stores/auth'
 import { useApp } from '@/stores/app'
 import { errMessage } from '@/api/client'
+import { aiStatusMessage } from '@/api/aiStatus'
 import { lang, setLang, t, type Lang } from '@/i18n'
 
 const props = defineProps<{ mode: 'officer' | 'owner' | 'public' }>()
@@ -54,8 +55,8 @@ async function toggleLlm(enabled: boolean) {
     <span class="pill" :class="mode === 'public' ? 'pill-info' : 'pill-neutral'">{{ roleLabel }}</span>
     <div style="flex: 1"></div>
 
-    <div v-if="mode === 'officer' && app.llm" class="llm" :title="app.llm.configured === false ? t('No LLM provider key is configured: narratives fall back to template summaries') : app.llm.provider + ' · ' + app.llm.model">
-      <span class="muted llm-label">LLM<span v-if="app.llm.configured === false" class="nokey"> · {{ t('no provider key') }}</span></span>
+    <div v-if="mode === 'officer' && app.llm" class="llm" :title="app.llm.configured === false ? t('No LLM provider key is configured: narratives fall back to template summaries') : (app.llm.status === 'no_credits' || app.llm.status === 'no_key') ? aiStatusMessage(app.llm.status, app.llm.status_text) : app.llm.provider + ' · ' + app.llm.model">
+      <span class="muted llm-label">LLM<span v-if="app.llm.configured === false" class="nokey"> · {{ t('no provider key') }}</span><span v-else-if="app.llm.status === 'no_credits'" class="nokey"> · {{ t('no credits left') }}</span><span v-else-if="app.llm.status === 'no_key'" class="nokey"> · {{ t('key rejected') }}</span></span>
       <div class="seg" role="group" :aria-label="t('Language model on or off')">
         <button type="button" :class="{ on: app.llm.enabled }" :disabled="llmBusy" :aria-pressed="app.llm.enabled" @click="toggleLlm(true)">{{ t('On') }}</button>
         <button type="button" :class="{ on: !app.llm.enabled }" :disabled="llmBusy" :aria-pressed="!app.llm.enabled" @click="toggleLlm(false)">{{ t('Off') }}</button>

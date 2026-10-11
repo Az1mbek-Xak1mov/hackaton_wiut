@@ -14,6 +14,7 @@ import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import FindingRow from '@/components/evidence/FindingRow.vue'
 import InlineEvidence from '@/components/evidence/InlineEvidence'
 import NarrativeText from '@/components/evidence/NarrativeText'
+import { aiStatusMessage } from '@/api/aiStatus'
 import { t, tn } from '@/i18n'
 
 const route = useRoute()
@@ -526,6 +527,15 @@ const bundleNarrative = computed(() => {
   const n = bundle.value?.review?.narrative
   return n && n.markdown && n.verified !== false ? n : null
 })
+// plain reason there is no AI summary / description (switched off, no key, no credits left, provider error)
+const bundleAiOff = computed(() => {
+  const n = bundle.value?.review?.narrative
+  return n && n.mode !== 'llm' ? aiStatusMessage(n.llm_status, n.llm_status_text) : ''
+})
+const docAiOff = computed(() => {
+  const d = result.value?.description
+  return d && d.mode !== 'llm' ? aiStatusMessage(d.llm_status, d.llm_status_text) : ''
+})
 const bundleRequest = computed(() => {
   const r = bundle.value?.review?.request
   return r && r.amount_display && r.amount_display !== 'n/a' ? r : null
@@ -724,8 +734,9 @@ function bundleDocKind(d: { doc_type: string; status: string }) {
             <h2>{{ t('Summary') }}</h2>
             <span class="ctx">{{ bundleNarrative?.mode === 'llm' ? t('AI draft · every number checked against the documents by the citation verifier') : t('Template summary · built from the same figures and issues') }}</span>
           </div>
+          <div v-if="bundleAiOff" class="note" role="status">{{ bundleAiOff }}</div>
           <NarrativeText v-if="bundleNarrative" class="plain" :markdown="bundleNarrative.markdown" />
-          <div v-else class="muted">{{ t('No summary passed the citation verifier; the issues, figures and ratios above do not depend on it.') }}</div>
+          <div v-else-if="!bundleAiOff" class="muted">{{ t('No summary passed the citation verifier; the issues, figures and ratios above do not depend on it.') }}</div>
         </section>
 
         <details v-if="bundleDone && bundle?.review?.findings?.length" class="panel more">
@@ -806,6 +817,7 @@ function bundleDocKind(d: { doc_type: string; status: string }) {
             <NarrativeText class="plain" :markdown="result.description.text" />
             <div class="muted" style="font-size: 12px">{{ t('Written by the language model from the values below; every number in it was checked against them.') }}</div>
           </div>
+          <div v-else-if="docAiOff" class="note" role="status" style="margin-top: 4px">{{ docAiOff }}</div>
         </section>
 
         <!-- 2. Main figures -->

@@ -70,6 +70,25 @@ It is a pipeline of separate stages, not a single prompt. Deterministic stages c
 
 ## Run locally
 
+### Run with one command
+
+You need Docker and nothing else: no `.env` file and no API key.
+
+```bash
+git clone https://github.com/Az1mbek-Xak1mov/hackaton_wiut.git && cd hackaton_wiut
+docker compose up --build
+```
+
+- Business owner app: http://localhost:8080
+- Bank officer app: http://app.localhost:8080 (browsers send `*.localhost` to your own machine)
+- Sign in with the demo buttons (no password). You can also use `owner@converza.uz` or `officer@converza.uz` with the password `converza-local`.
+- On first start a one-off `seed` container pushes the synthetic demo documents through the real pipeline. This takes a few minutes, and the screens fill in as the documents are analysed. Later runs skip this step. To start again from empty, run `docker compose down -v`.
+- **It works without any API key.** Reading, checks, ratios and monitoring all work. AI summaries are turned off, the app says so (the footer shows "LLM off"), and template summaries are shown in their place. To turn AI summaries on, run `OPENAI_API_KEY=sk-... docker compose up --build`.
+- These settings are for your machine only: a development JWT secret, passwordless demo sign-in, and fixed demo passwords. Production uses `compose.prod.yml`.
+- If a port is already taken, change it with `WEB_PORT`, `API_PORT` or `DB_PORT`, e.g. `WEB_PORT=9090 docker compose up --build`.
+
+### Development setup
+
 Requirements: [uv](https://docs.astral.sh/uv/), Docker, Node 22, and Tesseract with the `uzb`, `uzb_cyrl`, `rus` and `eng` language packs to run OCR outside Docker (the Docker image installs them).
 
 ```bash
@@ -82,7 +101,7 @@ uv run python -m app.seed_demo       # pushes data/seed through the real pipelin
 cd web && npm ci && npm run dev      # http://localhost:5173 (proxies /api to :8020)
 ```
 
-API and database in Docker instead: `docker compose --profile full up -d --build`, then start the web dev server as above. Tests: `uv run pytest -q` and `cd web && npm run build`.
+API and database in Docker instead: `docker compose up -d --build api` (API on localhost:8020), then start the web dev server as above. Tests: `uv run pytest -q` and `cd web && npm run build`.
 
 ## Evaluation
 

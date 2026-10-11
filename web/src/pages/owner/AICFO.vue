@@ -9,6 +9,8 @@ import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import InlineEvidence from '@/components/evidence/InlineEvidence'
 import { citedKeys } from '@/components/evidence/inline'
+import { aiStatusMessage } from '@/api/aiStatus'
+import { useApp } from '@/stores/app'
 import { t } from '@/i18n'
 
 interface Turn {
@@ -23,6 +25,13 @@ interface Turn {
 
 const ev = useEvidence()
 const auth = useAuth()
+const app = useApp()
+// plain notice when the AI cannot answer (switched off, no key, no credits left): the latest answer's reason wins
+const aiOff = computed(() => {
+  const last = [...turns.value].reverse().find((x) => x.answer)
+  if (last?.answer) return last.mode === 'llm' ? '' : aiStatusMessage(last.answer.llm_status, last.answer.llm_status_text)
+  return aiStatusMessage(app.version?.llm_status, app.version?.llm_status_text)
+})
 const turns = ref<Turn[]>([])
 const question = ref('')
 const asking = ref(false)
@@ -128,6 +137,7 @@ function argText(a: Record<string, any>) {
           </div>
         </div>
         <div v-if="histErr" class="error-box">{{ histErr }}</div>
+        <div v-if="aiOff" class="note" role="status">{{ aiOff }} {{ t('Matching records are still listed for each question.') }}</div>
 
         <template v-for="(turn, i) in turns" :key="i">
           <div class="msg">

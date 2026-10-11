@@ -12,6 +12,7 @@ import FindingRow from '@/components/evidence/FindingRow.vue'
 import InlineEvidence from '@/components/evidence/InlineEvidence'
 import NarrativeText from '@/components/evidence/NarrativeText'
 import Modal from '@/components/ui/Modal.vue'
+import { aiStatusMessage } from '@/api/aiStatus'
 import { t, tn } from '@/i18n'
 
 const route = useRoute()
@@ -141,9 +142,14 @@ const narrativeLabel = computed(() => {
     const att = n.attempts > 1 ? ` · ${t('accepted on attempt {n} (earlier drafts rejected by the verifier)', { n: n.attempts })}` : ''
     return `${t('AI analysis')}${when}${att} · ${t('every figure links to its source')}`
   }
-  return n.attempts > 0
-    ? `${t('Template summary')} · ${tn(n.attempts, '{n} AI draft was rejected by the citation verifier', '{n} AI drafts were rejected by the citation verifier')}`
-    : `${t('Template summary')} · ${t('the language model is switched off; issues, figures and ratios are unchanged')}`
+  if (n.attempts > 0) return `${t('Template summary')} · ${tn(n.attempts, '{n} AI draft was rejected by the citation verifier', '{n} AI drafts were rejected by the citation verifier')}`
+  if (n.llm_status && n.llm_status !== 'off') return `${t('Template summary')} · ${t('built from the same figures and issues')}`
+  return `${t('Template summary')} · ${t('the language model is switched off; issues, figures and ratios are unchanged')}`
+})
+// plain reason there is no AI summary (switched off, no key, no credits left, provider error)
+const narrativeOff = computed(() => {
+  const n = data.value?.narrative
+  return n && n.mode !== 'llm' ? aiStatusMessage(n.llm_status, n.llm_status_text) : ''
 })
 
 // ----- decision modal -----
@@ -353,6 +359,7 @@ async function submitDecision() {
             <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px">
               <div v-if="regenerating" class="note">{{ app.llm?.enabled ? t('Regenerating the summary with the language model on… Issues, figures and ratios above do not change.') : t('Regenerating the summary with the language model off… Issues, figures and ratios above do not change.') }}</div>
               <div v-if="regenErr" class="error-box">{{ regenErr }}</div>
+              <div v-if="narrativeOff && !regenerating" class="note" role="status">{{ narrativeOff }}</div>
               <template v-if="data.narrative && data.narrative.markdown && data.narrative.verified !== false">
                 <div class="eyebrow">{{ narrativeLabel }}</div>
                 <NarrativeText :markdown="data.narrative.markdown" />

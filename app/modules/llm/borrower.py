@@ -11,7 +11,7 @@ from app.modules.extraction.service import fact_to_draft
 from app.modules.llm import prompts
 from app.modules.llm.models import NarrativeRun
 from app.modules.llm.narrative import finding_payload, redactor, run_verified_draft
-from app.modules.llm.provider import available
+from app.modules.llm.provider import available, status as llm_status
 from app.modules.monitoring.models import MonitoringResult, MonitoringRun
 from app.modules.reconcile.models import Finding
 
@@ -77,6 +77,9 @@ def generate_borrower_narrative(db: Session, borrower_id: int, run_id: int) -> N
     from app.pipeline.verify import verify
     text = template_text(res.status, findings, facts)
     report = verify(text, facts, check_forbidden=False)
+    st = llm_status(db)
+    report = {**(report if isinstance(report, dict) else {"ok": bool(report)}),
+              "llm_status": st["code"], "llm_status_text": st["text"]}
     attempts = db.scalar(select(func.count(NarrativeRun.id)).where(NarrativeRun.borrower_id == borrower_id,
                                                                    NarrativeRun.generation == generation)) or 0
     run = NarrativeRun(borrower_id=borrower_id, generation=generation, attempt=attempts + 1, mode="template",

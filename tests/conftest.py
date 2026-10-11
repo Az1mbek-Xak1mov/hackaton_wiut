@@ -27,6 +27,15 @@ from app.models import Base  # noqa: E402
 from app.modules.users.models import User  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def _llm_status_reset():
+    """A remembered provider refusal (no credits / bad key) must not leak between tests."""
+    from app.modules.llm.provider import reset_status
+    reset_status()
+    yield
+    reset_status()
+
+
 @pytest.fixture()
 def engine():
     eng = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)

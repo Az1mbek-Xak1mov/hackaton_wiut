@@ -328,7 +328,7 @@ def _narrative(db: Session, app_id: int | None = None, borrower_id: int | None =
     runs = list(db.scalars(stmt.order_by(NarrativeRun.generation.desc(), NarrativeRun.attempt.desc())).all())
     if not runs:
         return {"mode": None, "markdown": "", "accepted_at": None, "attempts": 0, "verified": False,
-                "rejected": []}
+                "rejected": [], "llm_status": None, "llm_status_text": ""}
     latest_gen = runs[0].generation
     gen_runs = [r for r in runs if r.generation == latest_gen]
     chosen = next((r for r in gen_runs if r.accepted), None) or next((r for r in runs if r.accepted), None)
@@ -337,12 +337,21 @@ def _narrative(db: Session, app_id: int | None = None, borrower_id: int | None =
                  "uncited_sentences": (r.verifier_report or {}).get("uncited_sentences", []),
                  "unknown_ids": (r.verifier_report or {}).get("unknown_ids", [])}
                 for r in gen_runs if not r.accepted]
+    tmpl = next((r for r in gen_runs if r.mode == "template"), None)
+    rep = (tmpl.verifier_report or {}) if tmpl is not None else {}
+    reason = {"llm_status": rep.get("llm_status"), "llm_status_text": rep.get("llm_status_text") or ""}
+    if reason["llm_status"] == "ok":
+        reason = {"llm_status": None, "llm_status_text": ""}   # LLM was reachable; drafts were rejected instead
     if chosen is None:
         return {"mode": gen_runs[0].mode, "markdown": "", "accepted_at": None,
-                "attempts": len([r for r in gen_runs if r.mode == "llm"]), "verified": False, "rejected": rejected}
+                "attempts": len([r for r in gen_runs if r.mode == "llm"]), "verified": False, "rejected": rejected,
+                **reason}
+    if chosen.mode == "llm":
+        reason = {"llm_status": "ok", "llm_status_text": ""}
     return {"mode": chosen.mode, "markdown": chosen.output,
             "accepted_at": chosen.created_at.isoformat() if chosen.created_at else None,
-            "attempts": len([r for r in gen_runs if r.mode == "llm"]), "verified": True, "rejected": rejected}
+            "attempts": len([r for r in gen_runs if r.mode == "llm"]), "verified": True, "rejected": rejected,
+            **reason}
 
 
 def _doc_row(d: Document) -> dict:

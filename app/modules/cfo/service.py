@@ -24,6 +24,7 @@ from app.modules.extraction.service import FactSerializer, fact_to_draft, persis
 from app.modules.llm import prompts
 from app.modules.llm.narrative import redactor
 from app.modules.llm.provider import LLMError, LLMUnavailable, available, complete, parse_json
+from app.modules.llm.provider import status as llm_status
 from app.modules.statements.models import Transaction
 
 logger = logging.getLogger(__name__)
@@ -259,6 +260,11 @@ class CfoService:
                 logger.warning("CFO LLM path failed: %s", exc)
         if result is None:
             result = self._facts_only(question, llm_on=available(self.db))
+        if result["mode"] != "llm":
+            st = llm_status(self.db)
+            if st["code"] != "ok":   # say plainly why there is no AI answer (off, no key, no credits, error)
+                result["answer"]["llm_status"] = st["code"]
+                result["answer"]["llm_status_text"] = st["text"]
         msg = CfoMessage(thread_id=thread.id, role="assistant", content=result["answer"]["direct_answer"],
                          answer=result["answer"], citations=result["citations"], tool_trace=result["tool_trace"],
                          mode=result["mode"])

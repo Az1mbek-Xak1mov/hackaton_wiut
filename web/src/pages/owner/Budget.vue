@@ -9,6 +9,7 @@ import EvidencePane from '@/components/evidence/EvidencePane.vue'
 import EvidenceChip from '@/components/evidence/EvidenceChip.vue'
 import InlineEvidence from '@/components/evidence/InlineEvidence'
 import BarGroupChart from '@/components/charts/BarGroupChart.vue'
+import { aiStatusMessage } from '@/api/aiStatus'
 import { t } from '@/i18n'
 
 interface Ref { fact_key: string; label: string; document_uuid: string | null; filename: string | null; page_n: number | null }
@@ -29,6 +30,7 @@ const files = ref<DocumentOut[]>([])
 const advice = ref<AdviceItem[]>([])
 const adviceMode = ref<string | null>(null)
 const adviceAt = ref<string | null>(null)
+const adviceOff = ref('')   // plain reason the advice is not explained by the AI (off, no key, no credits)
 const loading = ref(true)
 const err = ref('')
 const upErr = ref('')
@@ -100,6 +102,7 @@ async function loadAdvice() {
   advice.value = a.items || []
   adviceMode.value = a.mode
   adviceAt.value = a.generated_at
+  adviceOff.value = a.mode === 'llm' ? '' : aiStatusMessage(a.llm_status, a.llm_status_text)
 }
 
 onMounted(async () => {
@@ -176,6 +179,7 @@ async function runAdvice() {
     advice.value = a.items || []
     adviceMode.value = a.mode
     adviceAt.value = a.generated_at
+    adviceOff.value = a.mode === 'llm' ? '' : aiStatusMessage(a.llm_status, a.llm_status_text)
     const first = advice.value[0]?.fact_keys?.[0]
     if (first) ev.select(first)
   } catch (e) {
@@ -344,7 +348,8 @@ const SEV: Record<string, [string, string]> = {
             <button type="button" class="btn btn-primary" :disabled="running" @click="runAdvice">{{ running ? t('Checking…') : advice.length || adviceAt ? t('Check again') : t('Get advice') }}</button>
           </div>
           <div v-if="adviceErr" class="error-box">{{ adviceErr }}</div>
-          <div v-if="adviceMode === 'rules' && advice.length" class="row"><span class="pill pill-neutral">{{ t('LLM is off — rule texts shown') }}</span></div>
+          <div v-if="adviceOff && advice.length" class="note" role="status">{{ adviceOff }}</div>
+          <div v-else-if="adviceMode === 'rules' && advice.length" class="row"><span class="pill pill-neutral">{{ t('LLM is off — rule texts shown') }}</span></div>
           <div v-if="!advice.length" class="empty muted">
             <template v-if="adviceAt">{{ t('No issues found by the rules in the records on file.') }}</template>
             <template v-else-if="!hasActuals">{{ t('n/a — upload a bank statement or cash-flow table, then press “Get advice”.') }}</template>

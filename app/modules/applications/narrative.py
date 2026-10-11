@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.modules.extraction.models import Fact
 from app.modules.extraction.service import fact_to_draft
 from app.modules.llm.models import NarrativeRun
-from app.modules.llm.provider import available
+from app.modules.llm.provider import available, status as llm_status
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,8 @@ def generate_application_narrative(db: Session, application, ctx, findings, rati
     text = template_narrative(ctx, findings, ratio_drafts)
     report = verify(text, facts)
     report = report if isinstance(report, dict) else {"ok": bool(report)}
+    st = llm_status(db)   # why no AI draft: switched off, no key, no credits, provider error, or verifier rejections
+    report = {**report, "llm_status": st["code"], "llm_status_text": st["text"]}
     run = NarrativeRun(application_id=application.id, generation=generation, attempt=llm_attempts + 1, mode="template",
                        fact_set=_fact_set(facts), output=text, verifier_report=_safe(report),
                        accepted=bool(report.get("ok")))

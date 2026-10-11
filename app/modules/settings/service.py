@@ -30,8 +30,10 @@ class SettingsService:
         self.db = db
 
     def llm_status(self) -> dict:
+        from app.modules.llm.provider import status
+        st = status(self.db)
         return {"enabled": llm_enabled(self.db), "provider": settings.LLM_PROVIDER, "model": settings.LLM_MODEL,
-                "configured": llm_configured()}
+                "configured": llm_configured(), "status": st["code"], "status_text": st["text"]}
 
     def set_llm_enabled(self, enabled: bool, actor) -> dict:
         row = self.db.scalars(select(AppSetting).where(AppSetting.key == LLM_KEY)).first()

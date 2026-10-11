@@ -6,6 +6,8 @@ class LlmSettings(BaseModel):
     provider: str
     model: str
     configured: bool
+    status: str = "ok"          # ok | off | no_key | no_credits | error
+    status_text: str = ""
 
 
 class LlmSettingsUpdate(BaseModel):

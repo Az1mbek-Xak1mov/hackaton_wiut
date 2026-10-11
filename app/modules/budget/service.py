@@ -26,6 +26,7 @@ from app.modules.extraction.service import FactSerializer
 from app.modules.llm import prompts
 from app.modules.llm.narrative import redactor
 from app.modules.llm.provider import LLMError, LLMUnavailable, available, complete, parse_json
+from app.modules.llm.provider import status as llm_status
 from app.pipeline.cashflow import month_human
 from app.pipeline.compute import ComputeError, compute, constant_fact, display_with_unit, to_kuzs
 from app.pipeline.statements.categorise import CATEGORY_LABELS
@@ -187,9 +188,11 @@ class BudgetService:
     def _advice_out(self, row: BudgetAdvice) -> dict:
         keys = {k for it in row.items or [] for k in it.get("fact_keys", [])}
         facts = list(self.db.scalars(select(Fact).where(Fact.key.in_(list(keys) or ["-"]))).all())
+        st = llm_status(self.db) if row.mode != "llm" else {"code": "ok", "text": ""}
         return {"uuid": str(row.uuid), "items": row.items, "mode": row.mode,
                 "generated_at": row.created_at.isoformat() if row.created_at else None,
-                "facts": FactSerializer(self.db).by_key(facts)}
+                "facts": FactSerializer(self.db).by_key(facts),
+                "llm_status": st["code"], "llm_status_text": st["text"]}
 
     def generate_advice(self, user) -> dict:
         cfo = self._ctx(user)
